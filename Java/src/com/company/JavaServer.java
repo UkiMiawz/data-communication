@@ -1,3 +1,4 @@
+package com.company;
 import org.apache.xmlrpc.*;
 
 public class JavaServer {
