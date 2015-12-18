@@ -1,5 +1,5 @@
 package org.aachen.rpc;
-
+import java.net.InetAddress;
 import java.net.URL;
 
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -14,7 +14,8 @@ public class JavaWsClient {
 						"http://localhost:1080/xml-rpc-example/xmlrpc"));
 				XmlRpcClient client = new XmlRpcClient();
 				client.setConfig(config);
-				Object[] params = new Object[] { "Chris Martin" };
+				InetAddress IP=InetAddress.getLocalHost();
+				Object[] params = new Object[] { IP.getHostAddress() };
 				String response = (String) client.execute("HelloWorld.message", params);
 				System.out.println("Message : " + response);
 				
