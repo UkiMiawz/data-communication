@@ -98,4 +98,4 @@ Election message is sent from 6 to 7
 Election message is sent from 4 to 7
 Final coordinator is 6
  
- * /
+*/
