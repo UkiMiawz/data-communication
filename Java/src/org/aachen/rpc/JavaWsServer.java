@@ -1,7 +1,6 @@
 package org.aachen.rpc;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
@@ -11,18 +10,28 @@ import org.apache.xmlrpc.webserver.WebServer;
 public class JavaWsServer {
 
 	private static final int PORT = 1090;
-	public static HashMap<UUID, String> machines = new HashMap<UUID, String>();
+	private static int lastPriority = 0;
+	private static HashMap<Integer, String> machines = new HashMap<Integer, String>();
+	private static Integer keyMaster;
+	
+	public static void setMaster(Integer master){
+		keyMaster = master;
+	}
 	
 	public static void networkLog(String logMessage){
 		System.out.println(logMessage);
 	}
 	
 	public static int addMachineToMap(String ipAddress){
-		UUID uniqueID = UUID.randomUUID();
-		machines.put(uniqueID, ipAddress);
-		networkLog("New Machine added with ID : " + uniqueID);
+		machines.put(lastPriority, ipAddress);
+		lastPriority += 1;
+		networkLog("New Machine added with priority : " + lastPriority);
 		networkLog("Total number of machines now :" + machines.size());
 		return machines.size();
+	}
+	
+	public static HashMap<Integer, String> getMachines(){
+		return machines;
 	}
 	
 	public static void main(String[] args) {
