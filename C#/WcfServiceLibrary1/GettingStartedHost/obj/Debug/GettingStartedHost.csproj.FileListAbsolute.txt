@@ -8,3 +8,13 @@ D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedHost\bin\Debug\Mi
 D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.csprojResolveAssemblyReference.cache
 D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.exe
 D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\GettingStartedHost.exe.config
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\GettingStartedHost.exe
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\GettingStartedHost.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\WcfServiceLibrary1.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\Microsoft.Samples.XmlRpc.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\WcfServiceLibrary1.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\bin\Debug\Microsoft.Samples.XmlRpc.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.csprojResolveAssemblyReference.cache
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.exe
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\GettingStartedHost\obj\Debug\GettingStartedHost.pdb

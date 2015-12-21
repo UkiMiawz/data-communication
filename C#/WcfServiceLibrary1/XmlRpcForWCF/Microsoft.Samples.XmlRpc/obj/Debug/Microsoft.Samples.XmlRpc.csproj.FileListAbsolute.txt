@@ -11,3 +11,10 @@ D:\D. Work Related\GitHub Project\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debu
 D:\D. Work Related\GitHub Project\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.csproj.GenerateResource.Cache
 D:\D. Work Related\GitHub Project\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.dll
 D:\D. Work Related\GitHub Project\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\bin\Debug\Microsoft.Samples.XmlRpc.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\bin\Debug\Microsoft.Samples.XmlRpc.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.csprojResolveAssemblyReference.cache
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.Properties.Resources.resources
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.csproj.GenerateResource.Cache
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\WcfServiceLibrary1\XmlRpcForWCF\Microsoft.Samples.XmlRpc\obj\Debug\Microsoft.Samples.XmlRpc.pdb
