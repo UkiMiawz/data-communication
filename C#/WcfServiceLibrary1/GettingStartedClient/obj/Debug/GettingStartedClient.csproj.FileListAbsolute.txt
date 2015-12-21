@@ -1,0 +1,6 @@
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\bin\Debug\GettingStartedClient.exe.config
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\bin\Debug\GettingStartedClient.exe
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\bin\Debug\GettingStartedClient.pdb
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\obj\Debug\GettingStartedClient.exe
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\obj\Debug\GettingStartedClient.pdb
+D:\D. Work Related\VS Project\WcfServiceLibrary1\GettingStartedClient\obj\Debug\GettingStartedClient.csprojResolveAssemblyReference.cache
