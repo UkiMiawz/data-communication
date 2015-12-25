@@ -2,16 +2,17 @@ package org.aachen.rpc;
 
 import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 public class Bully {
 	
 	private Integer master;
-	private HashMap<Integer, String> machines;
+	private TreeMap<Integer, String> machines;
 	private int n;
     private Integer positionValue[] = new Integer[100];
     private int timeout = 3000;
     
-    Bully(HashMap<Integer, String> machines){
+    Bully(TreeMap<Integer, String> machines){
     	this.machines = machines;
     	this.n = machines.size();
     	positionValue = machines.keySet().toArray(new Integer[100]);

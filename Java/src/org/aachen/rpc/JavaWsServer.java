@@ -1,6 +1,8 @@
 package org.aachen.rpc;
 
+import java.net.InetAddress;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
@@ -11,11 +13,31 @@ public class JavaWsServer {
 
 	private static final int PORT = 1090;
 	private static int lastPriority = 0;
-	private static HashMap<Integer, String> machines = new HashMap<Integer, String>();
+	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	private static Integer keyMaster;
+	private static int myPriority;
+	private static String myIpAddress;
+	private static InetAddress myIp;
+	
+	public static InetAddress getIp(){
+		return myIp;
+	}
+	
+	public static int getMyPriority(){
+		return myPriority;
+	}
+	
+	public static String getMyIpAddress(){
+		return myIpAddress;
+	}
 	
 	public static void setMaster(Integer master){
 		keyMaster = master;
+	}
+	
+	public static void setLastPriority(){
+		int biggestPriority = machines.lastKey();
+		lastPriority = biggestPriority;
 	}
 	
 	public static void networkLog(String logMessage){
@@ -30,7 +52,14 @@ public class JavaWsServer {
 		return machines.size();
 	}
 	
-	public static HashMap<Integer, String> getMachines(){
+	public static int addMachineToMap(String ipAddress, int priority){
+		machines.put(priority, ipAddress);
+		networkLog("New Machine added with priority : " + priority);
+		networkLog("Total number of machines now :" + machines.size());
+		return machines.size();
+	}
+	
+	public static TreeMap<Integer, String> getMachines(){
 		return machines;
 	}
 	
@@ -48,7 +77,11 @@ public class JavaWsServer {
 
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
 			webServer.start();
-
+			
+			//assign my IP
+			myIp=InetAddress.getLocalHost();
+			myIpAddress = myIp.getHostAddress();
+			
 			System.out.println("Server started successfully...");
 		} catch (Exception exception) {
 			System.out.println("Something went wrong while starting the server : ");
