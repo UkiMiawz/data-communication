@@ -1,4 +1,7 @@
 package org.aachen.rpc;
+import java.io.BufferedReader;
+import java.io.Console;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 
@@ -48,10 +51,43 @@ public class JavaWsClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void startElection(){
+		
+	}
 		
 	public static void main (String [] args) {   
+        
 		connect("localhost");
 		joinNetwork();
 		registerSelf();
+		
+		//wait for command
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+	            System.in));
+		
+        boolean keepRunning = true;
+        while (keepRunning)
+        {       
+        	try{
+        		System.out.println("Enter command, or 'exit' to quit: ");
+                String command =  reader.readLine();
+                if ("exit".equals(command))
+                {
+                    keepRunning = false;
+                }
+                else if("elect".equals(command)){
+                	//if command is "elect" start election
+                	startElection();
+                }
+                else
+                {
+                    System.out.println("Command " + command + " not recognized");
+                }
+        	} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+       
+        }
 	}
 }
