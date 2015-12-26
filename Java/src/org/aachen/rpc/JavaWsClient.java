@@ -53,7 +53,13 @@ public class JavaWsClient {
 	}
 	
 	private static void startElection(){
-		
+		try {
+			Object[] params = new Object[] { ip.getHostAddress() };
+			String response = (String) client.execute("RegisterHandler.leaderElection", params);
+			System.out.println("Message : " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 		
 	public static void main (String [] args) {   

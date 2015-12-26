@@ -2,6 +2,7 @@ package org.aachen.rpc;
 
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.aachen.rpc.Bully;
@@ -89,13 +90,45 @@ public class RegisterHandler {
 		
 	}
 	
-	public String leaderElection() {
+	public String leaderElection(String ip) {
+		System.out.println("Leader election on ip " + ip);
 		//get machines
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
 		Bully bullyGenerator = new Bully(machines);
 		bullyGenerator.holdElection(1);
 		Integer keyMaster = bullyGenerator.getMaster();
-		JavaWsServer.setMaster(keyMaster);
-		return machines.get(keyMaster);
+		String newLeaderIp = JavaWsServer.setMaster(keyMaster);
+		
+		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
+			  Integer priority = entry.getKey();
+			  String ipAddress = entry.getValue();
+			  
+			  try{
+					//send this machine IP address and priority
+					XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+					config.setServerURL(new URL(
+							"http://"+ ipAddress + ":1090/xml-rpc-example/xmlrpc"));
+					XmlRpcClient client = new XmlRpcClient();
+					client.setConfig(config);
+					
+					//register self to the new machine
+					Object[] params = new Object[] { newLeaderIp };
+					String response = (String) client.execute("RegisterHandler.setNewLeader", params);
+					System.out.println("Message: " + response);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			  System.out.println("Contacting priority " + priority + " => " + ipAddress);
+			}
+		
+		//send new master to everyone
+		return newLeaderIp;
+	}
+	
+	public String setNewLeader(int keyMaster){
+		String newMaster = JavaWsServer.setMaster(keyMaster);
+		return "Leader set to machine with IP : " + newMaster;
 	}
 }

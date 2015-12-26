@@ -15,6 +15,7 @@ public class JavaWsServer {
 	private static int lastPriority = 0;
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	private static Integer keyMaster;
+	private static String ipMaster;
 	private static int myPriority;
 	private static String myIpAddress;
 	private static InetAddress myIp;
@@ -31,8 +32,10 @@ public class JavaWsServer {
 		return myIpAddress;
 	}
 	
-	public static void setMaster(Integer master){
+	public static String setMaster(Integer master){
 		keyMaster = master;
+		ipMaster = machines.get(keyMaster);
+		return ipMaster;
 	}
 	
 	public static void setLastPriority(){
