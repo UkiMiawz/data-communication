@@ -47,16 +47,29 @@ public class HelloClient {
         while (keepRunning)
         {       
         	try{
-        		System.out.println("Enter ip address, or 'exit' to quit: ");
-                String ip =  reader.readLine();
-                if ("exit".equals(ip))
+        		System.out.println("Enter command ('server' or 'local'), or 'exit' to quit: ");
+                String command =  reader.readLine();
+                if ("exit".equals(command))
                 {
                     keepRunning = false;
                 }
-                else
+                else if("local".equals(command))
                 {
+                	System.out.println("Enter ip address: ");
+                    String ip =  reader.readLine();
                 	connect(ip);
                 	sayHello();
+                } 
+                else if("server".equals(command))
+                {
+                	System.out.println("Enter ip address: ");
+                    String ipAddress =  reader.readLine();
+                    Object[] params = new Object[] { ip.getHostAddress() };
+                	JavaWsServer.TestConnection(ipAddress, "HelloWorld.hello", params);
+                } 
+                else
+                {
+                	System.out.println("Command " + command + " not recognized");
                 }
         	} catch (Exception e) {
     			e.printStackTrace();

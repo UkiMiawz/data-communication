@@ -97,7 +97,6 @@ public class JavaWsServer {
 			myIp=InetAddress.getLocalHost();
 			myIpAddress = myIp.getHostAddress();
 			
-			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 		            System.in));
@@ -127,13 +126,16 @@ public class JavaWsServer {
 			webServer.shutdown();
 			System.out.println("Server shutdown");
 			
-			
-			System.out.println("Server started successfully...");
 		} catch (Exception exception) {
 			System.out.println("Something went wrong while starting the server : ");
 			exception.printStackTrace();
 		}
 		
+	}
+	
+	public static String TestConnection(String ipAddress, String command, Object[] params){
+		String response = RpcSender.SendToOneMachine(ipAddress, command, params);
+		return response;
 	}
 
 }
