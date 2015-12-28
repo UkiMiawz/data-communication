@@ -113,6 +113,10 @@ public class JavaWsServer {
 	                    System.out.println("Shutting down server...");
 	                    ServerShutDown();
 	                }
+	                else if ("ip".equals(command))
+	                {
+	                	System.out.println("This machine ip :" + myIpAddress);
+	                }
 	                else
 	                {
 	                    System.out.println("Command " + command + " not recognized");
