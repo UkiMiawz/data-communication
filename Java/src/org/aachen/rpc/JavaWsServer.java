@@ -3,8 +3,12 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URL;
+import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
@@ -20,6 +24,7 @@ public class JavaWsServer {
 	private static int myKey;
 	private static String myIpAddress;
 	private static InetAddress myIp;
+	private static int timeout = 100;
 	
 	public static InetAddress getIp(){
 		return myIp;
@@ -40,6 +45,14 @@ public class JavaWsServer {
 	}
 	
 	public static void setLastPriority(){
+		System.out.println("Printing all machines :");
+		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
+			
+			  Integer priority = entry.getKey();
+			  String ipAddress = entry.getValue();
+
+			  System.out.println("Priority " + priority + " with IP " + ipAddress);
+		}
 		int biggestPriority = machines.lastKey();
 		lastPriority = biggestPriority;
 	}
@@ -73,7 +86,7 @@ public class JavaWsServer {
 		return machines;
 	}
 	
-	public static void ServerShutDown(){
+	public static void serverShutDown(){
 		Object[] params = new Object[] { myKey };
 		RpcSender.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
 	}
@@ -111,11 +124,15 @@ public class JavaWsServer {
 	                {
 	                    keepRunning = false;
 	                    System.out.println("Shutting down server...");
-	                    ServerShutDown();
+	                    serverShutDown();
 	                }
 	                else if ("ip".equals(command))
 	                {
 	                	System.out.println("This machine ip :" + myIpAddress);
+	                }
+	                else if ("print".equals(command))
+	                {
+	                	printAllMachinesInLan();
 	                }
 	                else
 	                {
@@ -140,6 +157,38 @@ public class JavaWsServer {
 	public static String TestConnection(String ipAddress, String command, Object[] params){
 		String response = RpcSender.SendToOneMachine(ipAddress, command, params);
 		return response;
+	}
+	
+	public static void printAllMachinesInLan(){
+		try{
+			//get IP addresses
+			InetAddress ip = JavaWsServer.getIp();
+			String ipAddress = ip.getHostAddress();
+		    String subnet = ipAddress.substring(0, ipAddress.lastIndexOf('.'));
+		    System.out.println("Subnet : " + subnet);
+			
+		    int counter = 0;
+		    long startTime = System.nanoTime();
+		    for (int i=1;i<255;i++){
+			       String host= subnet + "." + i;
+			       if (InetAddress.getByName(host).isReachable(timeout)){
+			           System.out.println(host + " is reachable");
+			           counter++;
+			       } else {
+			    	   System.out.println(host + " is not reachable");
+			       }
+			}
+		    
+		    long endTime = System.nanoTime();
+		    long duration = (endTime - startTime)/1000000;
+		    System.out.println("Number of machines detected: " + counter);
+		    System.out.println("Operation time in second: " + duration/1000);
+		    
+		    System.out.println("Finish checking");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

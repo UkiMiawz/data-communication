@@ -13,32 +13,44 @@ public class RegisterHandler {
 	public static void joinNetwork(String ipAddress) {
 		try{
 			//get IP addresses
-			InetAddress ip = JavaWsServer.getIp();
-			InetAddress[] addr = InetAddress.getAllByName(ip.getCanonicalHostName());
+			
+		    String subnet = ipAddress.substring(0, ipAddress.lastIndexOf('.'));
+		    System.out.println("Subnet : " + subnet);
+			
+		    int counter = 0;
+		    long startTime = System.nanoTime();
 		    
-			//send IP address to all nodes
-			for (int i = 0; i < addr.length; i++){
-		    	//check if machine active
-		    	String machineIp = addr[i].getHostAddress();
-		    	if(InetAddress.getByName(machineIp).isReachable(timeout)){
-		    		try{
-		    			//connect to the machine
-		    			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-		    			config.setServerURL(new URL(
-		    					"http://"+ machineIp + ":1090/xml-rpc-example/xmlrpc"));
-		    			XmlRpcClient client = new XmlRpcClient();
-		    			client.setConfig(config);
-		    			
-		    			//register to self
-		    			Object[] params = new Object[] { ip.getHostAddress() };
-		    			String response = (String) client.execute("RegisterHandler.newMachineJoin", params);
-		    			System.out.println("Message : " + response);
-		    			
-		    		} catch (Exception e) {
-		    			e.printStackTrace();
-		    		}
-		    	}
-		    }
+		    for (int i=1;i<255;i++){
+			       String host= subnet + "." + i;
+			       if (InetAddress.getByName(host).isReachable(timeout)){
+			           System.out.println(host + " is reachable");
+			           try{
+			    			//connect to the machine
+			    			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+			    			config.setServerURL(new URL(
+			    					"http://"+ host + ":1090/xml-rpc-example/xmlrpc"));
+			    			XmlRpcClient client = new XmlRpcClient();
+			    			client.setConfig(config);
+			    			
+			    			//register to self
+			    			Object[] params = new Object[] { ipAddress };
+			    			String response = (String) client.execute("RegisterHandler.newMachineJoin", params);
+			    			System.out.println("Message : " + response);
+			    			counter++;
+			    		} catch (Exception e) {
+				    		e.printStackTrace();
+				    	}
+			       } else {
+			    	   System.out.println(host + " is not reachable");
+			       }
+			}
+		    
+		    long endTime = System.nanoTime();
+		    long duration = (endTime - startTime)/1000000;
+		    System.out.println("Number of machines detected: " + counter);
+		    System.out.println("Operation time in second: " + duration/1000);
+		    
+		    System.out.println("Finish contacting all active machines");
 			
 			//sort machines and set last priority on server
 			JavaWsServer.setLastPriority();
