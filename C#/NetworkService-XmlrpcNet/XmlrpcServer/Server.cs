@@ -11,10 +11,65 @@ using System.Runtime.Remoting.Channels;
 
 public class NetworkServer : MarshalByRefObject, INetworkServer
 {
+    public NetworkServer()
+    {
+        NetworkMap = new Dictionary<int, string>();        
+    }
+
+    public Dictionary<int, string> NetworkMap;
+
+    #region Private Method
+    private int GetLatestPriority()
+    {
+        if (NetworkMap.Count == 0)
+        {
+            return 0;
+        }
+
+        List<int> priorityList = new List<int>();
+        foreach (int priority in NetworkMap.Keys)
+        {
+            priorityList.Add(priority);
+        }
+        return priorityList.Max();
+    }
+
+    private NetworkMapStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
+    {
+        NetworkMapStruct[] convertionResult = new NetworkMapStruct[dict.Count()];
+        for (int i = 0; i < dict.Count; i++)
+        {
+            convertionResult[i] = new NetworkMapStruct();
+            convertionResult[i].IpAddress = dict.Values.ElementAt(i);
+            convertionResult[i].NetworkPriority = dict.Keys.ElementAt(i);
+        }
+
+        return convertionResult;
+    }
+    #endregion
+
+    #region Public Method
+    public NetworkMapStruct[] AddNewNode(string ipAddress)
+    {
+        NetworkMapStruct[] response;
+        if (NetworkMap.Count() > 0 && NetworkMap.ContainsValue(ipAddress))
+        {
+            response = ConvertDictionaryToStruct(NetworkMap);
+            return response;
+        }
+
+        int currentPriority = GetLatestPriority() + 1;
+        NetworkMap.Add(currentPriority, ipAddress);
+        response = ConvertDictionaryToStruct(NetworkMap);        
+        return response;
+    }
+
     public string AppendString(string value)
     {
-        return value;
+        return "This is Aderick Computer" + value;
     }
+
+    #endregion
 }
 
 class _
@@ -32,7 +87,7 @@ class _
 
         RemotingConfiguration.RegisterWellKnownServiceType(
             typeof(NetworkServer),
-            "calculator.rem",
+            "networkServer.rem",
             WellKnownObjectMode.Singleton);
         Console.WriteLine("Press any key to end server");
         Console.ReadLine();
