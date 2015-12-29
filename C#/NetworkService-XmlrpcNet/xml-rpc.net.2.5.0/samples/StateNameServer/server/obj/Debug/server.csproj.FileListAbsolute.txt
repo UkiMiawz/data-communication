@@ -1,0 +1,6 @@
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\StateNameServer.exe.config
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\StateNameServer.exe
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\StateNameServer.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\server\obj\Debug\server.csprojResolveAssemblyReference.cache
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\server\obj\Debug\StateNameServer.exe
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\server\obj\Debug\StateNameServer.pdb

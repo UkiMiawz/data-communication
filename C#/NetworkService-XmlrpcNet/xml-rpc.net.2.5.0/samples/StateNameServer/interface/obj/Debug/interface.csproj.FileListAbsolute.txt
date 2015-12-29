@@ -1,0 +1,5 @@
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\IStateName.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\IStateName.pdb
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\interface\obj\Debug\interface.csprojResolveAssemblyReference.cache
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\interface\obj\Debug\IStateName.dll
+D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\samples\StateNameServer\interface\obj\Debug\IStateName.pdb
