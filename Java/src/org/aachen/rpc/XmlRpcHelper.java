@@ -68,7 +68,7 @@ public class XmlRpcHelper {
 			String ipAddress = entry.getValue();
 			  
 			try {
-				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
+				if (!ipAddress.equals(InetAddress.getLocalHost().getHostAddress()) && InetAddress.getByName(ipAddress).isReachable(timeout)){
 					System.out.println("Command " + command + " Contacting priority " + priority + " => " + ipAddress);
 					  
 					  //check if machine is on
