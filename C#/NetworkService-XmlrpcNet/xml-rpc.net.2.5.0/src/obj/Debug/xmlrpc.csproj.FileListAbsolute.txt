@@ -1,5 +1,0 @@
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\CookComputing.XmlRpcV2.dll
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\bin\CookComputing.XmlRpcV2.pdb
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\src\obj\Debug\xmlrpc.csprojResolveAssemblyReference.cache
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\src\obj\Debug\CookComputing.XmlRpcV2.dll
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\xml-rpc.net.2.5.0\src\obj\Debug\CookComputing.XmlRpcV2.pdb

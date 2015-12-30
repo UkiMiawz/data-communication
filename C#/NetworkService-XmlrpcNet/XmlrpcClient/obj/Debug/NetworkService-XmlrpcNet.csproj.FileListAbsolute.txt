@@ -1,1 +1,0 @@
-D:\D. Work Related\GitHub Project\data-communication\C#\NetworkService-XmlrpcNet\NetworkService-XmlrpcNet\bin\Debug\NetworkService-XmlrpcNet.exe.config
