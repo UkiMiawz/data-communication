@@ -3,12 +3,19 @@ package org.aachen.rpc;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.TreeMap;
+
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 
 public class RegisterHandler {
 	
-	private static int timeout = 3000;
+	private static int timeout = 200;
+	
+	public static String getMasterIp(){
+		return JavaWsServer.getIpMaster();
+	}
 	
 	public static void joinNetwork(String ipAddress) {
 		try{
@@ -22,24 +29,13 @@ public class RegisterHandler {
 		    
 		    for (int i=1;i<255;i++){
 			       String host= subnet + "." + i;
-			       if (InetAddress.getByName(host).isReachable(timeout)){
+			       System.out.println("Contacting " + host);
+			       
+			       if (host != ipAddress && InetAddress.getByName(host).isReachable(timeout)){
 			           System.out.println(host + " is reachable");
-			           try{
-			    			//connect to the machine
-			    			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			    			config.setServerURL(new URL(
-			    					"http://"+ host + ":1090/xml-rpc-example/xmlrpc"));
-			    			XmlRpcClient client = new XmlRpcClient();
-			    			client.setConfig(config);
-			    			
-			    			//register to self
-			    			Object[] params = new Object[] { ipAddress };
-			    			String response = (String) client.execute("RegisterHandler.newMachineJoin", params);
-			    			System.out.println("Message : " + response);
-			    			counter++;
-			    		} catch (Exception e) {
-				    		e.printStackTrace();
-				    	}
+			           Object[] params = new Object[] { ipAddress };
+			           String response = XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
+			           System.out.println(response);
 			       } else {
 			    	   System.out.println(host + " is not reachable");
 			       }
@@ -50,7 +46,7 @@ public class RegisterHandler {
 		    System.out.println("Number of machines detected: " + counter);
 		    System.out.println("Operation time in second: " + duration/1000);
 		    
-		    System.out.println("Finish contacting all active machines");
+		    System.out.println("Finish contacting all possible machines");
 			
 			//sort machines and set last priority on server
 			JavaWsServer.setLastPriority();
@@ -60,7 +56,7 @@ public class RegisterHandler {
 		}
 	}
 	
-	public static String RegisterMachine(String ipAddress, int priority){
+	public static String registerMachine(String ipAddress, int priority){
 		String myIp = JavaWsServer.getMyIpAddress();
 		int numberOfMachines = JavaWsServer.addMachineToMap(ipAddress, priority);
 		return "From " + myIp + " You have been registered " + ipAddress + "with priority " + priority + ". Number of machines now " + numberOfMachines;
@@ -77,30 +73,20 @@ public class RegisterHandler {
 	}
 	
 	public void newMachineJoin(String ipAddress){
-		//add new machine to map
-		addNewMachine(ipAddress);
-		
-		//get this machine priority number
-		int myPriority = JavaWsServer.getMyPriority();
-		
 		try{
-			//send this machine IP address and priority
-			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(new URL(
-					"http://"+ ipAddress + ":1090/xml-rpc-example/xmlrpc"));
-			XmlRpcClient client = new XmlRpcClient();
-			client.setConfig(config);
+			//add new machine to map
+			addNewMachine(ipAddress);
 			
-			//register self to the new machine
+			//get this machine priority number
+			int myPriority = JavaWsServer.getMyPriority();
+			
 			InetAddress IP=InetAddress.getLocalHost();
 			Object[] params = new Object[] { IP.getHostAddress(), myPriority };
-			String response = (String) client.execute("RegisterHandler.RegisterMachine", params);
-			System.out.println("Message : " + response);
-			
+			String response = XmlRpcHelper.SendToOneMachine(ipAddress, "RegisterHandler.registerMachine", params);
+			System.out.println(response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public static String leaderElection(String ip) {
@@ -113,7 +99,7 @@ public class RegisterHandler {
 		String newLeaderIp = JavaWsServer.setMaster(keyMaster);
 		Object[] params = new Object[] { newLeaderIp };
 		
-		RpcSender.SendToAllMachines(machines, "RegisterHandler.setNewLeader", params);
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.setNewLeader", params);
 		
 		//send new master to everyone
 		return newLeaderIp;

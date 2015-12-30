@@ -2,26 +2,20 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 public class JavaWsClient {
 	
 	private static XmlRpcClient client;
 	private static InetAddress ip;
+	private String masterIp;
 	
-	private static void connect(String ipAddress){
+	JavaWsClient(){
 		try {
-			
-			System.out.println("XML-RPC Client call to : http://localhost:1090/xmlrpc/xmlrpc");
-			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(new URL(
-					"http://localhost:1090/xml-rpc-example/xmlrpc"));
-			client = new XmlRpcClient();
-			client.setConfig(config);
 			ip = InetAddress.getLocalHost();
+			client = XmlRpcHelper.Connect("localhost");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -36,17 +30,32 @@ public class JavaWsClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static String consumeService(Object[] params, String command){
+		try {
+			String response = (String) client.execute(command, params);
+			return response;
+		} catch (XmlRpcException e) {
+			e.printStackTrace();
+			return "Method not available";
+		}
+	}
+	
+	private static void connectToMaster(){
+		//get and connect to current master if available
+		String masterIp = consumeService(new Object[] {null}, "Server.getIpMaster");
+		if(masterIp != null && !masterIp.isEmpty()){
+			XmlRpcHelper.Connect(masterIp);
+		}
+	}
 		
-	public static void main (String [] args) {   
-        
-		//connect to current master if available
-		//if not connect to localhost
-		connect("localhost");
+	public static void main (String [] args) {
 		
 		//wait for command
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 	            System.in));
 		
+		//if command need a service, try to connect to master server
         boolean keepRunning = true;
         while (keepRunning)
         {       
@@ -57,7 +66,7 @@ public class JavaWsClient {
                 {
                     keepRunning = false;
                 } else if("elect".equals(command)){
-                	//if command is "elect" start election
+                	//start election on localhost
                 	startElection();
                 } else
                 {

@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 
+import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
@@ -36,6 +37,27 @@ public class HelloClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void sayHelloServer(){
+		try {
+			Object[] params = new Object[] { ip.getHostAddress() };
+			String response = (String) client.execute("Server.hello", params);
+			System.out.println("Message : " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void tryUnexistingMethod(){
+		try {
+			Object[] params = new Object[] { ip.getHostAddress() };
+			String response = (String) client.execute("HelloWorld.nanana", params);
+			System.out.println("Message : " + response);
+		} catch (XmlRpcException e) {
+			System.out.println("Method not available");
+			e.printStackTrace();
+		}
+	}
 		
 	public static void main (String [] args) {
 		
@@ -59,13 +81,15 @@ public class HelloClient {
                     String ip =  reader.readLine();
                 	connect(ip);
                 	sayHello();
+                	sayHelloServer();
+                	tryUnexistingMethod();
                 } 
                 else if("server".equals(command))
                 {
                 	System.out.println("Enter ip address: ");
                     String ipAddress =  reader.readLine();
                     Object[] params = new Object[] { ip.getHostAddress() };
-                	JavaWsServer.TestConnection(ipAddress, "HelloWorld.hello", params);
+                	JavaWsServer.testConnection(ipAddress, "HelloWorld.hello", params);
                 } 
                 else if("print".equals(command))
                 {

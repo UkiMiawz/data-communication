@@ -8,7 +8,7 @@ public class HelloWorld {
 	}
 	
 	public String helloServer(String ipAddress, String command, Object[] params){
-		String response = JavaWsServer.TestConnection(ipAddress, command, params);
+		String response = JavaWsServer.testConnection(ipAddress, command, params);
 		System.out.println("Response from Server : " + response);
 		return response;
 	}
