@@ -9,9 +9,12 @@ public struct NetworkMapStruct
 
 public interface INetworkServer
 {
-    [XmlRpcMethod("server.AppendString")]
-    string AppendString(string value);
-
     [XmlRpcMethod("server.AddNewNode")]
     NetworkMapStruct[] AddNewNode(string ipAddress);
+
+    [XmlRpcMethod("getIpMaster")]
+    string getIpMaster(string callerIp);
+
+    [XmlRpcMethod("joinNetwork")]
+    void joinNetwork(string ipAddress);
 }

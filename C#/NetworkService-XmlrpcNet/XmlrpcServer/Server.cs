@@ -11,12 +11,30 @@ using System.Runtime.Remoting.Channels;
 
 public class NetworkServer : MarshalByRefObject, INetworkServer
 {
+    #region Constructor and Properties
     public NetworkServer()
     {
-        NetworkMap = new Dictionary<int, string>();        
+        NetworkMap = new Dictionary<int, string>();
+
+        // ip Address
+        NetworkPingService pingService = new NetworkPingService();
+        myIpAddress = pingService.getMyIpAddress();
+
+        // current master node
+        CurrentMasterNode = "";
+
+        // default master node
+        DefaultMasterNode = "localhost";
     }
 
     public Dictionary<int, string> NetworkMap;
+    public string CurrentMasterNode;
+    public string defMstrNode1 = "http://";
+    public string defMstrNode2 = ":1090/networkServer.rem";
+    public string DefaultMasterNode;
+    public string myIpAddress;
+
+    #endregion
 
     #region Private Method
     private int GetLatestPriority()
@@ -60,13 +78,57 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         int currentPriority = GetLatestPriority() + 1;
         NetworkMap.Add(currentPriority, ipAddress);
-        response = ConvertDictionaryToStruct(NetworkMap);        
+        response = ConvertDictionaryToStruct(NetworkMap);
         return response;
     }
 
-    public string AppendString(string value)
+    public string getIpMaster(string callerIp)
     {
-        return "This is Aderick Computer" + value;
+        if (CurrentMasterNode == string.Empty)
+            return DefaultMasterNode;
+        else
+            return CurrentMasterNode;
+    }
+
+    public void joinNetwork(string ipAddress)
+    {
+        // step 1: ping all neighbor
+        NetworkPingService nps = new NetworkPingService();
+        nps.DetectAllNetwork(ipAddress);
+        List<string> activeIps = nps.getActiveIps();
+
+        // step 2: ask for MasterNode to each neighbor
+        if (activeIps.Count() == 1 && activeIps.Contains(ipAddress))
+        {
+            CurrentMasterNode = DefaultMasterNode;
+        }
+        else
+        {
+            activeIps.Remove(ipAddress);
+
+            foreach (string neighborIp in activeIps)
+            {
+                try
+                {
+                    string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
+                    HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+                    ChannelServices.RegisterChannel(chnl, false);
+                    INetworkServer netwS = (INetworkServer)Activator.GetObject(
+                         typeof(INetworkServer), neighborServer);
+                    CurrentMasterNode = netwS.getIpMaster(ipAddress);
+                }
+                catch (Exception ex)
+                {
+                    // Basically, do nothing.
+                }
+            }
+
+            if (CurrentMasterNode == "")
+                CurrentMasterNode = DefaultMasterNode;
+
+            Console.WriteLine("The current master node is {0}", CurrentMasterNode);
+        }
+
     }
 
     #endregion
@@ -74,11 +136,11 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
 class _
 {
-    static void Main (string[] args)
+    static void Main(string[] args)
     {
         IDictionary props = new Hashtable();
         props["name"] = "MyHttpChannel";
-        props["port"] = 5678;
+        props["port"] = 1090;
         HttpChannel channel = new HttpChannel(
             props,
             null,

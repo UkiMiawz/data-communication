@@ -23,11 +23,14 @@ class _
             chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        string localServer = "http://localhost:5678/networkServer.rem";
-        string liveServer = "http://172.16.1.102:5678/networkServer.rem";
+        string localServer = "http://localhost:1090/networkServer.rem";
+        string liveServer = "http://172.16.1.102:1090/networkServer.rem";
 
         INetworkServer netwS = (INetworkServer)Activator.GetObject(
             typeof(INetworkServer), liveServer);
+
+        ClientObject co = new ClientObject();
+        string ipAddress = co.GetClientIpAdress();
 
         try
         {
@@ -40,10 +43,7 @@ class _
                 input = Console.ReadLine();
                 switch (input)
                 {
-                    case "1":
-                        ClientObject co = new ClientObject();
-                        string ipAddress = co.GetClientIpAdress();
-
+                    case "1":                        
                         NetworkMapStruct[] response = netwS.AddNewNode(ipAddress);
 
                         Console.WriteLine("The Ip map");
@@ -53,7 +53,17 @@ class _
                         }
 
                         Console.ReadLine();
-                        break;                  
+                        break;
+
+                    case "2":
+                        string result = netwS.getIpMaster(ipAddress);
+                        Console.WriteLine("{0}", result);
+                        break;
+
+                    case "3":
+                        netwS.joinNetwork(ipAddress);
+                        Console.ReadLine();
+                        break;
                 }
             }
             while (input != "0");            
@@ -80,7 +90,6 @@ class _
                 if (localIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 {
                     myIP = localIp.ToString();
-                    break;
                 }
             }
 
