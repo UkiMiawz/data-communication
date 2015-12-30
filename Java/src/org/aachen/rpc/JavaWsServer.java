@@ -40,14 +40,17 @@ public class JavaWsServer {
 		return keyMaster;
 	}
 	
-	private static String ipMaster;
-	public static String getIpMaster(){
+	private static String ipMaster = "localhost";
+	public static String getIpMaster(String callerIp){
+		System.out.println(callerIp + " requesting master ip");
 		return ipMaster;
 	}
 	
 	public static String setMaster(Integer master){
+		System.out.println("Key Master : " + master);
 		keyMaster = master;
 		ipMaster = machines.get(keyMaster);
+		System.out.println("IP Master : " + ipMaster);
 		return ipMaster;
 	}
 	
@@ -68,8 +71,8 @@ public class JavaWsServer {
 	}
 	
 	public static int addMachineToMap(String ipAddress){
-		machines.put(lastPriority, ipAddress);
 		lastPriority += 1;
+		machines.put(lastPriority, ipAddress);
 		System.out.println("New Machine added with priority : " + lastPriority);
 		System.out.println("Total number of machines now :" + machines.size());
 		return machines.size();

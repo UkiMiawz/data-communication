@@ -12,15 +12,6 @@ public class JavaWsClient {
 	private static InetAddress ip;
 	private String masterIp;
 	
-	JavaWsClient(){
-		try {
-			ip = InetAddress.getLocalHost();
-			client = XmlRpcHelper.Connect("localhost");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
@@ -43,13 +34,30 @@ public class JavaWsClient {
 	
 	private static void connectToMaster(){
 		//get and connect to current master if available
-		String masterIp = consumeService(new Object[] {null}, "Server.getIpMaster");
-		if(masterIp != null && !masterIp.isEmpty()){
+		String masterIp = consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster");
+		if(!masterIp.equals("localhost")){
 			XmlRpcHelper.Connect(masterIp);
+			System.out.println("Master IP now " + masterIp);
 		}
+		else {
+			System.out.println("Still connect to localhost");
+		}
+		
 	}
 		
 	public static void main (String [] args) {
+		
+		try {
+			System.out.print("Constructor called");
+			ip = InetAddress.getLocalHost();
+			System.out.println("Local IP " + ip);
+			client = XmlRpcHelper.Connect("localhost");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		connectToMaster();
 		
 		//wait for command
 		BufferedReader reader = new BufferedReader(new InputStreamReader(

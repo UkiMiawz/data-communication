@@ -18,7 +18,7 @@ public class XmlRpcHelper {
 	private static int timeout = 200;
 	public static XmlRpcClient Connect(String ipAddress){
 		try {
-			
+			System.out.println("Connecting to " + ipAddress);
 			XmlRpcClient client;
 			System.out.println("XML-RPC Client call to : http://localhost:1090/xmlrpc/xmlrpc");
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
@@ -69,7 +69,7 @@ public class XmlRpcHelper {
 			  
 			try {
 				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println("Command " + command + "Contacting priority " + priority + " => " + ipAddress);
+					System.out.println("Command " + command + " Contacting priority " + priority + " => " + ipAddress);
 					  
 					  //check if machine is on
 					  String response = SendToOneMachine(ipAddress, command, params);

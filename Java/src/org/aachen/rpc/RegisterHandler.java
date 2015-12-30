@@ -13,8 +13,9 @@ public class RegisterHandler {
 	
 	private static int timeout = 200;
 	
-	public static String getMasterIp(){
-		return JavaWsServer.getIpMaster();
+	public String getIpMaster(String callerIp){
+		String masterIp = JavaWsServer.getIpMaster(callerIp);
+		return masterIp;
 	}
 	
 	public static void joinNetwork(String ipAddress) {
@@ -31,7 +32,7 @@ public class RegisterHandler {
 			       String host= subnet + "." + i;
 			       System.out.println("Contacting " + host);
 			       
-			       if (host != ipAddress && InetAddress.getByName(host).isReachable(timeout)){
+			       if (InetAddress.getByName(host).isReachable(timeout)){
 			           System.out.println(host + " is reachable");
 			           Object[] params = new Object[] { ipAddress };
 			           String response = XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
@@ -89,7 +90,7 @@ public class RegisterHandler {
 		}
 	}
 	
-	public static String leaderElection(String ip) {
+	public String leaderElection(String ip) {
 		System.out.println("Leader election on ip " + ip);
 		//get machines
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
