@@ -15,7 +15,7 @@ import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
 
 public class JavaWsServer {
-
+	
 	private static final int PORT = 1090;
 	private static int lastPriority = 0;
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
@@ -94,6 +94,8 @@ public class JavaWsServer {
 	public static void main(String[] args) {
 		
 		try {
+			
+			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
 
 			WebServer webServer = new WebServer(PORT);
@@ -110,6 +112,11 @@ public class JavaWsServer {
 			myIp=InetAddress.getLocalHost();
 			myIpAddress = myIp.getHostAddress();
 			
+			//join network
+			RegisterHandler.joinNetwork(myIpAddress);
+			response = RegisterHandler.addNewMachine(myIpAddress);
+			System.out.println(response);
+			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 		            System.in));
@@ -120,28 +127,22 @@ public class JavaWsServer {
 	        	try{
 	        		System.out.println("Enter command, or 'exit' to quit: ");
 	                String command =  reader.readLine();
-	                if ("exit".equals(command))
-	                {
+	                if ("exit".equals(command)) {
 	                    keepRunning = false;
 	                    System.out.println("Shutting down server...");
 	                    serverShutDown();
-	                }
-	                else if ("ip".equals(command))
-	                {
+	                } else if ("ip".equals(command)) {
 	                	System.out.println("This machine ip :" + myIpAddress);
-	                }
-	                else if ("print".equals(command))
-	                {
+	                } else if ("print".equals(command)) {
 	                	printAllMachinesInLan();
-	                }
-	                else
-	                {
+	                } else if("leader".equals(command)) {
+	                	
+	                } else {
 	                    System.out.println("Command " + command + " not recognized");
 	                }
 	        	} catch (Exception e) {
 	    			e.printStackTrace();
 	    		}
-	       
 	        }
 	        
 			webServer.shutdown();

@@ -27,30 +27,6 @@ public class JavaWsClient {
 		}
 	}
 	
-	private static void joinNetwork(){
-		try {
-			   	Object[] params = new Object[] { ip.getHostAddress() };
-			   	//send message to other machine and the machine will send back their details
-				String response = (String) client.execute("RegisterHandler.joinNetwork", params);
-				System.out.println("Message : " + response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-	}
-	
-	private static void registerSelf(){
-		try {
-			
-		   	Object[] params = new Object[] { ip.getHostAddress() };
-			//register to self
-			String response = (String) client.execute("RegisterHandler.addNewMachine", params);
-			System.out.println("Message : " + response);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
@@ -63,9 +39,9 @@ public class JavaWsClient {
 		
 	public static void main (String [] args) {   
         
+		//connect to current master if available
+		//if not connect to localhost
 		connect("localhost");
-		joinNetwork();
-		registerSelf();
 		
 		//wait for command
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -80,12 +56,10 @@ public class JavaWsClient {
                 if ("exit".equals(command))
                 {
                     keepRunning = false;
-                }
-                else if("elect".equals(command)){
+                } else if("elect".equals(command)){
                 	//if command is "elect" start election
                 	startElection();
-                }
-                else
+                } else
                 {
                     System.out.println("Command " + command + " not recognized");
                 }

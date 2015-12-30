@@ -60,18 +60,18 @@ public class RegisterHandler {
 		}
 	}
 	
-	public String RegisterMachine(String ipAddress, int priority){
+	public static String RegisterMachine(String ipAddress, int priority){
 		String myIp = JavaWsServer.getMyIpAddress();
 		int numberOfMachines = JavaWsServer.addMachineToMap(ipAddress, priority);
 		return "From " + myIp + " You have been registered " + ipAddress + "with priority " + priority + ". Number of machines now " + numberOfMachines;
 	}
 	
-	public String addNewMachine(String ipAddress){
+	public static String addNewMachine(String ipAddress){
 		JavaWsServer.addMachineToMap(ipAddress);
 		return "Machine registered " + ipAddress;
 	}
 	
-	public String removeMachine(int key){
+	public static String removeMachine(int key){
 		String removedIp = JavaWsServer.removeMachineFromMap(key);
 		return "Machine removed " + removedIp;
 	}
@@ -103,7 +103,7 @@ public class RegisterHandler {
 		
 	}
 	
-	public String leaderElection(String ip) {
+	public static String leaderElection(String ip) {
 		System.out.println("Leader election on ip " + ip);
 		//get machines
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
