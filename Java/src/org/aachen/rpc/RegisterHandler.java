@@ -1,7 +1,9 @@
 package org.aachen.rpc;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcException;
@@ -94,10 +96,28 @@ public class RegisterHandler {
 		System.out.println("Leader election on ip " + ip);
 		//get machines
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
+		//get master
+		int keyMaster = JavaWsServer.getKeyMaster();
+		String ipMaster = JavaWsServer.getIpMaster(ip);
+		
+		//check if IP master not LocalHost and still active
+		try {
+			if(!ipMaster.equals(InetAddress.getLocalHost().getHostAddress()) && InetAddress.getByName(ipMaster).isReachable(timeout))
+			{
+				//put master back in machines for election
+				JavaWsServer.addMachineToMap(ipMaster, keyMaster);
+				machines.put(keyMaster, ipMaster);
+			}
+		} catch (UnknownHostException e) {
+			System.out.println("Leader Election: Unknown host from localhost");
+		} catch (IOException e) {
+			System.out.println("Leader Election: Get by name failed");
+		}
+		
 		Bully bullyGenerator = new Bully(machines);
 		bullyGenerator.holdElection(1);
-		Integer keyMaster = bullyGenerator.getMaster();
-		String newLeaderIp = JavaWsServer.setMaster(keyMaster);
+		Integer newKeyMaster = bullyGenerator.getMaster();
+		String newLeaderIp = JavaWsServer.setMaster(newKeyMaster);
 		Object[] params = new Object[] { newLeaderIp };
 		
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.setNewLeader", params);
