@@ -16,6 +16,7 @@ public class JavaWsServer {
 	private static final int PORT = 1090;
 	private static int timeout = 100;
 	private static WebServer webServer;
+	private static ElectionHelper electionHelper;
 	
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	public static TreeMap<Integer, String> getMachines(){
@@ -114,6 +115,7 @@ public class JavaWsServer {
 	public static void main(String[] args) {
 		
 		try {
+			electionHelper = new ElectionHelper();
 			
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
@@ -138,8 +140,9 @@ public class JavaWsServer {
 			System.out.println(response);
 			
 			//do election
-			RegisterHandler registerHelper = new RegisterHandler();
-			registerHelper.leaderElection(myIpAddress);
+			if(ipMaster == null || ipMaster.isEmpty()){
+				electionHelper.leaderElection(myIpAddress);
+			}
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(

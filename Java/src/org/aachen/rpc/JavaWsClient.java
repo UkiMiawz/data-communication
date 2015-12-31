@@ -15,7 +15,7 @@ public class JavaWsClient {
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
-			String response = (String) client.execute("RegisterHandler.leaderElection", params);
+			String response = (String) client.execute("Election.leaderElection", params);
 			System.out.println("Message : " + response);
 		} catch (Exception e) {
 			e.printStackTrace();
