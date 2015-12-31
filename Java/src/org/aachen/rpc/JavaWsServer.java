@@ -15,6 +15,7 @@ public class JavaWsServer {
 	
 	private static final int PORT = 1090;
 	private static int timeout = 100;
+	private static WebServer webServer;
 	
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	public static TreeMap<Integer, String> getMachines(){
@@ -102,6 +103,14 @@ public class JavaWsServer {
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
 	}
 	
+	public void serverShutDownFromClient(String ip){
+		System.out.println(ip + " client ask to shutdown server");
+		Object[] params = new Object[] { myPriority };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		webServer.shutdown();
+		System.out.println("Server shutdown");
+	}
+	
 	public static void main(String[] args) {
 		
 		try {
@@ -109,7 +118,7 @@ public class JavaWsServer {
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
 
-			WebServer webServer = new WebServer(PORT);
+			webServer = new WebServer(PORT);
 			XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
 
 			PropertyHandlerMapping propHandlerMapping = new PropertyHandlerMapping();

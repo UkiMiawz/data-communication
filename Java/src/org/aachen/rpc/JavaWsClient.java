@@ -76,6 +76,11 @@ public class JavaWsClient {
                 } else if("elect".equals(command)){
                 	//start election on localhost
                 	startElection();
+                } else if("logout".equals(command)){
+                	//shutdown server and client
+                	keepRunning = false;
+                	Object[] params = new Object[] { ip };
+                	XmlRpcHelper.SendToOneMachine("localhost", "Server.serverShutDownFromClient", params);
                 } else
                 {
                     System.out.println("Command " + command + " not recognized");
