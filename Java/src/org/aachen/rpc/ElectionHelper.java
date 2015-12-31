@@ -16,7 +16,7 @@ public class ElectionHelper {
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
 		//get master
 		int keyMaster = JavaWsServer.getKeyMaster();
-		String ipMaster = JavaWsServer.getIpMaster(ip);
+		String ipMaster = JavaWsServer.getIpMaster();
 		
 		//check machines validity, remove unactive machines
 		

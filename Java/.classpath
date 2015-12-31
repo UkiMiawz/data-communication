@@ -13,10 +13,11 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="lib" path="/Users/ukimiawz/Documents/Classes Notes/Data Communication &amp; Internet Technology/Data Communication/Java/lib/commons-logging-1.1.jar"/>
-	<classpathentry kind="lib" path="/Users/ukimiawz/Documents/Classes Notes/Data Communication &amp; Internet Technology/Data Communication/Java/lib/ws-commons-util-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/Users/ukimiawz/Documents/Classes Notes/Data Communication &amp; Internet Technology/Data Communication/Java/lib/xmlrpc-client-3.1.3.jar"/>
-	<classpathentry kind="lib" path="/Users/ukimiawz/Documents/Classes Notes/Data Communication &amp; Internet Technology/Data Communication/Java/lib/xmlrpc-common-3.1.3.jar"/>
-	<classpathentry kind="lib" path="/Users/ukimiawz/Documents/Classes Notes/Data Communication &amp; Internet Technology/Data Communication/Java/lib/xmlrpc-server-3.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/ws-commons-util-1.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc-client-3.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc-common-3.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/xmlrpc-server-3.1.3.jar"/>
+	<classpathentry kind="lib" path="lib/guava-18.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

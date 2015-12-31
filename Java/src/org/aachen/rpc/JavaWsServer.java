@@ -47,8 +47,7 @@ public class JavaWsServer {
 	}
 	
 	private static String ipMaster = "localhost";
-	public static String getIpMaster(String callerIp){
-		System.out.println(callerIp + " requesting master ip");
+	public static String getIpMaster(){
 		return ipMaster;
 	}
 	
@@ -134,16 +133,15 @@ public class JavaWsServer {
 			myIp=InetAddress.getLocalHost();
 			myIpAddress = myIp.getHostAddress();
 			
-			//join network
-			//RegisterHandler.joinNetwork(myIpAddress);
-			response = RegisterHandler.addNewMachine(myIpAddress);
-			System.out.println(response);
+			//automatically set self as master
+			ipMaster = myIpAddress;
+			keyMaster = myPriority;
 			
-			//do election
-			System.out.println("Ip Master " + ipMaster);
-			if(ipMaster == null || ipMaster.isEmpty()){
-				System.out.println("Calling for election");
-				electionHelper.leaderElection(myIpAddress);
+			//join network
+			RegisterHandler.joinNetwork(myIpAddress);
+			if(!machines.containsValue(myIpAddress)){
+				System.out.println("Add myself to hashmap");
+				addMachineToMap(myIpAddress);
 			}
 			
 			//wait for command
