@@ -15,7 +15,7 @@ public class ClientUI
         Console.WriteLine("=====XMLRPC-Client Main Menu=====");        
         Console.WriteLine("1. Display network hashmap");
         Console.WriteLine("2. Display master node");
-        Console.WriteLine("3. Join network");
+        Console.WriteLine("3. Add current machine to network");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
     }

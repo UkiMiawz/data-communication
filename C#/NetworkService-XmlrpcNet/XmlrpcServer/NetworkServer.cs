@@ -67,27 +67,43 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     #endregion
 
     #region Public Method
-    public NetworkMapStruct[] AddNewNode(string ipAddress)
+    public NetworkMapStruct[] ShowNetworkHashMap()
     {
-        NetworkMapStruct[] response;
-        if (NetworkMap.Count() > 0 && NetworkMap.ContainsValue(ipAddress))
-        {
-            response = ConvertDictionaryToStruct(NetworkMap);
-            return response;
-        }
-
-        int currentPriority = GetLatestPriority() + 1;
-        NetworkMap.Add(currentPriority, ipAddress);
-        response = ConvertDictionaryToStruct(NetworkMap);
-        return response;
+        NetworkMapStruct[] result = ConvertDictionaryToStruct(NetworkMap);
+        return result;
     }
 
+    public void newMachineJoin(string ipAddress)
+    {
+        if (NetworkMap.Count() > 0 && NetworkMap.ContainsValue(ipAddress))
+        {
+            Console.WriteLine("Existing machine {0} try to rejoin the network.");
+        }
+        else
+        {
+            int currentPriority = GetLatestPriority() + 1;
+            NetworkMap.Add(currentPriority, ipAddress);
+            Console.WriteLine("New machine {0} with priority {1} joined the network!", ipAddress, currentPriority);
+            Console.WriteLine("Total machine in the network now is {0}", NetworkMap.Count());
+        }
+    }
+
+    public void removeMachine(string ipAddress)
+    {
+        KeyValuePair<int, string> removedIp = NetworkMap.FirstOrDefault(x => x.Value == ipAddress);
+        NetworkMap.Remove(removedIp.Key);
+        Console.WriteLine("Machine {0} with priority {1} is removed from the network.", removedIp.Value, removedIp.Key);
+        Console.WriteLine("Total machine in the network now is {0}", NetworkMap.Count());
+    }
     public string getIpMaster(string callerIp)
     {
         if (CurrentMasterNode == string.Empty)
             return DefaultMasterNode;
         else
+        {
+            Console.WriteLine("ip {0} is asking for master node. The current master node is {1}", callerIp, CurrentMasterNode);
             return CurrentMasterNode;
+        }
     }
 
     public void joinNetwork(string ipAddress)
@@ -116,6 +132,9 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
                     INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
                          typeof(INetworkServer), neighborServer);
                     CurrentMasterNode = neighborNetServer.getIpMaster(ipAddress);
+
+                    if (CurrentMasterNode != "")
+                        break;                    
                 }
                 catch (Exception ex)
                 {
@@ -125,8 +144,21 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             if (CurrentMasterNode == "")
                 CurrentMasterNode = DefaultMasterNode;
+        }
 
-            Console.WriteLine("ip {0} is asking for master node. The current master node is {1}", ipAddress, CurrentMasterNode);
+        // step 3: After the master node found, add new machine to the hashmap.
+        try
+        {
+            string masterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
+            HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+            ChannelServices.RegisterChannel(chnl, false);
+            INetworkServer currentMasterNetServer = (INetworkServer)Activator.GetObject(
+                 typeof(INetworkServer), masterServer);
+            currentMasterNetServer.newMachineJoin(ipAddress);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occured. {0}", ex.Message);
         }
 
     }

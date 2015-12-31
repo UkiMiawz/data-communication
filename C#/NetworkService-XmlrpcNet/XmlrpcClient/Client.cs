@@ -24,7 +24,26 @@ class XmlrpcClient
         INetworkServer netServer = (INetworkServer)Activator.GetObject(
             typeof(INetworkServer), defaultServer);
         
-        // Try to connect to master node
+        // ============= Try to join the network ===============
+        try
+        {
+            //netServer.joinNetwork(ipAddress);
+            //string masterNode = netServer.getIpMaster(ipAddress);
+            //if (masterNode != ipAddress)
+            //{
+            //    string masterNodeServer = "http://" + masterNode + ":1090/networkServer.rem";
+            //    netServer = (INetworkServer)Activator.GetObject(
+            //        typeof(INetworkServer), masterNodeServer);
+            //}            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An exception occurred.");
+            Console.WriteLine("{0}", ex.Message);
+        }
+        // ============End of joining network=====================
+
+        // =============== Begin client input ===============
         try
         {
             string input;
@@ -37,31 +56,35 @@ class XmlrpcClient
                 switch (input)
                 {
                     case "1":
-                        NetworkMapStruct[] response = netServer.AddNewNode(ipAddress);
+                        NetworkMapStruct[] networkHashMap = netServer.ShowNetworkHashMap();
 
-                        Console.WriteLine("The Ip map");
-                        foreach (NetworkMapStruct ipItem in response)
+                        Console.WriteLine("The Network hashmap");
+                        foreach (NetworkMapStruct ipItem in networkHashMap)
                         {
-                            Console.WriteLine("{0}", ipItem.IpAddress);
+                           Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
                         }
 
-                        Console.ReadLine();
+                        Console.ReadKey();
                         break;
 
                     case "2":
                         string result = netServer.getIpMaster(ipAddress);
                         Console.WriteLine("the masterNode is {0}", result);
-                        Console.ReadLine();
+                        Console.ReadKey();
                         break;
 
                     case "3":
-                        netServer.joinNetwork(ipAddress);
-                        Console.WriteLine("The server successfully called");
-                        Console.ReadLine();
+                        netServer.newMachineJoin(ipAddress);
+                        Console.WriteLine("You successfully join the network");
+                        Console.ReadKey();
                         break;
                 }
             }
             while (input != "0");
+
+            netServer.removeMachine(ipAddress);
+            Console.WriteLine("You are logging out. Your machine have been removed from network");
+            Console.ReadKey();
         }
         catch (XmlRpcFaultException fex)
         {
@@ -69,5 +92,6 @@ class XmlrpcClient
                 fex.FaultCode, fex.FaultString, fex.Message);
             Console.ReadLine();
         }
+        // ===========End of Client Input================
     }
 }
