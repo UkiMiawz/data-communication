@@ -10,6 +10,7 @@ public class ElectionHelper {
 	private static int timeout = 200;
 	
 	public String leaderElection(String ip) {
+		
 		System.out.println("Leader election on ip " + ip);
 		//get machines
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();

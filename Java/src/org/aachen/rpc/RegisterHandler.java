@@ -37,7 +37,7 @@ public class RegisterHandler {
 			       if (InetAddress.getByName(host).isReachable(timeout)){
 			           System.out.println(host + " is reachable");
 			           Object[] params = new Object[] { ipAddress };
-			           String response = XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
+			           String response = (String) XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
 			           System.out.println(response);
 			       } else {
 			    	   System.out.println(host + " is not reachable");
@@ -85,7 +85,7 @@ public class RegisterHandler {
 			
 			InetAddress IP=InetAddress.getLocalHost();
 			Object[] params = new Object[] { IP.getHostAddress(), myPriority };
-			String response = XmlRpcHelper.SendToOneMachine(ipAddress, "RegisterHandler.registerMachine", params);
+			String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, "RegisterHandler.registerMachine", params);
 			System.out.println(response);
 		} catch (Exception e) {
 			e.printStackTrace();

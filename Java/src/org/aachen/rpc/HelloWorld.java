@@ -1,5 +1,7 @@
 package org.aachen.rpc;
 
+import java.util.TreeMap;
+
 public class HelloWorld {
 	
 	public String hello(String ipAddress){
@@ -11,5 +13,13 @@ public class HelloWorld {
 		String response = JavaWsServer.testConnection(ipAddress, command, params);
 		System.out.println("Response from Server : " + response);
 		return response;
+	}
+	
+	public TreeMap<Integer, String> returnKeyMap(String ipAddress, int priority){
+		TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
+		machines.put(priority, ipAddress);
+		machines.put(1, "test1");
+		machines.put(3, "test3");
+		return machines;
 	}
 }

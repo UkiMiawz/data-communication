@@ -135,12 +135,14 @@ public class JavaWsServer {
 			myIpAddress = myIp.getHostAddress();
 			
 			//join network
-			RegisterHandler.joinNetwork(myIpAddress);
+			//RegisterHandler.joinNetwork(myIpAddress);
 			response = RegisterHandler.addNewMachine(myIpAddress);
 			System.out.println(response);
 			
 			//do election
+			System.out.println("Ip Master " + ipMaster);
 			if(ipMaster == null || ipMaster.isEmpty()){
+				System.out.println("Calling for election");
 				electionHelper.leaderElection(myIpAddress);
 			}
 			
@@ -183,7 +185,7 @@ public class JavaWsServer {
 	}
 	
 	public static String testConnection(String ipAddress, String command, Object[] params){
-		String response = XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
+		String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
 		return response;
 	}
 	
