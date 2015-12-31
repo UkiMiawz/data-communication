@@ -3,7 +3,6 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -56,6 +55,8 @@ public class JavaWsServer {
 		keyMaster = master;
 		ipMaster = machines.get(keyMaster);
 		System.out.println("IP Master : " + ipMaster);
+		//remove master from map
+		machines.remove(keyMaster);
 		return ipMaster;
 	}
 	
@@ -114,7 +115,7 @@ public class JavaWsServer {
 			PropertyHandlerMapping propHandlerMapping = new PropertyHandlerMapping();
 			propHandlerMapping.load(Thread.currentThread().getContextClassLoader(), "handler.properties");
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
-
+			
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
 			webServer.start();
 			
@@ -126,6 +127,10 @@ public class JavaWsServer {
 			RegisterHandler.joinNetwork(myIpAddress);
 			response = RegisterHandler.addNewMachine(myIpAddress);
 			System.out.println(response);
+			
+			//do election
+			RegisterHandler registerHelper = new RegisterHandler();
+			registerHelper.leaderElection(myIpAddress);
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
