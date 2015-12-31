@@ -8,43 +8,36 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 using System.Net;
 
-class _
+class XmlrpcClient
 {
     static void Main(string[] args)
     {
-        bool bUseSoap = false;
-        if (args.Length > 0 && args[0] == "SOAP")
-            bUseSoap = true;
-
-        HttpChannel chnl;
-        if (bUseSoap)
-            chnl = new HttpChannel();
-        else
-            chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-        ChannelServices.RegisterChannel(chnl, false);
-
-        string localServer = "http://localhost:1090/networkServer.rem";
-        string liveServer = "http://172.16.1.102:1090/networkServer.rem";
-
-        INetworkServer netwS = (INetworkServer)Activator.GetObject(
-            typeof(INetworkServer), liveServer);
-
         ClientObject co = new ClientObject();
         string ipAddress = co.GetClientIpAdress();
 
+        HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+        ChannelServices.RegisterChannel(chnl, false);
+
+        string liveServer = "http://172.16.1.102:1090/networkServer.rem";
+        string defaultServer = "http://localhost:1090/networkServer.rem";
+
+        INetworkServer netServer = (INetworkServer)Activator.GetObject(
+            typeof(INetworkServer), defaultServer);
+        
+        // Try to connect to master node
         try
         {
-            //string result = netwS.AppendString("Khanh");
-            //Console.WriteLine("the result is {0}", result);
             string input;
+            ClientUI clientUi = new ClientUI();
 
             do
             {
+                clientUi.DisplayMainMenu(ipAddress);
                 input = Console.ReadLine();
                 switch (input)
                 {
-                    case "1":                        
-                        NetworkMapStruct[] response = netwS.AddNewNode(ipAddress);
+                    case "1":
+                        NetworkMapStruct[] response = netServer.AddNewNode(ipAddress);
 
                         Console.WriteLine("The Ip map");
                         foreach (NetworkMapStruct ipItem in response)
@@ -56,44 +49,25 @@ class _
                         break;
 
                     case "2":
-                        string result = netwS.getIpMaster(ipAddress);
-                        Console.WriteLine("{0}", result);
+                        string result = netServer.getIpMaster(ipAddress);
+                        Console.WriteLine("the masterNode is {0}", result);
+                        Console.ReadLine();
                         break;
 
                     case "3":
-                        netwS.joinNetwork(ipAddress);
+                        netServer.joinNetwork(ipAddress);
+                        Console.WriteLine("The server successfully called");
                         Console.ReadLine();
                         break;
                 }
             }
-            while (input != "0");            
+            while (input != "0");
         }
         catch (XmlRpcFaultException fex)
         {
             Console.WriteLine("Fault response {0} {1} {2}",
                 fex.FaultCode, fex.FaultString, fex.Message);
             Console.ReadLine();
-        }
-    }
-
-    public class ClientObject
-    {
-        public Dictionary<int, string> NetworkMap;
-
-        public string GetClientIpAdress()
-        {
-            IPHostEntry host;
-            string myIP = "0.0.0.0";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress localIp in host.AddressList)
-            {
-                if (localIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    myIP = localIp.ToString();
-                }
-            }
-
-            return myIP;
         }
     }
 }
