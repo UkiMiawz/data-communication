@@ -35,7 +35,7 @@ public class XmlRpcHelper {
 		}
 	}
 	
-	public static String SendToOneMachine(String ipAddress, String command, Object[] params){
+	public static Object SendToOneMachine(String ipAddress, String command, Object[] params){
 		
 		try{
 			//send this machine IP address and priority
@@ -44,7 +44,7 @@ public class XmlRpcHelper {
 					"http://"+ ipAddress + ":1090/xml-rpc-example/xmlrpc"));
 			XmlRpcClient client = new XmlRpcClient();
 			client.setConfig(config);
-			String response = (String) client.execute(command, params);
+			Object response = (Object) client.execute(command, params);
 			System.out.println("Message: " + response);
 			return response;
 		} catch (XmlRpcNoSuchHandlerException e){
@@ -64,15 +64,14 @@ public class XmlRpcHelper {
 		int success = 0;
 		
 		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
-			Integer priority = entry.getKey();
 			String ipAddress = entry.getValue();
 			  
 			try {
-				if (!ipAddress.equals(InetAddress.getLocalHost().getHostAddress()) && InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println("Command " + command + " Contacting priority " + priority + " => " + ipAddress);
+				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
+					System.out.println("Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
 					  
 					  //check if machine is on
-					  String response = SendToOneMachine(ipAddress, command, params);
+					  Object response = (Object)SendToOneMachine(ipAddress, command, params);
 					  System.out.println(response);
 					  success += 1;
 				} else {

@@ -15,7 +15,7 @@ public class JavaWsClient {
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
-			String response = (String) client.execute("RegisterHandler.leaderElection", params);
+			String response = (String) client.execute("Election.leaderElection", params);
 			System.out.println("Message : " + response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -76,6 +76,11 @@ public class JavaWsClient {
                 } else if("elect".equals(command)){
                 	//start election on localhost
                 	startElection();
+                } else if("logout".equals(command)){
+                	//shutdown server and client
+                	keepRunning = false;
+                	Object[] params = new Object[] { ip };
+                	XmlRpcHelper.SendToOneMachine("localhost", "Server.serverShutDownFromClient", params);
                 } else
                 {
                     System.out.println("Command " + command + " not recognized");

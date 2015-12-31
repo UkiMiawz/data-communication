@@ -3,6 +3,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -58,6 +61,23 @@ public class HelloClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void printHashMap(){
+		connect("localhost");
+		Object[] params = new Object[]{ "localhost", 2 };
+		TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
+		
+		try {
+			machines.putAll((HashMap<Integer, String>)client.execute("HelloWorld.returnKeyMap", params));
+			System.out.println(machines);
+			for(Map.Entry<Integer,String> entry : machines.entrySet()) {
+				System.out.println(entry.getKey() + " " + entry.getValue());
+			}
+		} catch (XmlRpcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 		
 	public static void main (String [] args) {
 		
@@ -74,29 +94,23 @@ public class HelloClient {
                 if ("exit".equals(command))
                 {
                     keepRunning = false;
-                }
-                else if("local".equals(command))
-                {
+                } else if("map".equals(command)){
+                	printHashMap();
+                } else if("local".equals(command)) {
                 	System.out.println("Enter ip address: ");
                     String ip =  reader.readLine();
                 	connect(ip);
                 	sayHello();
                 	sayHelloServer();
                 	tryUnexistingMethod();
-                } 
-                else if("server".equals(command))
-                {
+                } else if("server".equals(command)) {
                 	System.out.println("Enter ip address: ");
                     String ipAddress =  reader.readLine();
                     Object[] params = new Object[] { ip.getHostAddress() };
                 	JavaWsServer.testConnection(ipAddress, "HelloWorld.hello", params);
-                } 
-                else if("print".equals(command))
-                {
+                } else if("print".equals(command)) {
                 	JavaWsServer.printAllMachinesInLan();
-                }
-                else
-                {
+                } else {
                 	System.out.println("Command " + command + " not recognized");
                 }
         	} catch (Exception e) {

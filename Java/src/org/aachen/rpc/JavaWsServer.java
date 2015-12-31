@@ -3,12 +3,9 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
@@ -17,8 +14,17 @@ import org.apache.xmlrpc.webserver.WebServer;
 public class JavaWsServer {
 	
 	private static final int PORT = 1090;
-	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	private static int timeout = 100;
+	private static WebServer webServer;
+	private static ElectionHelper electionHelper;
+	
+	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
+	public static TreeMap<Integer, String> getMachines(){
+		return machines;
+	}
+	public static void setMachines(TreeMap<Integer, String> newMachines){
+		machines = newMachines;
+	}
 	
 	private static InetAddress myIp;
 	public static InetAddress getMyIp(){
@@ -41,8 +47,7 @@ public class JavaWsServer {
 	}
 	
 	private static String ipMaster = "localhost";
-	public static String getIpMaster(String callerIp){
-		System.out.println(callerIp + " requesting master ip");
+	public static String getIpMaster(){
 		return ipMaster;
 	}
 	
@@ -51,6 +56,8 @@ public class JavaWsServer {
 		keyMaster = master;
 		ipMaster = machines.get(keyMaster);
 		System.out.println("IP Master : " + ipMaster);
+		//remove master from map
+		machines.remove(keyMaster);
 		return ipMaster;
 	}
 	
@@ -91,29 +98,34 @@ public class JavaWsServer {
 		return machineIp;
 	}
 	
-	public static TreeMap<Integer, String> getMachines(){
-		return machines;
-	}
-	
 	public static void serverShutDown(){
 		Object[] params = new Object[] { myPriority };
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
 	}
 	
+	public void serverShutDownFromClient(String ip){
+		System.out.println(ip + " client ask to shutdown server");
+		Object[] params = new Object[] { myPriority };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		webServer.shutdown();
+		System.out.println("Server shutdown");
+	}
+	
 	public static void main(String[] args) {
 		
 		try {
+			electionHelper = new ElectionHelper();
 			
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
 
-			WebServer webServer = new WebServer(PORT);
+			webServer = new WebServer(PORT);
 			XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
 
 			PropertyHandlerMapping propHandlerMapping = new PropertyHandlerMapping();
 			propHandlerMapping.load(Thread.currentThread().getContextClassLoader(), "handler.properties");
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
-
+			
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
 			webServer.start();
 			
@@ -121,10 +133,16 @@ public class JavaWsServer {
 			myIp=InetAddress.getLocalHost();
 			myIpAddress = myIp.getHostAddress();
 			
+			//automatically set self as master
+			ipMaster = myIpAddress;
+			keyMaster = myPriority;
+			
 			//join network
 			RegisterHandler.joinNetwork(myIpAddress);
-			response = RegisterHandler.addNewMachine(myIpAddress);
-			System.out.println(response);
+			if(!machines.containsValue(myIpAddress)){
+				System.out.println("Add myself to hashmap");
+				addMachineToMap(myIpAddress);
+			}
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -165,7 +183,7 @@ public class JavaWsServer {
 	}
 	
 	public static String testConnection(String ipAddress, String command, Object[] params){
-		String response = XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
+		String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
 		return response;
 	}
 	
