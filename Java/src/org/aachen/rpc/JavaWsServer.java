@@ -7,8 +7,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
@@ -17,8 +15,15 @@ import org.apache.xmlrpc.webserver.WebServer;
 public class JavaWsServer {
 	
 	private static final int PORT = 1090;
-	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	private static int timeout = 100;
+	
+	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
+	public static TreeMap<Integer, String> getMachines(){
+		return machines;
+	}
+	public static void setMachines(TreeMap<Integer, String> newMachines){
+		machines = newMachines;
+	}
 	
 	private static InetAddress myIp;
 	public static InetAddress getMyIp(){
@@ -89,10 +94,6 @@ public class JavaWsServer {
 		String machineIp = machines.get(key);
 		machines.remove(key);
 		return machineIp;
-	}
-	
-	public static TreeMap<Integer, String> getMachines(){
-		return machines;
 	}
 	
 	public static void serverShutDown(){
