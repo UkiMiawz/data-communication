@@ -13,9 +13,9 @@ public class ClientUI
         Console.Clear();
         Console.WriteLine("Your ip address is {0}", ipAddress);
         Console.WriteLine("=====XMLRPC-Client Main Menu=====");        
-        Console.WriteLine("1. Display network hashmap");
-        Console.WriteLine("2. Display master node");
-        Console.WriteLine("3. Add current machine to network");
+        Console.WriteLine("1. Display master node's network hashmap");
+        Console.WriteLine("2. Display localhost's network hashmap");
+        Console.WriteLine("3. Display master node");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
     }

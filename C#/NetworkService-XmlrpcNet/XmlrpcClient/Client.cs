@@ -20,19 +20,23 @@ class XmlrpcClient
 
         string defaultServer = "http://localhost:1090/networkServer.rem";
 
-        INetworkServer netServer = (INetworkServer)Activator.GetObject(
+        INetworkServer localServer = (INetworkServer)Activator.GetObject(
             typeof(INetworkServer), defaultServer);
-        
+        INetworkServer masterServer = (INetworkServer)Activator.GetObject(
+            typeof(INetworkServer), defaultServer);
+
         // ============= Try to join the network ===============
         try
         {
-            netServer.joinNetwork(ipAddress);
-            string masterNode = netServer.getIpMaster(ipAddress);
+            localServer.joinNetwork(ipAddress);
+            string masterNode = localServer.getIpMaster(ipAddress);
             if (masterNode != ipAddress)
             {
                 string masterNodeServer = "http://" + masterNode + ":1090/networkServer.rem";
-                netServer = (INetworkServer)Activator.GetObject(
+                masterServer = (INetworkServer)Activator.GetObject(
                     typeof(INetworkServer), masterNodeServer);
+                NetworkMapStruct[] newHashmap = masterServer.ShowNetworkHashMap();
+                localServer.updateLocalHashmapFromMasterNode(newHashmap);
             }
         }
         catch (Exception ex)
@@ -55,33 +59,40 @@ class XmlrpcClient
                 switch (input)
                 {
                     case "1":
-                        NetworkMapStruct[] networkHashMap = netServer.ShowNetworkHashMap();
+                        NetworkMapStruct[] networkHashMap = masterServer.ShowNetworkHashMap();
 
-                        Console.WriteLine("The Network hashmap");
+                        Console.WriteLine("The Masternode hashmap");
                         foreach (NetworkMapStruct ipItem in networkHashMap)
                         {
-                           Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
                         }
 
                         Console.ReadKey();
                         break;
 
                     case "2":
-                        string result = netServer.getIpMaster(ipAddress);
-                        Console.WriteLine("the masterNode is {0}", result);
+                        NetworkMapStruct[] localhostHashMap = localServer.ShowNetworkHashMap();
+
+                        Console.WriteLine("The localhost hashmap");
+                        foreach (NetworkMapStruct ipItem in localhostHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                        }
+
                         Console.ReadKey();
                         break;
 
                     case "3":
-                        netServer.newMachineJoin(ipAddress);
-                        Console.WriteLine("You successfully join the network");
+                        string result = localServer.getIpMaster(ipAddress);
+                        Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
+
                 }
             }
             while (input != "0");
 
-            netServer.removeMachine(ipAddress);
+            masterServer.removeMachine(ipAddress);
             Console.WriteLine("You are logging out. Your machine have been removed from network");
             Console.ReadKey();
         }

@@ -23,5 +23,8 @@ public interface INetworkServer
 
     [XmlRpcMethod("removeMachine")]
     void removeMachine(string ipAddress);
+
+    [XmlRpcMethod("updateHashmapFromMaster")]
+    void updateLocalHashmapFromMasterNode(NetworkMapStruct[] masterHashmap);
 }
 

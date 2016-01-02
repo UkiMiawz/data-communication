@@ -37,6 +37,46 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     #endregion
 
     #region Private Method
+    private void sendToAllSlave(string command, string ipAddress = "")
+    {
+        if (CurrentMasterNode == myIpAddress)
+        {
+            List<string> mySlaves = new List<string>();
+            foreach (KeyValuePair<int, string> nodeItem in NetworkMap)
+            {
+                if (nodeItem.Value != myIpAddress) mySlaves.Add(nodeItem.Value);
+            }
+
+            try
+            {
+                // ==== Erase this after the system stabilized ===
+                //HttpChannel slaveChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+                //ChannelServices.RegisterChannel(slaveChnl, false);
+                string defaultServer = defMstrNode1 + DefaultMasterNode + defMstrNode2;
+                INetworkServer slaveNetServer = (INetworkServer)Activator.GetObject(
+                        typeof(INetworkServer), defaultServer);
+
+                foreach (string mySlaveItem in mySlaves)
+                {
+                    string slaveServer = defMstrNode1 + mySlaveItem + defMstrNode2;
+                    slaveNetServer = (INetworkServer)Activator.GetObject(
+                         typeof(INetworkServer), slaveServer);
+
+                    switch (command)
+                    {
+                        case "addNewMachine":
+                            slaveNetServer.newMachineJoin(ipAddress);
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }            
+        }
+    }
+
     private int GetLatestPriority()
     {
         if (NetworkMap.Count == 0)
@@ -64,6 +104,17 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         return convertionResult;
     }
+
+    private Dictionary<int, string> ConvertStructToDictionary(NetworkMapStruct[] netStruct)
+    {
+        Dictionary<int, string> convertionResult = new Dictionary<int, string>();
+        foreach (NetworkMapStruct netStructItem in netStruct)
+        {
+            convertionResult.Add(netStructItem.NetworkPriority, netStructItem.IpAddress);
+        }
+
+        return convertionResult;
+    }
     #endregion
 
     #region Public Method
@@ -85,6 +136,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             NetworkMap.Add(currentPriority, ipAddress);
             Console.WriteLine("New machine {0} with priority {1} joined the network!", ipAddress, currentPriority);
             Console.WriteLine("Total machine in the network now is {0}", NetworkMap.Count());
+            sendToAllSlave("addNewMachine", ipAddress);
         }
     }
 
@@ -126,18 +178,16 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             {
                 try
                 {
+                    // ==== Erase this after the system stabilized ===
+                    //HttpChannel neighborChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+                    //ChannelServices.RegisterChannel(neighborChnl, false);
                     string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
-                    HttpChannel neighborChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-                    ChannelServices.RegisterChannel(neighborChnl, false);
-                    
                     INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
                          typeof(INetworkServer), neighborServer);
                     CurrentMasterNode = neighborNetServer.getIpMaster(ipAddress);
 
-                    ChannelServices.UnregisterChannel(neighborChnl);
-
                     if (CurrentMasterNode != "")
-                        break;                    
+                        break;
                 }
                 catch (Exception ex)
                 {
@@ -152,11 +202,13 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         // step 3: After the master node found, add new machine to the hashmap.
         try
         {
+            // ==== Erase this after the system stabilized ===
+            //HttpChannel masterChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+            //ChannelServices.RegisterChannel(masterChnl, false);
+
             string masterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
-            HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-            ChannelServices.RegisterChannel(chnl, false);
             INetworkServer currentMasterNetServer = (INetworkServer)Activator.GetObject(
-                 typeof(INetworkServer), masterServer);
+                typeof(INetworkServer), masterServer);
             currentMasterNetServer.newMachineJoin(ipAddress);
         }
         catch (Exception ex)
@@ -164,6 +216,12 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("An error occured. {0}", ex.Message);
         }
 
+    }
+
+    public void updateLocalHashmapFromMasterNode(NetworkMapStruct[] masterHashmap)
+    {
+        NetworkMap = ConvertStructToDictionary(masterHashmap);
+        Console.WriteLine("local hashmap updated");
     }
 
     #endregion
