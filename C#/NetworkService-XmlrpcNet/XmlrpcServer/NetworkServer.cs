@@ -127,11 +127,14 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
                 try
                 {
                     string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
-                    HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-                    ChannelServices.RegisterChannel(chnl, false);
+                    HttpChannel neighborChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+                    ChannelServices.RegisterChannel(neighborChnl, false);
+                    
                     INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
                          typeof(INetworkServer), neighborServer);
                     CurrentMasterNode = neighborNetServer.getIpMaster(ipAddress);
+
+                    ChannelServices.UnregisterChannel(neighborChnl);
 
                     if (CurrentMasterNode != "")
                         break;                    

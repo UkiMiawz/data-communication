@@ -18,7 +18,6 @@ class XmlrpcClient
         HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        string liveServer = "http://172.16.1.102:1090/networkServer.rem";
         string defaultServer = "http://localhost:1090/networkServer.rem";
 
         INetworkServer netServer = (INetworkServer)Activator.GetObject(
@@ -27,14 +26,14 @@ class XmlrpcClient
         // ============= Try to join the network ===============
         try
         {
-            //netServer.joinNetwork(ipAddress);
-            //string masterNode = netServer.getIpMaster(ipAddress);
-            //if (masterNode != ipAddress)
-            //{
-            //    string masterNodeServer = "http://" + masterNode + ":1090/networkServer.rem";
-            //    netServer = (INetworkServer)Activator.GetObject(
-            //        typeof(INetworkServer), masterNodeServer);
-            //}            
+            netServer.joinNetwork(ipAddress);
+            string masterNode = netServer.getIpMaster(ipAddress);
+            if (masterNode != ipAddress)
+            {
+                string masterNodeServer = "http://" + masterNode + ":1090/networkServer.rem";
+                netServer = (INetworkServer)Activator.GetObject(
+                    typeof(INetworkServer), masterNodeServer);
+            }
         }
         catch (Exception ex)
         {

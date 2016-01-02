@@ -8,6 +8,7 @@ using System.Collections;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels.Http;
 using System.Runtime.Remoting.Channels;
+using System.Runtime.Serialization.Formatters;
 
 class XmlrpcServer
 {
@@ -18,7 +19,7 @@ class XmlrpcServer
         props["port"] = 1090;
         HttpChannel channel = new HttpChannel(
             props,
-            null,
+            new XmlRpcClientFormatterSinkProvider(),
             new XmlRpcServerFormatterSinkProvider());
         ChannelServices.RegisterChannel(channel, false);
 
