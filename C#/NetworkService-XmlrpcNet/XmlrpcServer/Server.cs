@@ -14,9 +14,14 @@ class XmlrpcServer
 {
     static void Main(string[] args)
     {
+        string input;
+
+
         IDictionary props = new Hashtable();
         props["name"] = "MyHttpChannel";
         props["port"] = 1090;
+        //RemotingConfiguration.Configure("networkServer.exe.config", false);
+
         HttpChannel channel = new HttpChannel(
             props,
             new XmlRpcClientFormatterSinkProvider(),
@@ -29,7 +34,11 @@ class XmlrpcServer
             WellKnownObjectMode.Singleton);
         Console.WriteLine("=====Xmlrpc-Server=====");
         Console.WriteLine("Press any key to end server");
-        Console.ReadLine();
+        do
+        {
+            input = Console.ReadLine().ToLower();
+        }
+        while (input != "exit");
     }
 }
 

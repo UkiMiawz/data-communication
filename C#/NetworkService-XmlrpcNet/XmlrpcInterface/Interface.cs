@@ -7,7 +7,8 @@ public struct NetworkMapStruct
     public string IpAddress;
 }
 
-public interface INetworkServer
+//[XmlRpcUrl("http://localhost:1090/networkServer.rem")]
+public interface INetworkServer 
 {
     [XmlRpcMethod("showNetworkHashMap")]
     NetworkMapStruct[] ShowNetworkHashMap();
@@ -26,5 +27,15 @@ public interface INetworkServer
 
     [XmlRpcMethod("updateHashmapFromMaster")]
     void updateLocalHashmapFromMasterNode(NetworkMapStruct[] masterHashmap);
+
+    [XmlRpcMethod("addNewMessage")]
+    void addNewMessage(string newMessage);
+
+    [XmlRpcMethod("getMessages")]
+    string[] getMessages();
+
+    [XmlRpcMethod("doElection")]
+    void doElection();
+
 }
 

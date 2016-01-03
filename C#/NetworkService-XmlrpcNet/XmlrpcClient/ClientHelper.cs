@@ -16,6 +16,9 @@ public class ClientUI
         Console.WriteLine("1. Display master node's network hashmap");
         Console.WriteLine("2. Display localhost's network hashmap");
         Console.WriteLine("3. Display master node");
+        Console.WriteLine("4. Send message to server");
+        Console.WriteLine("5. Get message from server");
+        Console.WriteLine("6. Do Election");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
     }

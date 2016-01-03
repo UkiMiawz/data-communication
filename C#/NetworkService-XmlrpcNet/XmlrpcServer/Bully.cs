@@ -14,12 +14,21 @@ public class Bully
         Ping pingsender = new Ping();
         foreach (string ipaddress in NetworkMap.Values)
         {
-            PingReply pingreply = pingsender.Send(ipaddress);
-            if (pingreply.Status == IPStatus.TimedOut)
+            try
             {
-                KeyValuePair<int, string> removedip = NetworkMap.FirstOrDefault(x => x.Value == ipaddress);
-                NetworkMap.Remove(removedip.Key);
+                PingReply pingreply = pingsender.Send(ipaddress);
+                if (pingreply.Status == IPStatus.TimedOut)
+                {
+                    KeyValuePair<int, string> removedip = NetworkMap.FirstOrDefault(x => x.Value == ipaddress);
+                    NetworkMap.Remove(removedip.Key);
+                }
+
             }
+            catch(Exception ex)
+            {
+                NetworkMap.Remove(NetworkMap.FirstOrDefault(x => x.Value == ipaddress).Key);
+            }
+
         }
 
         return NetworkMap;

@@ -24,7 +24,7 @@ class XmlrpcClient
             typeof(INetworkServer), defaultServer);
         INetworkServer masterServer = (INetworkServer)Activator.GetObject(
             typeof(INetworkServer), defaultServer);
-
+        
         // ============= Try to join the network ===============
         try
         {
@@ -83,11 +83,36 @@ class XmlrpcClient
                         break;
 
                     case "3":
-                        string result = localServer.getIpMaster(ipAddress);
+                        string result = masterServer.getIpMaster(ipAddress);
                         Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
 
+                    case "4":
+                        Console.WriteLine("write your new message: ");
+                        string newMessage = Console.ReadLine();
+                        masterServer.addNewMessage(newMessage);
+                        Console.ReadLine();
+                        Console.WriteLine("Your message successfully sent.");
+                        break;
+
+                    case "5":
+                        Console.WriteLine("The messages are: ");
+                        string[] groupMessages = masterServer.getMessages();
+                        foreach(string msg in groupMessages)
+                        {
+                            Console.WriteLine("{0}", msg);
+                        }
+                        Console.WriteLine("===== End of messages =====");
+                        Console.ReadLine();
+                        break;
+
+                    case "6":
+                        Console.WriteLine("Election held!!!");
+                        localServer.doElection();
+                        Console.WriteLine("The new masternode is {0}", localServer.getIpMaster(ipAddress));
+                        Console.ReadLine();
+                        break;
                 }
             }
             while (input != "0");

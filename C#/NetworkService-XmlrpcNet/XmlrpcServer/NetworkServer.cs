@@ -25,6 +25,10 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         // default master node
         DefaultMasterNode = myIpAddress;
+
+        // default group messages;
+        GroupMessages = new List<string>();
+        
     }
 
     public Dictionary<int, string> NetworkMap;
@@ -33,13 +37,14 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string defMstrNode2 = ":1090/networkServer.rem";
     public string DefaultMasterNode;
     public string myIpAddress;
+    public List<string> GroupMessages;
 
     #endregion
 
     #region Private Method
     private void sendToAllSlave(string command, string ipAddress = "")
     {
-        if (CurrentMasterNode == myIpAddress)
+        if (CurrentMasterNode == myIpAddress && NetworkMap.Count() > 1)
         {
             List<string> mySlaves = new List<string>();
             foreach (KeyValuePair<int, string> nodeItem in NetworkMap)
@@ -67,12 +72,16 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
                         case "addNewMachine":
                             slaveNetServer.newMachineJoin(ipAddress);
                             break;
+
+                        case "removeMachine":
+                            slaveNetServer.removeMachine(ipAddress);
+                            break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                
+                Console.WriteLine("{0}", ex.Message);
             }            
         }
     }
@@ -115,9 +124,29 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         return convertionResult;
     }
+
+    private string[] ConvertListToStruct(List<string> input)
+    {
+        string[] result = new string[input.Count];
+        for (int i = 0; i< input.Count(); i++)
+        {
+            result[i] = input[i];
+        }
+        return result;
+    }
     #endregion
 
     #region Public Method
+    public void addNewMessage(string newMessage)
+    {
+        GroupMessages.Add(newMessage);
+    }
+
+    public string[] getMessages()
+    {
+        return ConvertListToStruct(GroupMessages);
+    }
+
     public NetworkMapStruct[] ShowNetworkHashMap()
     {
         NetworkMapStruct[] result = ConvertDictionaryToStruct(NetworkMap);
@@ -146,7 +175,9 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         NetworkMap.Remove(removedIp.Key);
         Console.WriteLine("Machine {0} with priority {1} is removed from the network.", removedIp.Value, removedIp.Key);
         Console.WriteLine("Total machine in the network now is {0}", NetworkMap.Count());
+        sendToAllSlave("removeMachine", ipAddress);
     }
+
     public string getIpMaster(string callerIp)
     {
         if (CurrentMasterNode == string.Empty)
@@ -222,6 +253,13 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     {
         NetworkMap = ConvertStructToDictionary(masterHashmap);
         Console.WriteLine("local hashmap updated");
+    }
+
+    public void doElection()
+    {
+        Bully localBully = new Bully();
+        string newMaster = localBully.electMaster(NetworkMap);
+        CurrentMasterNode = newMaster;
     }
 
     #endregion
