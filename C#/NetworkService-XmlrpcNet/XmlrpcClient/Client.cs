@@ -24,7 +24,7 @@ class XmlrpcClient
             typeof(INetworkServer), defaultServer);
         INetworkServer masterServer = (INetworkServer)Activator.GetObject(
             typeof(INetworkServer), defaultServer);
-        
+
         // ============= Try to join the network ===============
         try
         {
@@ -99,19 +99,35 @@ class XmlrpcClient
                     case "5":
                         Console.WriteLine("The messages are: ");
                         string[] groupMessages = masterServer.getMessages();
-                        foreach(string msg in groupMessages)
+                        foreach (string msg in groupMessages)
                         {
                             Console.WriteLine("{0}", msg);
                         }
                         Console.WriteLine("===== End of messages =====");
-                        Console.ReadLine();
+                        Console.ReadKey();
                         break;
 
                     case "6":
                         Console.WriteLine("Election held!!!");
-                        localServer.doElection();
-                        Console.WriteLine("The new masternode is {0}", localServer.getIpMaster(ipAddress));
-                        Console.ReadLine();
+                        localServer.announceElectionHeld();
+                        string newMasterNode = localServer.getIpMaster(ipAddress);
+                        
+                        // re-assign the new masternode.
+                        try
+                        {
+                            string masterNodeServer = "http://" + newMasterNode + ":1090/networkServer.rem";
+                            masterServer = (INetworkServer)Activator.GetObject(
+                                typeof(INetworkServer), masterNodeServer);
+                            NetworkMapStruct[] newHashmap = masterServer.ShowNetworkHashMap();
+                            localServer.updateLocalHashmapFromMasterNode(newHashmap);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("{0}", ex.Message);
+                        }
+                        
+                        Console.WriteLine("The new masternode is {0}", newMasterNode);
+                        Console.ReadKey();
                         break;
                 }
             }

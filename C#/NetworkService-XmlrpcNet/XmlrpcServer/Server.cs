@@ -16,7 +16,6 @@ class XmlrpcServer
     {
         string input;
 
-
         IDictionary props = new Hashtable();
         props["name"] = "MyHttpChannel";
         props["port"] = 1090;
@@ -33,7 +32,7 @@ class XmlrpcServer
             "networkServer.rem",
             WellKnownObjectMode.Singleton);
         Console.WriteLine("=====Xmlrpc-Server=====");
-        Console.WriteLine("Press any key to end server");
+        Console.WriteLine("type 'exit' to end server");
         do
         {
             input = Console.ReadLine().ToLower();

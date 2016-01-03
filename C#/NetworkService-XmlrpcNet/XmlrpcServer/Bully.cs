@@ -38,12 +38,11 @@ public class Bully
     {
         string newMasterNode = "";
 
-        Bully election = new Bully();
         //get an active Map
-        Dictionary<int, string> newMap = election.getActiveMap(NetworkMap);
+        Dictionary<int, string> newMap = getActiveMap(NetworkMap);
     
         int maxkey = newMap.Keys.Max();
-        string newMasternode = newMap[maxkey];
+        newMasterNode = newMap[maxkey];
 
         return newMasterNode;
     }

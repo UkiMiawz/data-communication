@@ -28,7 +28,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         // default group messages;
         GroupMessages = new List<string>();
-        
+
     }
 
     public Dictionary<int, string> NetworkMap;
@@ -82,7 +82,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             catch (Exception ex)
             {
                 Console.WriteLine("{0}", ex.Message);
-            }            
+            }
         }
     }
 
@@ -128,7 +128,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     private string[] ConvertListToStruct(List<string> input)
     {
         string[] result = new string[input.Count];
-        for (int i = 0; i< input.Count(); i++)
+        for (int i = 0; i < input.Count(); i++)
         {
             result[i] = input[i];
         }
@@ -184,7 +184,6 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             return DefaultMasterNode;
         else
         {
-            Console.WriteLine("ip {0} is asking for master node. The current master node is {1}", callerIp, CurrentMasterNode);
             return CurrentMasterNode;
         }
     }
@@ -258,8 +257,55 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public void doElection()
     {
         Bully localBully = new Bully();
+        Console.WriteLine("!!!!!!!!!!!!! Election started !!!!!!!!!!!!!!");
+
+        // 1. Update my local hashmap
+        NetworkMap = localBully.getActiveMap(NetworkMap);
+        Console.WriteLine("Local Hashmap updated.");
+
+        // 2. Held an election
         string newMaster = localBully.electMaster(NetworkMap);
         CurrentMasterNode = newMaster;
+        Console.WriteLine("New master of {0} elected!", CurrentMasterNode);
+
+        // 3. Update local hashmap from master node
+        try
+        {
+            string newMasterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
+            INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
+                    typeof(INetworkServer), newMasterServer);
+            NetworkMapStruct[] updatedMap = neighborNetServer.ShowNetworkHashMap();
+            updateLocalHashmapFromMasterNode(updatedMap);
+            Console.WriteLine("local hashmap has been updated from new master node.");
+        }
+        catch (Exception ex)
+        {
+            // Let it go... Let it go... can't hold it back anymore....
+        }
+
+        Console.WriteLine("!!!!!!!!!!!!!!!!!! Election ended !!!!!!!!!!!!!!!!!!!!");
+    }
+
+    public void announceElectionHeld()
+    {
+        Bully mybully = new Bully();
+        NetworkMap = mybully.getActiveMap(NetworkMap);
+        foreach (string neighborAddress in NetworkMap.Values)
+        {
+            try
+            {
+                Console.WriteLine("Doing election in {0}.", neighborAddress);
+                string defaultServer = defMstrNode1 + neighborAddress + defMstrNode2;
+                INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
+                        typeof(INetworkServer), defaultServer);
+                neighborNetServer.doElection();
+                Console.WriteLine("Election in {0} done!", neighborAddress);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Election in {0} could not be done. Move to another neighbor.", neighborAddress);
+            }
+        }
     }
 
     #endregion
