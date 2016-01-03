@@ -17,6 +17,13 @@ public class JavaWsServer {
 	private static int timeout = 100;
 	private static WebServer webServer;
 	private static ElectionHelper electionHelper;
+	private static XmlRpcServer xmlRpcServer;
+	
+	
+	private static PropertyHandlerMapping propHandlerMapping;
+	public static PropertyHandlerMapping getMapping(){
+		return propHandlerMapping;
+	}
 	
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	public static TreeMap<Integer, String> getMachines(){
@@ -120,9 +127,9 @@ public class JavaWsServer {
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
 
 			webServer = new WebServer(PORT);
-			XmlRpcServer xmlRpcServer = webServer.getXmlRpcServer();
+			xmlRpcServer = webServer.getXmlRpcServer();
 
-			PropertyHandlerMapping propHandlerMapping = new PropertyHandlerMapping();
+			propHandlerMapping = new PropertyHandlerMapping();
 			propHandlerMapping.load(Thread.currentThread().getContextClassLoader(), "handler.properties");
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
 			
