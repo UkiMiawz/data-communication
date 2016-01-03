@@ -38,13 +38,13 @@ public class RegisterHandler {
 	public static void joinNetwork(String ipAddress) {
 		try{
 			//get IP addresses
-			
 			String myIp = JavaWsServer.getMyIpAddress();
 		    String subnet = ipAddress.substring(0, ipAddress.lastIndexOf('.'));
 		    System.out.println("Subnet : " + subnet);
 		    String ipNeighbor = null;
 		    int i = 2;
 		    
+		    //search for neighbor
 		    while (ipNeighbor == null && i<255){
 			       String host= subnet + "." + i;
 			       System.out.println("Contacting " + host);
@@ -110,14 +110,33 @@ public class RegisterHandler {
 		return "Machine removed " + removedIp;
 	}
 	
+	public String newMachineJoinNotification(String newIp, String callerIp){
+		addNewMachine(newIp, callerIp);
+		//inform all others
+		Object[] params = new Object[]{newIp, callerIp};
+		XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+		return "Notification from " + callerIp + " Machine added " + newIp;
+	}
+	
 	public String newMachineJoin(String ipAddress){
 		try{
 			//tell everyone in network that new machine join
 			String myIp = JavaWsServer.getMyIpAddress();
-			//add new machine to map
-			addNewMachine(ipAddress, myIp);
+			String masterIp = JavaWsServer.getIpMaster();
 			Object[] params = new Object[]{ipAddress, myIp};
-			XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+			
+			//check master
+			if(masterIp.equals(myIp)){
+				//if master is me, send to all other machines to add new machine
+				//add new machine to map
+				addNewMachine(ipAddress, myIp);
+				XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+			} else {
+				//inform master and let master handle
+				String response = (String) XmlRpcHelper.SendToOneMachine(masterIp, "RegisterHandler.newMachineJoinNotification", params);
+				System.out.println(response);
+			}
+			
 			return myIp;
 		} catch (Exception e) {
 			e.printStackTrace();

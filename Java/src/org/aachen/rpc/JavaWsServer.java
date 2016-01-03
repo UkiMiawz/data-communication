@@ -19,6 +19,8 @@ public class JavaWsServer {
 	private static ElectionHelper electionHelper;
 	private static XmlRpcServer xmlRpcServer;
 	
+	private static VectorClock localClock;
+	
 	
 	private static PropertyHandlerMapping propHandlerMapping;
 	public static PropertyHandlerMapping getMapping(){
@@ -31,6 +33,7 @@ public class JavaWsServer {
 	}
 	public static void setMachines(TreeMap<Integer, String> newMachines){
 		machines = newMachines;
+		localClock.updateClockMember(machines.size());
 	}
 	
 	private static InetAddress myIp;
@@ -89,13 +92,20 @@ public class JavaWsServer {
 		machines.put(lastPriority, ipAddress);
 		System.out.println("New Machine added with priority : " + lastPriority);
 		System.out.println("Total number of machines now :" + machines.size());
-		return machines.size();
+		return lastPriority;
 	}
 	
 	public static int addMachineToMap(String ipAddress, int priority){
 		machines.put(priority, ipAddress);
 		System.out.println("New Machine added with priority : " + priority);
 		System.out.println("Total number of machines now :" + machines.size());
+		
+		if(localClock == null){
+			localClock = new VectorClock();
+		}
+		
+		localClock.addNewNode();
+		
 		return machines.size();
 	}
 	
@@ -122,6 +132,7 @@ public class JavaWsServer {
 		
 		try {
 			electionHelper = new ElectionHelper();
+			localClock = new VectorClock();
 			
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
@@ -148,8 +159,12 @@ public class JavaWsServer {
 			RegisterHandler.joinNetwork(myIpAddress);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
-				addMachineToMap(myIpAddress);
+				myPriority = addMachineToMap(myIpAddress);
+			} else {
+				myPriority = machines.lastKey();
 			}
+			
+			localClock.updateMyNumber(myPriority);
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
