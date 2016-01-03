@@ -8,6 +8,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 using System.Net;
 
+
 class XmlrpcClient
 {
     static void Main(string[] args)
@@ -20,23 +21,24 @@ class XmlrpcClient
 
         string defaultServer = "http://localhost:1090/networkServer.rem";
 
-        INetworkServer localServer = (INetworkServer)Activator.GetObject(
-            typeof(INetworkServer), defaultServer);
-        INetworkServer masterServer = (INetworkServer)Activator.GetObject(
-            typeof(INetworkServer), defaultServer);
+        INetworkServerClientProxy localProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+        localProxy.Url = defaultServer;
+
+        INetworkServerClientProxy masterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+        masterProxy.Url = defaultServer;
 
         // ============= Try to join the network ===============
         try
         {
-            localServer.joinNetwork(ipAddress);
-            string masterNode = localServer.getIpMaster(ipAddress);
+            localProxy.joinNetwork(ipAddress);
+            string masterNode = localProxy.getIpMaster(ipAddress);
             if (masterNode != ipAddress)
             {
                 string masterNodeServer = "http://" + masterNode + ":1090/networkServer.rem";
-                masterServer = (INetworkServer)Activator.GetObject(
-                    typeof(INetworkServer), masterNodeServer);
-                NetworkMapStruct[] newHashmap = masterServer.ShowNetworkHashMap();
-                localServer.updateLocalHashmapFromMasterNode(newHashmap);
+
+                masterProxy.Url = masterNodeServer;
+                NetworkMapStruct[] newHashMap = masterProxy.ShowNetworkHashMap();
+                localProxy.updateLocalHashmapFromMasterNode(newHashMap);
             }
         }
         catch (Exception ex)
@@ -59,7 +61,7 @@ class XmlrpcClient
                 switch (input)
                 {
                     case "1":
-                        NetworkMapStruct[] networkHashMap = masterServer.ShowNetworkHashMap();
+                        NetworkMapStruct[] networkHashMap = masterProxy.ShowNetworkHashMap();
 
                         Console.WriteLine("The Masternode hashmap");
                         foreach (NetworkMapStruct ipItem in networkHashMap)
@@ -71,7 +73,7 @@ class XmlrpcClient
                         break;
 
                     case "2":
-                        NetworkMapStruct[] localhostHashMap = localServer.ShowNetworkHashMap();
+                        NetworkMapStruct[] localhostHashMap = localProxy.ShowNetworkHashMap();
 
                         Console.WriteLine("The localhost hashmap");
                         foreach (NetworkMapStruct ipItem in localhostHashMap)
@@ -83,7 +85,7 @@ class XmlrpcClient
                         break;
 
                     case "3":
-                        string result = masterServer.getIpMaster(ipAddress);
+                        string result = masterProxy.getIpMaster(ipAddress);
                         Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
@@ -91,14 +93,13 @@ class XmlrpcClient
                     case "4":
                         Console.WriteLine("write your new message: ");
                         string newMessage = Console.ReadLine();
-                        masterServer.addNewMessage(newMessage);
-                        Console.ReadLine();
+                        masterProxy.addNewMessage(newMessage);
                         Console.WriteLine("Your message successfully sent.");
                         break;
 
                     case "5":
                         Console.WriteLine("The messages are: ");
-                        string[] groupMessages = masterServer.getMessages();
+                        string[] groupMessages = masterProxy.getMessages();
                         foreach (string msg in groupMessages)
                         {
                             Console.WriteLine("{0}", msg);
@@ -109,17 +110,17 @@ class XmlrpcClient
 
                     case "6":
                         Console.WriteLine("Election held!!!");
-                        localServer.announceElectionHeld();
-                        string newMasterNode = localServer.getIpMaster(ipAddress);
-                        
+                        localProxy.announceElectionHeld();
+                        string newMasterNode = localProxy.getIpMaster(ipAddress);
+
                         // re-assign the new masternode.
                         try
                         {
                             string masterNodeServer = "http://" + newMasterNode + ":1090/networkServer.rem";
-                            masterServer = (INetworkServer)Activator.GetObject(
-                                typeof(INetworkServer), masterNodeServer);
-                            NetworkMapStruct[] newHashmap = masterServer.ShowNetworkHashMap();
-                            localServer.updateLocalHashmapFromMasterNode(newHashmap);
+                            
+                            masterProxy.Url = masterNodeServer;
+                            NetworkMapStruct[] newHashMap = masterProxy.ShowNetworkHashMap();
+                            localProxy.updateLocalHashmapFromMasterNode(newHashMap);
                         }
                         catch (Exception ex)
                         {
@@ -133,7 +134,7 @@ class XmlrpcClient
             }
             while (input != "0");
 
-            masterServer.removeMachine(ipAddress);
+            masterProxy.removeMachine(ipAddress);
             Console.WriteLine("You are logging out. Your machine have been removed from network");
             Console.ReadKey();
         }

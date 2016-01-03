@@ -54,27 +54,22 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             try
             {
-                // ==== Erase this after the system stabilized ===
-                //HttpChannel slaveChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-                //ChannelServices.RegisterChannel(slaveChnl, false);
                 string defaultServer = defMstrNode1 + DefaultMasterNode + defMstrNode2;
-                INetworkServer slaveNetServer = (INetworkServer)Activator.GetObject(
-                        typeof(INetworkServer), defaultServer);
+                INetworkServerClientProxy slaveProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
 
                 foreach (string mySlaveItem in mySlaves)
                 {
                     string slaveServer = defMstrNode1 + mySlaveItem + defMstrNode2;
-                    slaveNetServer = (INetworkServer)Activator.GetObject(
-                         typeof(INetworkServer), slaveServer);
+                    slaveProxy.Url = slaveServer;
 
                     switch (command)
                     {
                         case "addNewMachine":
-                            slaveNetServer.newMachineJoin(ipAddress);
+                            slaveProxy.newMachineJoin(ipAddress);
                             break;
 
                         case "removeMachine":
-                            slaveNetServer.removeMachine(ipAddress);
+                            slaveProxy.removeMachine(ipAddress);
                             break;
                     }
                 }
@@ -194,7 +189,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         NetworkPingService nps = new NetworkPingService();
         nps.DetectAllNetwork(ipAddress);
         List<string> activeIps = nps.getActiveIps();
-
+       
         // step 2: ask for MasterNode to each neighbor
         if (activeIps.Count() == 1 && activeIps.Contains(ipAddress))
         {
@@ -208,13 +203,10 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             {
                 try
                 {
-                    // ==== Erase this after the system stabilized ===
-                    //HttpChannel neighborChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-                    //ChannelServices.RegisterChannel(neighborChnl, false);
                     string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
-                    INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
-                         typeof(INetworkServer), neighborServer);
-                    CurrentMasterNode = neighborNetServer.getIpMaster(ipAddress);
+                    INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                    neighborProxy.Url = neighborServer;
+                    CurrentMasterNode = neighborProxy.getIpMaster(ipAddress);
 
                     if (CurrentMasterNode != "")
                         break;
@@ -232,14 +224,10 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         // step 3: After the master node found, add new machine to the hashmap.
         try
         {
-            // ==== Erase this after the system stabilized ===
-            //HttpChannel masterChnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
-            //ChannelServices.RegisterChannel(masterChnl, false);
-
             string masterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
-            INetworkServer currentMasterNetServer = (INetworkServer)Activator.GetObject(
-                typeof(INetworkServer), masterServer);
-            currentMasterNetServer.newMachineJoin(ipAddress);
+            INetworkServerClientProxy currentMasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+            currentMasterProxy.Url = masterServer;
+            currentMasterProxy.newMachineJoin(ipAddress);
         }
         catch (Exception ex)
         {
@@ -272,9 +260,9 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         try
         {
             string newMasterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
-            INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
-                    typeof(INetworkServer), newMasterServer);
-            NetworkMapStruct[] updatedMap = neighborNetServer.ShowNetworkHashMap();
+            INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+            neighborProxy.Url = newMasterServer;
+            NetworkMapStruct[] updatedMap = neighborProxy.ShowNetworkHashMap();
             updateLocalHashmapFromMasterNode(updatedMap);
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
@@ -296,9 +284,9 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             {
                 Console.WriteLine("Doing election in {0}.", neighborAddress);
                 string defaultServer = defMstrNode1 + neighborAddress + defMstrNode2;
-                INetworkServer neighborNetServer = (INetworkServer)Activator.GetObject(
-                        typeof(INetworkServer), defaultServer);
-                neighborNetServer.doElection();
+                INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                neighborProxy.Url = defaultServer;
+                neighborProxy.doElection();
                 Console.WriteLine("Election in {0} done!", neighborAddress);
             }
             catch (Exception ex)

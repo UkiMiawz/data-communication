@@ -1,13 +1,11 @@
 ﻿using CookComputing.XmlRpc;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public struct NetworkMapStruct
-{
-    public int NetworkPriority;
-    public string IpAddress;
-}
-
-public interface INetworkServer 
+public interface INetworkServerClientProxy : IXmlRpcProxy
 {
     [XmlRpcMethod("showNetworkHashMap")]
     NetworkMapStruct[] ShowNetworkHashMap();
@@ -38,6 +36,4 @@ public interface INetworkServer
 
     [XmlRpcMethod("doElection")]
     void doElection();
-
 }
-
