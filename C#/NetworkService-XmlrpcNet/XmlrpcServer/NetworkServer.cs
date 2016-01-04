@@ -1,13 +1,7 @@
-﻿using System;
+﻿using CookComputing.XmlRpc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CookComputing.XmlRpc;
-using System.Collections;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels.Http;
-using System.Runtime.Remoting.Channels;
 
 public class NetworkServer : MarshalByRefObject, INetworkServer
 {
@@ -128,7 +122,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             result[i] = input[i];
         }
         return result;
-    }
+    }    
     #endregion
 
     #region Public Method
@@ -189,7 +183,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         NetworkPingService nps = new NetworkPingService();
         nps.DetectAllNetwork(ipAddress);
         List<string> activeIps = nps.getActiveIps();
-       
+
         // step 2: ask for MasterNode to each neighbor
         if (activeIps.Count() == 1 && activeIps.Contains(ipAddress))
         {
@@ -203,13 +197,20 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             {
                 try
                 {
-                    string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
-                    INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
-                    neighborProxy.Url = neighborServer;
-                    CurrentMasterNode = neighborProxy.getIpMaster(ipAddress);
+                    ServerStatusCheck ssc = new ServerStatusCheck();
+                    bool serverUp = ssc.isServerUp(neighborIp, 1090, 300);
 
-                    if (CurrentMasterNode != "")
-                        break;
+                    if (serverUp)
+                    {
+                        string neighborServer = defMstrNode1 + neighborIp + defMstrNode2;
+                        INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                        neighborProxy.Url = neighborServer;
+
+                        CurrentMasterNode = neighborProxy.getIpMaster(ipAddress);
+
+                        if (CurrentMasterNode != "")
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
