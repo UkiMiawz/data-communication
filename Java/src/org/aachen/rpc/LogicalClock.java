@@ -7,26 +7,26 @@ import java.util.TreeMap;
 public class LogicalClock {
 	
 	/*Lamport clock*/
-	private int localClock;
+	private int clockValue;
 	
-	public int getLocalClock(){
-		return localClock;
+	public int getClockValue(){
+		return clockValue;
 	}
 	
 	public int setLocalClock(int newClock){
-		localClock = newClock;
-		return localClock;
+		clockValue = newClock;
+		return clockValue;
 	}
 	
 	public int incrementClock(){
-		localClock++;
-		return localClock;
+		clockValue++;
+		return clockValue;
 	}
 	
 	public int syncClock(int requestClock){
-		if(localClock < requestClock){
-			localClock = requestClock;
+		if(clockValue < requestClock + 1){
+			clockValue = requestClock + 1;
 		}
-		return localClock;
+		return clockValue;
 	}
 }

@@ -22,8 +22,6 @@ public class JavaWsServer {
 	private static ElectionHelper electionHelper;
 	private static XmlRpcServer xmlRpcServer;
 	
-	private static LogicalClock localClock;
-	
 	private static PropertyHandlerMapping propHandlerMapping;
 	public static PropertyHandlerMapping getMapping(){
 		return propHandlerMapping;
@@ -68,11 +66,19 @@ public class JavaWsServer {
 	public static String getSharedString(){
 		return sharedString;
 	}
-	public static void setSharedString(String newString){
+	public static String setSharedString(String newString){
 		sharedString = newString;
+		return sharedString;
 	}
 	
-	private static TreeMap<String, List<Integer>> requestQueue;
+	private static String myString = "";
+	public static String getMyString(){
+		return myString;
+	}
+	public static String setMyString(String newString){
+		myString = newString;
+		return myString;
+	}
 	
 	
 	/* ========= REGISTRATION METHODS ====== */
@@ -145,7 +151,6 @@ public class JavaWsServer {
 		
 		try {
 			electionHelper = new ElectionHelper();
-			localClock = new LogicalClock();
 			
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
