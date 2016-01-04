@@ -158,6 +158,7 @@ public class JavaWsServer {
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
 			
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
+			serverConfig.setEnabledForExtensions(true);
 			webServer.start();
 			
 			//assign my IP
@@ -169,7 +170,7 @@ public class JavaWsServer {
 			keyMaster = myPriority;
 			
 			//join network
-			RegisterHandler.joinNetwork(myIpAddress);
+			//RegisterHandler.joinNetwork(myIpAddress);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
 				myPriority = addMachineToMap(myIpAddress);
