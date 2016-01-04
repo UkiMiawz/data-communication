@@ -14,6 +14,8 @@ import org.apache.xmlrpc.webserver.WebServer;
 
 public class JavaWsServer {
 	
+	/* ========= PROPERTIES SETTER AND GETTER ====== */
+	
 	private static final int PORT = 1090;
 	private static int timeout = 100;
 	private static WebServer webServer;
@@ -33,7 +35,6 @@ public class JavaWsServer {
 	}
 	public static void setMachines(TreeMap<Integer, String> newMachines){
 		machines = newMachines;
-		localClock.updateClockMember(machines.size());
 	}
 	
 	private static InetAddress myIp;
@@ -61,6 +62,8 @@ public class JavaWsServer {
 		return ipMaster;
 	}
 	
+	/* ========= SYNC PROPERTIES SETTER AND GETTER ====== */
+	
 	private static String sharedString = "";
 	public static String getSharedString(){
 		return sharedString;
@@ -70,6 +73,9 @@ public class JavaWsServer {
 	}
 	
 	private static TreeMap<String, List<Integer>> requestQueue;
+	
+	
+	/* ========= REGISTRATION METHODS ====== */
 	
 	public static String setMaster(Integer master){
 		System.out.println("Key Master : " + master);
@@ -109,13 +115,6 @@ public class JavaWsServer {
 		machines.put(priority, ipAddress);
 		System.out.println("New Machine added with priority : " + priority);
 		System.out.println("Total number of machines now :" + machines.size());
-		
-		if(localClock == null){
-			localClock = new LogicalClock();
-		}
-		
-		localClock.addNewNode();
-		
 		return machines.size();
 	}
 	
@@ -124,6 +123,8 @@ public class JavaWsServer {
 		machines.remove(key);
 		return machineIp;
 	}
+	
+	/* ========= SERVER SHUTDOWN METHODS ====== */
 	
 	public static void serverShutDown(){
 		Object[] params = new Object[] { myPriority };
@@ -137,6 +138,8 @@ public class JavaWsServer {
 		webServer.shutdown();
 		System.out.println("Server shutdown");
 	}
+	
+	/* ========= MAIN METHODS ====== */
 	
 	public static void main(String[] args) {
 		
@@ -173,8 +176,6 @@ public class JavaWsServer {
 			} else {
 				myPriority = machines.lastKey();
 			}
-			
-			localClock.updateMyNumber(myPriority);
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -213,6 +214,8 @@ public class JavaWsServer {
 		}
 		
 	}
+	
+	/* ========= METHODS FOR TESTING ====== */
 	
 	public static String testConnection(String ipAddress, String command, Object[] params){
 		String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
