@@ -3,6 +3,7 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -19,8 +20,7 @@ public class JavaWsServer {
 	private static ElectionHelper electionHelper;
 	private static XmlRpcServer xmlRpcServer;
 	
-	private static VectorClock localClock;
-	
+	private static LogicalClock localClock;
 	
 	private static PropertyHandlerMapping propHandlerMapping;
 	public static PropertyHandlerMapping getMapping(){
@@ -60,6 +60,16 @@ public class JavaWsServer {
 	public static String getIpMaster(){
 		return ipMaster;
 	}
+	
+	private static String sharedString = "";
+	public static String getSharedString(){
+		return sharedString;
+	}
+	public static void setSharedString(String newString){
+		sharedString = newString;
+	}
+	
+	private static TreeMap<String, List<Integer>> requestQueue;
 	
 	public static String setMaster(Integer master){
 		System.out.println("Key Master : " + master);
@@ -101,7 +111,7 @@ public class JavaWsServer {
 		System.out.println("Total number of machines now :" + machines.size());
 		
 		if(localClock == null){
-			localClock = new VectorClock();
+			localClock = new LogicalClock();
 		}
 		
 		localClock.addNewNode();
@@ -132,7 +142,7 @@ public class JavaWsServer {
 		
 		try {
 			electionHelper = new ElectionHelper();
-			localClock = new VectorClock();
+			localClock = new LogicalClock();
 			
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");

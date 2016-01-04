@@ -2,12 +2,15 @@ package org.aachen.rpc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
-public class VectorClock {
+public class LogicalClock {
+	
+	/*Vector clock*/
 	private List<Integer> serverClock;
 	private int myNumber;
 	
-	VectorClock(){
+	LogicalClock(){
 		myNumber = 0;
 		serverClock = new ArrayList<Integer>();
 	}
@@ -48,5 +51,14 @@ public class VectorClock {
 			updateClockByIndex(nodeNumber, requestClock.get(nodeNumber));
 		}
 		return serverClock;
+	}
+	
+	public String returnEarliestEvent(TreeMap<String, List<Integer>> requestMap){
+		List<Integer> lastBiggestTime;
+		String lastBiggestIp = "";
+		
+		//TODO sorting
+		
+		return lastBiggestIp;
 	}
 }
