@@ -110,7 +110,7 @@ class XmlrpcClient
 
                     case "6":
                         Console.WriteLine("Election held!!!");
-                        localProxy.announceElectionHeld();
+                        localProxy.doElection();
                         string newMasterNode = localProxy.getIpMaster(ipAddress);
 
                         // re-assign the new masternode.

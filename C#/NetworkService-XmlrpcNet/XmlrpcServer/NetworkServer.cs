@@ -257,44 +257,43 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         CurrentMasterNode = newMaster;
         Console.WriteLine("New master of {0} elected!", CurrentMasterNode);
 
-        // 3. Update local hashmap from master node
+        // 3. Call changeMaster() from neighbor Servers
+        foreach (string neighborAddress in NetworkMap.Values)
+        {
+            try
+            {
+                string neighborServer = defMstrNode1 + neighborAddress + defMstrNode2;
+                INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                neighborProxy.Url = neighborServer;
+                neighborProxy.changeMaster(newMaster);
+                Console.WriteLine("Call method changeMaster() in {0} node SUCCESS!", neighborAddress);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Call method changeMaster() in {0} node FAIL!", neighborAddress);
+            }
+        }  
+
+        Console.WriteLine("!!!!!!!!!!!!!!!!!! Election ended !!!!!!!!!!!!!!!!!!!!");
+    }
+
+    public void changeMaster(string newMasterIp)
+    {
         try
         {
-            string newMasterServer = defMstrNode1 + CurrentMasterNode + defMstrNode2;
-            INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
-            neighborProxy.Url = newMasterServer;
-            NetworkMapStruct[] updatedMap = neighborProxy.ShowNetworkHashMap();
+            string newMasterServer = defMstrNode1 + newMasterIp + defMstrNode2;
+            INetworkServerClientProxy newMasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+            newMasterProxy.Url = newMasterServer;
+            NetworkMapStruct[] updatedMap = newMasterProxy.ShowNetworkHashMap();
             updateLocalHashmapFromMasterNode(updatedMap);
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
         catch (Exception ex)
         {
-            // Let it go... Let it go... can't hold it back anymore....
+       
         }
 
-        Console.WriteLine("!!!!!!!!!!!!!!!!!! Election ended !!!!!!!!!!!!!!!!!!!!");
-    }
-
-    public void announceElectionHeld()
-    {
-        Bully mybully = new Bully();
-        NetworkMap = mybully.getActiveMap(NetworkMap);
-        foreach (string neighborAddress in NetworkMap.Values)
-        {
-            try
-            {
-                Console.WriteLine("Doing election in {0}.", neighborAddress);
-                string defaultServer = defMstrNode1 + neighborAddress + defMstrNode2;
-                INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
-                neighborProxy.Url = defaultServer;
-                neighborProxy.doElection();
-                Console.WriteLine("Election in {0} done!", neighborAddress);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Election in {0} could not be done. Move to another neighbor.", neighborAddress);
-            }
-        }
+        Console.WriteLine("New master Node is : {0}"+ newMasterIp);
     }
 
     #endregion

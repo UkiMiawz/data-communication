@@ -33,11 +33,11 @@ public interface INetworkServer
     [XmlRpcMethod("getMessages")]
     string[] getMessages();
 
-    [XmlRpcMethod("announceElectionHeld")]
-    void announceElectionHeld();
-
     [XmlRpcMethod("doElection")]
     void doElection();
+
+    [XmlRpcMethod("changeMaster")]
+    void changeMaster(string newMasterIp);
 
 }
 
