@@ -31,6 +31,12 @@ public class JavaWsServer {
 	public static TreeMap<Integer, String> getMachines(){
 		return machines;
 	}
+	
+	public TreeMap<Integer, String> getMachines(String ipAddress){
+		System.out.println("Machines list request from " + ipAddress);
+		return machines;
+	}
+	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
 		machines = newMachines;
 	}
