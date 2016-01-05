@@ -10,34 +10,34 @@ public struct NetworkMapStruct
 public interface INetworkServer 
 {
     [XmlRpcMethod("showNetworkHashMap")]
-    NetworkMapStruct[] ShowNetworkHashMap();
+    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false,int inputLamportClock = 0);
 
     [XmlRpcMethod("newMachineJoin")]
-    void newMachineJoin(string ipAddress);
+    void newMachineJoin(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
 
     [XmlRpcMethod("getIpMaster")]
-    string getIpMaster(string callerIp);
+    string getIpMaster(string callerIp, int inputLamportClock = 0);
 
     [XmlRpcMethod("joinNetwork")]
-    void joinNetwork(string ipAddress);
+    void joinNetwork(string ipAddress, int inputLamportClock = 0);
 
     [XmlRpcMethod("removeMachine")]
-    void removeMachine(string ipAddress);
-
-    [XmlRpcMethod("updateHashmapFromMaster")]
-    void updateLocalHashmapFromMasterNode(NetworkMapStruct[] masterHashmap);
+    void removeMachine(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
 
     [XmlRpcMethod("addNewMessage")]
-    void addNewMessage(string newMessage);
+    void addNewMessage(string newMessage, int inputLamportClock = 0);
 
     [XmlRpcMethod("getMessages")]
-    string[] getMessages();
+    string[] getMessages(int inputLamportClock = 0);
 
     [XmlRpcMethod("doElection")]
-    void doElection();
+    void doElection(int inputLamportClock = 0);
 
     [XmlRpcMethod("changeMaster")]
-    void changeMaster(string newMasterIp);
+    void changeMaster(string newMasterIp, int inputLamportClock = 0);
+
+    [XmlRpcMethod("getCurrentLamportClock")]
+    int getCurrentLamportClock();
 
 }
 

@@ -19,6 +19,7 @@ public class ClientUI
         Console.WriteLine("4. Send message to server");
         Console.WriteLine("5. Get message from server");
         Console.WriteLine("6. Do Election");
+        Console.WriteLine("7. Get local Lamport Clock");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
     }
