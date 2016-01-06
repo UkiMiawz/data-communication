@@ -40,9 +40,21 @@ public interface INetworkServerClientProxy : IXmlRpcProxy
     [XmlRpcMethod("receiveElectionSignal")]
     string receiveElectionSignal(string senderIP);
 
+    [XmlRpcMethod("checkMasterStatus")]
+    void checkMasterStatus();
+
     [XmlRpcMethod("DoLocalElection")]
     void DoLocalElection();
 
-    [XmlRpcMethod("checkMasterStatus")]
-    void checkMasterStatus();
+    [XmlRpcBegin("DoLocalElection")]
+    IAsyncResult BeginDoLocalElection();
+
+    [XmlRpcBegin("DoLocalElection")]
+    IAsyncResult BeginDoLocalElection(AsyncCallback acb);
+
+    [XmlRpcBegin("DoLocalElection")]
+    IAsyncResult BeginDoLocalElection(AsyncCallback acb, object state);
+
+    [XmlRpcEnd("DoLocalElection")]
+    void EndDoLocalElection(IAsyncResult iars);
 }

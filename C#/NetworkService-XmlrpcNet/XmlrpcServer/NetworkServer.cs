@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 public class NetworkServer : MarshalByRefObject, INetworkServer
 {
@@ -27,6 +28,10 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         MasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
         MasterProxy.Url = ServerUrlStart + DefaultMasterNode + ServerUrlEnd;
 
+        // local proxy
+        LocalProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+        LocalProxy.Url = ServerUrlStart + MyIpAddress + ServerUrlEnd;
+
         // Lamport clock
         localLamportClock = new LamportClock();
     }
@@ -49,6 +54,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string MyIpAddress;
     public List<string> GroupMessages;
     public INetworkServerClientProxy MasterProxy;
+    public INetworkServerClientProxy LocalProxy;
     public LamportClock localLamportClock;
     #endregion
 
@@ -347,9 +353,37 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public string receiveElectionSignal(string senderIP)
     {
-        DoLocalElection();
+        //DoLocalElection(null,null);
+        IAsyncResult asr;
+        asr = LocalProxy.BeginDoLocalElection(null,null);
+        while(asr.IsCompleted == false)
+        {
+            Thread.Sleep(1000);
+        }
+        try
+        {
+            LocalProxy.EndDoLocalElection(asr);
+        }
+        catch(Exception ex)
+        {
+            
+        }
 
         return "OK";
+    }
+
+    void DoLocalElectionCallBack(IAsyncResult asr)
+    {
+        XmlRpcAsyncResult clientResult = (XmlRpcAsyncResult)asr;
+        INetworkServer proxy = (INetworkServer)clientResult.ClientProtocol;
+        try
+        {
+            LocalProxy.EndDoLocalElection(asr);
+        }
+        catch(Exception ex)
+        {
+
+        }
     }
 
     public void DoLocalElection()

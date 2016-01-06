@@ -101,20 +101,20 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    //case "6":
-                    //    // Menu 6: do election.
-                    //    localProxy.checkMasterStatus();
-
-                    //    Console.WriteLine("Election held!!!");
-                        
-                    //    localProxy.DoLocalElection();
-                    //    string newMasterIp = localProxy.getIpMaster(ipAddress);
-                        
-                    //    Console.WriteLine("The new masternode is {0}", newMasterIp);
-                    //    Console.ReadKey();
-                    //    break;
-
                     case "6":
+                        // Menu 6: do election.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("Election held!!!");
+
+                        localProxy.DoLocalElection();
+                        string newMasterIp = localProxy.getIpMaster(ipAddress);
+
+                        Console.WriteLine("The new masternode is {0}", newMasterIp);
+                        Console.ReadKey();
+                        break;
+
+                    case "7":
                         // Menu 6: show current Lamport clock.
                         localProxy.checkMasterStatus();
 
