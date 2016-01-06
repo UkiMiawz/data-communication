@@ -42,5 +42,7 @@ public interface INetworkServer
     [XmlRpcMethod("DoLocalElection")]
     void DoLocalElection();
 
+    [XmlRpcMethod("checkMasterStatus")]
+    void checkMasterStatus();
 }
 

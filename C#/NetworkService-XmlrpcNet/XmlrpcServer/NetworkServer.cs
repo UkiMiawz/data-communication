@@ -142,9 +142,21 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
         return result;
     }
+
     #endregion
 
     #region Public Method
+    public void checkMasterStatus()
+    {
+        ServerStatusCheck ssc = new ServerStatusCheck();
+        bool MasterAlive = ssc.isServerUp(CurrentMasterNode, 1090, 300);
+        if (MasterAlive == false)
+        {
+            Console.WriteLine("Master Node has been crashed...Preparing for election !");
+            DoLocalElection();
+        }
+    }
+
     public void addNewMessage(string newMessage, int inputLamportClock = 0)
     {
         localLamportClock.UpdateLamportClock(inputLamportClock);

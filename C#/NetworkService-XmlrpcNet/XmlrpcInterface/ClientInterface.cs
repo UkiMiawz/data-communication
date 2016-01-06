@@ -42,4 +42,7 @@ public interface INetworkServerClientProxy : IXmlRpcProxy
 
     [XmlRpcMethod("DoLocalElection")]
     void DoLocalElection();
+
+    [XmlRpcMethod("checkMasterStatus")]
+    void checkMasterStatus();
 }

@@ -41,8 +41,10 @@ class XmlrpcClient
                 {
                     case "1":
                         // Menu 1: Show master hashmap.
-                        NetworkMapStruct[] networkHashMap = localProxy.ShowNetworkHashMap();
+                        localProxy.checkMasterStatus();
 
+                        NetworkMapStruct[] networkHashMap = localProxy.ShowNetworkHashMap();
+                        
                         Console.WriteLine("The Masternode hashmap");
                         foreach (NetworkMapStruct ipItem in networkHashMap)
                         {
@@ -54,6 +56,8 @@ class XmlrpcClient
 
                     case "2":
                         // Menu 1: Show local hashmap.
+                        localProxy.checkMasterStatus();
+
                         NetworkMapStruct[] localhostHashMap = localProxy.ShowNetworkHashMap(true);
 
                         Console.WriteLine("The localhost hashmap");
@@ -67,13 +71,17 @@ class XmlrpcClient
 
                     case "3":
                         // Menu 3: Get Master Ip.
+                        localProxy.checkMasterStatus();
+
                         string result = localProxy.getIpMaster(ipAddress);
                         Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
 
                     case "4":
-                        // Menu 4: add new message. 
+                        // Menu 4: add new message.
+                        localProxy.checkMasterStatus();
+
                         Console.WriteLine("write your new message: ");
                         string newMessage = Console.ReadLine();
                         localProxy.addNewMessage(newMessage);
@@ -81,6 +89,8 @@ class XmlrpcClient
 
                     case "5":
                         // Menu 5: get all messages.
+                        localProxy.checkMasterStatus();
+
                         Console.WriteLine("===== Start of messages ===== ");
                         string[] groupMessages = localProxy.getMessages();
                         foreach (string msg in groupMessages)
@@ -91,20 +101,23 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    case "6":
-                        // Menu 6: do election.
-                        Console.WriteLine("Election held!!!");
-                        //   localProxy.doElection();
-                        //    string newMasterNode = localProxy.getIpMaster(ipAddress);
-                        localProxy.DoLocalElection();
-                        string newMasterIp = localProxy.getIpMaster(ipAddress);
-                     
-                        Console.WriteLine("The new masternode is {0}", newMasterIp);
-                        Console.ReadKey();
-                        break;
+                    //case "6":
+                    //    // Menu 6: do election.
+                    //    localProxy.checkMasterStatus();
 
-                    case "7":
-                        // Menu 7: show current Lamport clock.
+                    //    Console.WriteLine("Election held!!!");
+                        
+                    //    localProxy.DoLocalElection();
+                    //    string newMasterIp = localProxy.getIpMaster(ipAddress);
+                        
+                    //    Console.WriteLine("The new masternode is {0}", newMasterIp);
+                    //    Console.ReadKey();
+                    //    break;
+
+                    case "6":
+                        // Menu 6: show current Lamport clock.
+                        localProxy.checkMasterStatus();
+
                         int lampClock = localProxy.getCurrentLamportClock();
                         Console.WriteLine("The current Lamport Clock is: {0}", lampClock);
                         Console.ReadKey();
