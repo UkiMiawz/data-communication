@@ -86,6 +86,10 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
                         case "removeMachine":
                             slaveProxy.removeMachine(ipAddress, localLamportClock.getCurrentTime(), true);
                             break;
+
+                        case "changeMaster":
+                            slaveProxy.changeMaster(ipAddress, localLamportClock.getCurrentTime());
+                            break;
                     }
                 }
             }
@@ -309,16 +313,13 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         try
         {
-
-            string CurrentMasterNode = ServerUrlStart + newMasterIp + ServerUrlEnd;
-            
             //change Masternode
-            MasterProxy.Url = CurrentMasterNode;
+            MasterProxy.Url = ServerUrlStart + newMasterIp + ServerUrlEnd;
             CurrentMasterNode = newMasterIp;
             Console.WriteLine("New master Node is : {0}" + newMasterIp);
             
             //update Hash map from Master
-            NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap();
+            NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
         catch (Exception ex)
@@ -334,8 +335,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public string receiveElectionSignal(string senderIP)
     {
-        Bully bullyObj = new Bully();
-        bullyObj.doElection(MyIpAddress, NetworkHashMap);
+        DoLocalElection();
 
         return "OK";
     }
@@ -350,6 +350,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             // 1. tell other notes that I'm the new master, update my hashmap
             changeMaster(newMaster);
             // 2. tell other notes to update their hashmap
+            sendToAllSlave("changeMaster", newMaster);
         }
 
     }

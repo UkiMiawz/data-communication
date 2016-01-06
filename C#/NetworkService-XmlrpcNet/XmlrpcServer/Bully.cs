@@ -29,7 +29,7 @@ public class Bully
 
                 if (result == "OK")
                 {
-                    return null;
+                    return string.Empty;
                 }
             }            
         }
