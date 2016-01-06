@@ -301,69 +301,61 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         {
             Console.WriteLine("An error occured. {0}", ex.Message);
         }
-    }
-
-    public void doElection(int inputLamportClock = 0)
-    {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
-        Bully localBully = new Bully();
-        Console.WriteLine("!!!!!!!!!!!!! Election started !!!!!!!!!!!!!!");
-
-        // 1. Update my local hashmap
-        NetworkHashMap = localBully.getActiveMap(NetworkHashMap);
-        Console.WriteLine("Local Hashmap updated.");
-
-        // 2. Held an election
-        string newMaster = localBully.electMaster(NetworkHashMap);
-        CurrentMasterNode = newMaster;
-        Console.WriteLine("New master of {0} elected!", CurrentMasterNode);
-
-        // 3. Call changeMaster() from neighbor Servers
-        foreach (string neighborAddress in NetworkHashMap.Values)
-        {
-            try
-            {
-                string neighborServer = ServerUrlStart + neighborAddress + ServerUrlEnd;
-                INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
-                neighborProxy.Url = neighborServer;
-                neighborProxy.changeMaster(newMaster);
-                Console.WriteLine("Call method changeMaster() in {0} node SUCCESS!", neighborAddress);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Call method changeMaster() in {0} node FAIL!", neighborAddress);
-            }
-        }
-
-        Console.WriteLine("!!!!!!!!!!!!!!!!!! Election ended !!!!!!!!!!!!!!!!!!!!");
-    }
-
+    } 
+    
     public void changeMaster(string newMasterIp, int inputLamportClock = 0)
     {
         localLamportClock.UpdateLamportClock(inputLamportClock);
 
         try
         {
-            string newMasterServer = ServerUrlStart + newMasterIp + ServerUrlEnd;
-            INetworkServerClientProxy newMasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
-            newMasterProxy.Url = newMasterServer;
-            NetworkMapStruct[] updatedMap = newMasterProxy.ShowNetworkHashMap();
-            //updateLocalHashmapFromMasterNode(updatedMap);
+
+            string CurrentMasterNode = ServerUrlStart + newMasterIp + ServerUrlEnd;
+            
+            //change Masternode
+            MasterProxy.Url = CurrentMasterNode;
+            CurrentMasterNode = newMasterIp;
+            Console.WriteLine("New master Node is : {0}" + newMasterIp);
+            
+            //update Hash map from Master
+            NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap();
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
         catch (Exception ex)
         {
 
-        }
-
-        Console.WriteLine("New master Node is : {0}" + newMasterIp);
+        }       
     }
 
     public int getCurrentLamportClock()
     {
         return localLamportClock.getCurrentTime();
+    }           
+
+    public string receiveElectionSignal(string senderIP)
+    {
+        Bully bullyObj = new Bully();
+        bullyObj.doElection(MyIpAddress, NetworkHashMap);
+
+        return "OK";
+    }
+
+    public void DoLocalElection()
+    {
+        Bully bullyObj = new Bully();
+        string newMaster = bullyObj.doElection(MyIpAddress, NetworkHashMap);
+
+        if (newMaster != string.Empty)
+        {
+            // 1. tell other notes that I'm the new master, update my hashmap
+            changeMaster(newMaster);
+            // 2. tell other notes to update their hashmap
+        }
+
     }
 
     #endregion
 }
+
+
+

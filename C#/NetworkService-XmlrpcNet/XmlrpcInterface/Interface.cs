@@ -29,15 +29,18 @@ public interface INetworkServer
 
     [XmlRpcMethod("getMessages")]
     string[] getMessages(int inputLamportClock = 0);
-
-    [XmlRpcMethod("doElection")]
-    void doElection(int inputLamportClock = 0);
-
+    
     [XmlRpcMethod("changeMaster")]
     void changeMaster(string newMasterIp, int inputLamportClock = 0);
 
     [XmlRpcMethod("getCurrentLamportClock")]
     int getCurrentLamportClock();
+
+    [XmlRpcMethod("receiveElectionSignal")]
+    string receiveElectionSignal(string senderIP);
+
+    [XmlRpcMethod("DoLocalElection")]
+    void DoLocalElection();
 
 }
 

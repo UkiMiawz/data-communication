@@ -94,9 +94,12 @@ class XmlrpcClient
                     case "6":
                         // Menu 6: do election.
                         Console.WriteLine("Election held!!!");
-                        localProxy.doElection();
-                        string newMasterNode = localProxy.getIpMaster(ipAddress);
-                        Console.WriteLine("The new masternode is {0}", newMasterNode);
+                        //   localProxy.doElection();
+                        //    string newMasterNode = localProxy.getIpMaster(ipAddress);
+                        localProxy.DoLocalElection();
+                        string newMasterIp = localProxy.getIpMaster(ipAddress);
+                     
+                        Console.WriteLine("The new masternode is {0}", newMasterIp);
                         Console.ReadKey();
                         break;
 
