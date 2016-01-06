@@ -353,12 +353,11 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public string receiveElectionSignal(string senderIP)
     {
-        //DoLocalElection(null,null);
         IAsyncResult asr;
         asr = LocalProxy.BeginDoLocalElection(null,null);
         while(asr.IsCompleted == false)
         {
-            Thread.Sleep(1000);
+            return "Ok";
         }
         try
         {
