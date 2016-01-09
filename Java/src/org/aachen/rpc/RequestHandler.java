@@ -14,6 +14,7 @@ public class RequestHandler {
 	private static TreeMap<Integer, String> differedRequestIps;
 	private static LogicalClock localClock;
 	private static int timeout = 200;
+	private static ResourceHandler resourceHandler;
 	
 	private static String masterIp;
 	private static String myIp;
@@ -21,20 +22,27 @@ public class RequestHandler {
 	
 	private boolean haveInterest = false;
 	private boolean currentlyAccessing = false;
+	private boolean wantWrite = false;
+	
+	private String finalString;
+	private String myString;
 	
 	private int myKey;
 	
-	public void startMessage(String ipAddress){
-		System.out.println(ipAddress + " start string append");
+	public String startMessage(boolean wantWrite){
+		System.out.println("Start string append");
 		//start sync, send messages to all nodes
 		masterIp = JavaWsServer.getIpMaster();
 		myIp = JavaWsServer.getMyIpAddress();
 		machines = JavaWsServer.getMachines();
 		myKey = JavaWsServer.getMyPriority();
+		resourceHandler = new ResourceHandler();
+		this.wantWrite = wantWrite;
+		return sendRequest();
 	}
 	
 	//send request
-	private void sendRequest(){
+	private String sendRequest(){
 		
 		//increment clock by 1
 		localClock.incrementClock();
@@ -83,6 +91,29 @@ public class RequestHandler {
 				removeMachineFromExpected(machineKey);
 			}
 		}
+		
+		//wait until all finished
+		while(haveInterest){
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if(wantWrite){
+			//return written string
+			return myString;
+		}
+		
+		int containMyString = 0;
+		if(finalString.contains(myString))
+		{
+			containMyString = 1;
+		}
+		
+		return finalString + ";" + containMyString;
 	}
 
 	// receive message for ok permission, triggering resource access when all have given permission
@@ -94,7 +125,8 @@ public class RequestHandler {
 		//check if all machine clear
 		if(expectedRequestIps.isEmpty() && haveInterest){
 			System.out.println("Permission clear, access resource");
-			String nowResource = doResourceAccess();
+			String nowResource;
+			nowResource = doResourceAccess();
 			System.out.println("Resource value now : " + nowResource);
 		}
 	}
@@ -123,7 +155,13 @@ public class RequestHandler {
 	private String doResourceAccess(){
 		currentlyAccessing = true;
 		//clear permission, do request access
-		String nowResource = appendNewString();
+		String nowResource;
+		if(wantWrite){
+			myString = resourceHandler.generateRandomString();
+			nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
+		} else {
+			nowResource = resourceHandler.readNewString(myIp, masterIp); 
+		}
 		
 		//send ok to all machines in differedRequestIps
 		sendOkResponse();
@@ -146,33 +184,6 @@ public class RequestHandler {
 			System.out.println("Removing machine from differed request :" + machineKey);
 			removeMachineFromDiffered(machineKey);
 		}
-	}
-	
-	//access shared resource
-	private String appendNewString(){
-		//get current string from master
-		Object[] params = new Object[]{ myIp };
-		String currentString = (String) XmlRpcHelper.SendToOneMachine(masterIp, "Resource.readString", params);
-		//generate random string of 10 chars and append
-		String randomString = generateRandomString();
-		JavaWsServer.setMyString(randomString);
-		params = new Object[] { currentString + randomString, myIp };
-		String responseString = (String) XmlRpcHelper.SendToOneMachine(masterIp, "Resource.setString", params);
-		System.out.println("String appended, shared string value now " + responseString);
-		return responseString;
-	}
-	
-	/*====== RANDOM STRING GENERATOR ======*/
-	private String generateRandomString(){
-		char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-		StringBuilder sb = new StringBuilder();
-		Random random = new Random();
-		for (int i = 0; i < 10; i++) {
-		    char c = chars[random.nextInt(chars.length)];
-		    sb.append(c);
-		}
-		String output = sb.toString();
-		return output;
 	}
 	
 	private void removeMachineFromExpected(int machineKey){
