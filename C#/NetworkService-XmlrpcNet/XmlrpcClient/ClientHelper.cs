@@ -20,6 +20,7 @@ public class ClientUI
         Console.WriteLine("5. Get message from server");
         Console.WriteLine("6. Do Election");
         Console.WriteLine("7. Get local Lamport Clock");
+        Console.WriteLine("8. Test Mutual Exclusion");
         Console.WriteLine("0. Exit");
         Console.Write("Enter your choice: ");
     }

@@ -27,7 +27,7 @@ public interface INetworkServerClientProxy : IXmlRpcProxy
 
     [XmlRpcMethod("getMessages")]
     string[] getMessages(int inputLamportClock = 0);
-    
+
     [XmlRpcMethod("changeMaster")]
     void changeMaster(string newMasterIp, int inputLamportClock = 0);
 
@@ -57,4 +57,22 @@ public interface INetworkServerClientProxy : IXmlRpcProxy
 
     [XmlRpcEnd("DoLocalElection")]
     void EndDoLocalElection(IAsyncResult iars);
+
+    [XmlRpcMethod("MutualExclusion.SendMERequest")]
+    bool SendMERequestToServer(string methodName, string parameter);
+
+    [XmlRpcBegin("MutualExclusion.ReceiveMEReply")]
+    IAsyncResult BeginReceiveMEReply();
+
+    [XmlRpcMethod("MutualExclusion.ReceiveMEReply")]
+    void ReceiveMEReply();
+
+    [XmlRpcEnd("MutualExclusion.ReceiveMEReply")]
+    void EndReceiveMEReply(IAsyncResult iars);
+
+    [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
+    string ReceiveMERequest(string ipAddress, int inputLamportClock);
+
+    [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
+    void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0);
 }

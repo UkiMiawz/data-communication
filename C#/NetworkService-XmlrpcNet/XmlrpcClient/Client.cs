@@ -115,11 +115,26 @@ class XmlrpcClient
                         break;
 
                     case "7":
-                        // Menu 6: show current Lamport clock.
+                        // Menu 7: show current Lamport clock.
                         localProxy.checkMasterStatus();
 
                         int lampClock = localProxy.getCurrentLamportClock();
                         Console.WriteLine("The current Lamport Clock is: {0}", lampClock);
+                        Console.ReadKey();
+                        break;
+
+                    case "8":
+                        // Menu 8: Test Mutual Exclusion.
+                        Console.WriteLine("Processing Now...");
+                        bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
+                        if (isDirectProcessing)
+                        {
+                            Console.WriteLine("The process is complete!!!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("You are on pending.");
+                        }
                         Console.ReadKey();
                         break;
                 }

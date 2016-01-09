@@ -44,5 +44,17 @@ public interface INetworkServer
 
     [XmlRpcMethod("checkMasterStatus")]
     void checkMasterStatus();
+
+    [XmlRpcMethod("MutualExclusion.SendMERequest")]
+    bool SendMERequestToServer(string methodName, string parameter);
+
+    [XmlRpcMethod("MutualExclusion.ReceiveMEReply")]
+    void ReceiveMEReply();
+
+    [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
+    string ReceiveMERequest(string ipAddress, int inputLamportClock);
+
+    [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
+    void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0);   
 }
 

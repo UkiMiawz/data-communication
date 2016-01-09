@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Threading;
+using System.Web;
 
 public class NetworkServer : MarshalByRefObject, INetworkServer
 {
@@ -34,6 +36,12 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         // Lamport clock
         localLamportClock = new LamportClock();
+
+        // Mutual Exclusion
+        localMutualExclusion = new MutualExclusion();
+
+        // RequestPackage
+        localRequestPackage = new RequestPackage();
     }
 
     ~NetworkServer() // Destructor
@@ -56,6 +64,8 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public INetworkServerClientProxy MasterProxy;
     public INetworkServerClientProxy LocalProxy;
     public LamportClock localLamportClock;
+    public MutualExclusion localMutualExclusion;
+    public RequestPackage localRequestPackage;
     #endregion
 
     #region Private Method
@@ -73,6 +83,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         if (CurrentMasterNode == MyIpAddress && NetworkHashMap.Count() > 1)
         {
             List<string> mySlaves = NetworkHashMap.Values.ToList();
+            mySlaves.Remove(MyIpAddress);
 
             try
             {
@@ -323,8 +334,8 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         {
             Console.WriteLine("An error occured. {0}", ex.Message);
         }
-    } 
-    
+    }
+
     public void changeMaster(string newMasterIp, int inputLamportClock = 0)
     {
         localLamportClock.UpdateLamportClock(inputLamportClock);
@@ -335,7 +346,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             MasterProxy.Url = ServerUrlStart + newMasterIp + ServerUrlEnd;
             CurrentMasterNode = newMasterIp;
             Console.WriteLine("New master Node is : {0}" + newMasterIp);
-            
+
             //update Hash map from Master
             NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
             Console.WriteLine("local hashmap has been updated from new master node.");
@@ -343,19 +354,19 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         catch (Exception ex)
         {
 
-        }       
+        }
     }
 
     public int getCurrentLamportClock()
     {
         return localLamportClock.getCurrentTime();
-    }           
+    }
 
     public string receiveElectionSignal(string senderIP)
     {
         IAsyncResult asr;
-        asr = LocalProxy.BeginDoLocalElection(null,null);
-        while(asr.IsCompleted == false)
+        asr = LocalProxy.BeginDoLocalElection(null, null);
+        while (asr.IsCompleted == false)
         {
             return "Ok";
         }
@@ -363,9 +374,9 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         {
             LocalProxy.EndDoLocalElection(asr);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            
+
         }
 
         return "OK";
@@ -379,7 +390,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         {
             LocalProxy.EndDoLocalElection(asr);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
 
         }
@@ -399,6 +410,83 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
 
     }
+    #endregion
+
+    #region Mutual Exclusion
+
+    #region Mutual Exclusion : Slave part
+    // ==== Mutual Exclusion : Slave part ===== 
+    public bool SendMERequestToServer(string methodName, string parameter)
+    {
+        localLamportClock.UpdateLamportClock();
+        bool isRequestAvailable = localRequestPackage.CreateNewRequest(methodName, parameter);
+        if (isRequestAvailable == true)
+        {
+            string meRequestStatus = MasterProxy.ReceiveMERequest(MyIpAddress, localLamportClock.getCurrentTime());
+            // If master available, do the process immediately.
+            if (meRequestStatus == MEStatus.Available)
+            {
+                ReceiveMEReply();
+                return true;
+            }            
+        }
+        return false;
+    }
+
+    public void ReceiveMEReply()
+    {
+        // === !!! Achtung !!! ===
+        // This is an Async method!!
+        if (localRequestPackage.getIsWaitingProcess())
+        {
+            localLamportClock.UpdateLamportClock();
+            MasterProxy.AccessCriticalPart(MyIpAddress, localRequestPackage.methodName, localRequestPackage.parameter, localLamportClock.getCurrentTime());
+            localRequestPackage.FinishSending();
+        }
+    }
+    // ==== Mutual Exclusion : Slave part End =====
+    #endregion
+
+    #region Mutual Exclusion : Master part
+    // ==== Mutual Exclusion : Master part ====
+    public string ReceiveMERequest(string senderIP, int inputLamportClock)
+    {
+        localLamportClock.UpdateLamportClock(inputLamportClock);
+        Console.WriteLine("machine {0} request access to critical part.", senderIP);
+        string result = localMutualExclusion.TryToAccess(senderIP, localLamportClock.getCurrentTime());
+        if (result == MEStatus.Available)
+        {
+            Console.WriteLine("Mutual Exclusion is available. Machine {0} will accessing the critical part now.", senderIP);            
+        }
+        else
+        {
+            int queueNumber = localMutualExclusion.GetQueueOrderByIp(senderIP);
+            Console.WriteLine("Mutual Exclusion is busy. Machine {0} is in queue number {1}", senderIP, queueNumber);
+        }
+        return result;  
+    }
+
+    public void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0)
+    {
+        localLamportClock.UpdateLamportClock(inputLamportClock);
+        if (CurrentMasterNode == MyIpAddress)
+        {
+            localMutualExclusion.AccessingTheCriticalPart();
+            Console.WriteLine("machine {0} is accessing critical part.", senderIP);
+
+            switch (methodName)
+            {
+                case "addNewMessage":
+                    addNewMessage(parameter);
+                    break;
+            }
+
+            Console.WriteLine("machine {0} finished accessing critical part.", senderIP);
+            localMutualExclusion.FinishAccessing();
+        }
+    }   
+    // ==== Mutual Exclusion : Master part End ====
+    #endregion
 
     #endregion
 }
