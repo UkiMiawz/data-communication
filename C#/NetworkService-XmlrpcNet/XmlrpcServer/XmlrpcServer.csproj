@@ -48,8 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bully.cs" />
+    <Compile Include="NetworkPingService.cs" />
+    <Compile Include="NetworkServer.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SynchronizationService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

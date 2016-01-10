@@ -8,55 +8,142 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Http;
 using System.Net;
 
-class _
+
+class XmlrpcClient
 {
     static void Main(string[] args)
     {
-        bool bUseSoap = false;
-        if (args.Length > 0 && args[0] == "SOAP")
-            bUseSoap = true;
+        ClientObject co = new ClientObject();
+        string ipAddress = co.GetClientIpAdress();
 
-        HttpChannel chnl;
-        if (bUseSoap)
-            chnl = new HttpChannel();
-        else
-            chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
+        HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        string localServer = "http://localhost:5678/networkServer.rem";
-        string liveServer = "http://172.16.1.102:5678/networkServer.rem";
+        string defaultServer = "http://localhost:1090/networkServer.rem";
 
-        INetworkServer netwS = (INetworkServer)Activator.GetObject(
-            typeof(INetworkServer), liveServer);
+        INetworkServerClientProxy localProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+        localProxy.Url = defaultServer;
 
         try
         {
-            //string result = netwS.AppendString("Khanh");
-            //Console.WriteLine("the result is {0}", result);
+            // ====== try to join the network =====
+            localProxy.joinNetwork(ipAddress);
+            
+            // ====== Begin client input ======
             string input;
+            ClientUI clientUi = new ClientUI();
 
             do
             {
+                clientUi.DisplayMainMenu(ipAddress);
                 input = Console.ReadLine();
                 switch (input)
                 {
                     case "1":
-                        ClientObject co = new ClientObject();
-                        string ipAddress = co.GetClientIpAdress();
+                        // Menu 1: Show master hashmap.
+                        localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] response = netwS.AddNewNode(ipAddress);
-
-                        Console.WriteLine("The Ip map");
-                        foreach (NetworkMapStruct ipItem in response)
+                        NetworkMapStruct[] networkHashMap = localProxy.ShowNetworkHashMap();
+                        
+                        Console.WriteLine("The Masternode hashmap");
+                        foreach (NetworkMapStruct ipItem in networkHashMap)
                         {
-                            Console.WriteLine("{0}", ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
                         }
 
-                        Console.ReadLine();
-                        break;                  
+                        Console.ReadKey();
+                        break;
+
+                    case "2":
+                        // Menu 1: Show local hashmap.
+                        localProxy.checkMasterStatus();
+
+                        NetworkMapStruct[] localhostHashMap = localProxy.ShowNetworkHashMap(true);
+
+                        Console.WriteLine("The localhost hashmap");
+                        foreach (NetworkMapStruct ipItem in localhostHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                        }
+
+                        Console.ReadKey();
+                        break;
+
+                    case "3":
+                        // Menu 3: Get Master Ip.
+                        localProxy.checkMasterStatus();
+
+                        string result = localProxy.getIpMaster(ipAddress);
+                        Console.WriteLine("the masterNode is {0}", result);
+                        Console.ReadKey();
+                        break;
+
+                    case "4":
+                        // Menu 4: add new message.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("write your new message: ");
+                        string newMessage = Console.ReadLine();
+                        localProxy.addNewMessage(newMessage);
+                        break;
+
+                    case "5":
+                        // Menu 5: get all messages.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("===== Start of messages ===== ");
+                        string[] groupMessages = localProxy.getMessages();
+                        foreach (string msg in groupMessages)
+                        {
+                            Console.WriteLine("{0}", msg);
+                        }
+                        Console.WriteLine("===== End of messages =====");
+                        Console.ReadKey();
+                        break;
+
+                    case "6":
+                        // Menu 6: do election.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("Election held!!!");
+
+                        localProxy.DoLocalElection();
+                        string newMasterIp = localProxy.getIpMaster(ipAddress);
+
+                        Console.WriteLine("The new masternode is {0}", newMasterIp);
+                        Console.ReadKey();
+                        break;
+
+                    case "7":
+                        // Menu 7: show current Lamport clock.
+                        localProxy.checkMasterStatus();
+
+                        int lampClock = localProxy.getCurrentLamportClock();
+                        Console.WriteLine("The current Lamport Clock is: {0}", lampClock);
+                        Console.ReadKey();
+                        break;
+
+                    case "8":
+                        // Menu 8: Test Mutual Exclusion.
+                        Console.WriteLine("Processing Now...");
+                        bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
+                        if (isDirectProcessing)
+                        {
+                            Console.WriteLine("The process is complete!!!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("You are on pending.");
+                        }
+                        Console.ReadKey();
+                        break;
                 }
             }
-            while (input != "0");            
+            while (input != "0");
+
+            localProxy.removeMachine(ipAddress);
+            Console.WriteLine("You are logging out. Your machine have been removed from network");
+            Console.ReadKey();
         }
         catch (XmlRpcFaultException fex)
         {
@@ -64,27 +151,6 @@ class _
                 fex.FaultCode, fex.FaultString, fex.Message);
             Console.ReadLine();
         }
-    }
-
-    public class ClientObject
-    {
-        public Dictionary<int, string> NetworkMap;
-
-        public string GetClientIpAdress()
-        {
-            IPHostEntry host;
-            string myIP = "0.0.0.0";
-            host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress localIp in host.AddressList)
-            {
-                if (localIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    myIP = localIp.ToString();
-                    break;
-                }
-            }
-
-            return myIP;
-        }
+        // ===========End of Client Input================
     }
 }

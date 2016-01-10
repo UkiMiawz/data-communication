@@ -8,80 +8,22 @@ using System.Collections;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels.Http;
 using System.Runtime.Remoting.Channels;
+using System.Runtime.Serialization.Formatters;
 
-public class NetworkServer : MarshalByRefObject, INetworkServer
+class XmlrpcServer
 {
-    public NetworkServer()
+    static void Main(string[] args)
     {
-        NetworkMap = new Dictionary<int, string>();        
-    }
+        string input;
 
-    public Dictionary<int, string> NetworkMap;
-
-    #region Private Method
-    private int GetLatestPriority()
-    {
-        if (NetworkMap.Count == 0)
-        {
-            return 0;
-        }
-
-        List<int> priorityList = new List<int>();
-        foreach (int priority in NetworkMap.Keys)
-        {
-            priorityList.Add(priority);
-        }
-        return priorityList.Max();
-    }
-
-    private NetworkMapStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
-    {
-        NetworkMapStruct[] convertionResult = new NetworkMapStruct[dict.Count()];
-        for (int i = 0; i < dict.Count; i++)
-        {
-            convertionResult[i] = new NetworkMapStruct();
-            convertionResult[i].IpAddress = dict.Values.ElementAt(i);
-            convertionResult[i].NetworkPriority = dict.Keys.ElementAt(i);
-        }
-
-        return convertionResult;
-    }
-    #endregion
-
-    #region Public Method
-    public NetworkMapStruct[] AddNewNode(string ipAddress)
-    {
-        NetworkMapStruct[] response;
-        if (NetworkMap.Count() > 0 && NetworkMap.ContainsValue(ipAddress))
-        {
-            response = ConvertDictionaryToStruct(NetworkMap);
-            return response;
-        }
-
-        int currentPriority = GetLatestPriority() + 1;
-        NetworkMap.Add(currentPriority, ipAddress);
-        response = ConvertDictionaryToStruct(NetworkMap);        
-        return response;
-    }
-
-    public string AppendString(string value)
-    {
-        return "This is Aderick Computer" + value;
-    }
-
-    #endregion
-}
-
-class _
-{
-    static void Main (string[] args)
-    {
         IDictionary props = new Hashtable();
         props["name"] = "MyHttpChannel";
-        props["port"] = 5678;
+        props["port"] = 1090;
+        //RemotingConfiguration.Configure("networkServer.exe.config", false);
+
         HttpChannel channel = new HttpChannel(
             props,
-            null,
+            new XmlRpcClientFormatterSinkProvider(),
             new XmlRpcServerFormatterSinkProvider());
         ChannelServices.RegisterChannel(channel, false);
 
@@ -89,8 +31,13 @@ class _
             typeof(NetworkServer),
             "networkServer.rem",
             WellKnownObjectMode.Singleton);
-        Console.WriteLine("Press any key to end server");
-        Console.ReadLine();
+        Console.WriteLine("=====Xmlrpc-Server=====");
+        Console.WriteLine("type 'exit' to end server");
+        do
+        {
+            input = Console.ReadLine().ToLower();
+        }
+        while (input != "exit");
     }
 }
 
