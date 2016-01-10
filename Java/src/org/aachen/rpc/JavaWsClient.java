@@ -54,6 +54,53 @@ public class JavaWsClient {
 		}
 		
 	}
+	
+	private static void StartMutualExclusion(boolean isCentralized){
+		try {
+			//wait for random time
+			Thread.sleep((long)(Math.random() * 1000));
+			String response;
+			
+			//call mutual exclusion to write
+			Object[] params = new Object[]{ true };
+			if(isCentralized){
+				System.out.println("Start centralized mutual exclusion");
+				response = (String)consumeService(params, "RequestCentral.startMessage",true);
+				System.out.println("Resource value now :" + response);
+			} else {
+				System.out.println("Start ricart agrawala mutual exclusion");
+				response = (String)consumeService(params, "Request.startMessage",true);
+				System.out.println("Resource value now :" + response);
+			}
+			
+			Thread.sleep(10000);
+			params = new Object[]{ false };
+			
+			//call mutual exclusion to read
+			params = new Object[]{ true };
+			if(isCentralized){
+				System.out.println("Start centralized mutual exclusion");
+				response = (String)consumeService(params, "RequestCentral.startMessage",true);
+			} else {
+				System.out.println("Start ricart agrawala mutual exclusion");
+				response = (String)consumeService(params, "Request.startMessage",true);
+			}
+			
+			String[] parts = response.split(";");
+			
+			if(parts[1] == "1"){
+				System.out.println("My string is in the final string");
+			} else {
+				System.out.println("My string is not in the final string");
+			}
+			
+			System.out.println("Final String: " + parts[0]);
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 		
 	public static void main (String [] args) {
 		
@@ -85,6 +132,8 @@ public class JavaWsClient {
         	System.out.println("3. Display master node");
         	System.out.println("4. Do election");
         	System.out.println("5. Logout and shutdown server");
+        	System.out.println("6. Ricart Agrawala Mutual Exclusion");
+        	System.out.println("7. Centralized Mutual Exclusion");
         	System.out.println("0. Exit");
         	
         	try{
@@ -118,6 +167,10 @@ public class JavaWsClient {
                 	keepRunning = false;
                 	Object[] params = new Object[] { ip };
                 	XmlRpcHelper.SendToOneMachine("localhost", "Server.serverShutDownFromClient", params);
+                } else if("6".equals(command)){
+                	StartMutualExclusion(false);
+                } else if("7".equals(command)){
+                	StartMutualExclusion(true);
                 } else
                 {
                     System.out.println("Command " + command + " not recognized");
