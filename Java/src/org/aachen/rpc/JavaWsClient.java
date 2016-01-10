@@ -131,9 +131,12 @@ public class JavaWsClient {
         	System.out.println("2. Display localhost's network hashmap");
         	System.out.println("3. Display master node");
         	System.out.println("4. Do election");
-        	System.out.println("5. Logout and shutdown server");
-        	System.out.println("6. Ricart Agrawala Mutual Exclusion");
-        	System.out.println("7. Centralized Mutual Exclusion");
+        	System.out.println("5. Ricart Agrawala Mutual Exclusion");
+        	System.out.println("6. Centralized Mutual Exclusion");
+        	
+        	//TODO Rejoin network
+        	System.out.println("7. Rejoin Network");
+        	System.out.println("99. Logout and shutdown server");
         	System.out.println("0. Exit");
         	
         	try{
@@ -162,14 +165,14 @@ public class JavaWsClient {
                 } else if("4".equals(command)){
                 	//start election on localhost
                 	startElection();
-                } else if("5".equals(command)){
+                } else if("99".equals(command)){
                 	//shutdown server and client
                 	keepRunning = false;
                 	Object[] params = new Object[] { ip };
                 	XmlRpcHelper.SendToOneMachine("localhost", "Server.serverShutDownFromClient", params);
-                } else if("6".equals(command)){
+                } else if("5".equals(command)){
                 	StartMutualExclusion(false);
-                } else if("7".equals(command)){
+                } else if("6".equals(command)){
                 	StartMutualExclusion(true);
                 } else
                 {
