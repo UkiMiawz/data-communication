@@ -13,6 +13,9 @@ public interface INetworkServerClientProxy : IXmlRpcProxy
     [XmlRpcMethod("newMachineJoin")]
     void newMachineJoin(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
 
+    [XmlRpcMethod("neighborAskToJoin")]
+    string NeighborAskToJoin(string senderIpAddress);
+
     [XmlRpcMethod("getIpMaster")]
     string getIpMaster(string callerIp, int inputLamportClock = 0);
 

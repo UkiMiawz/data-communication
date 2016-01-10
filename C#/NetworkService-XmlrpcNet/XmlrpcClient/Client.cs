@@ -19,16 +19,13 @@ class XmlrpcClient
         HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        string defaultServer = "http://localhost:1090/networkServer.rem";
+        string defaultServer = "http://localhost:1090/xml-rpc-example/xmlrpc";
 
         INetworkServerClientProxy localProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
         localProxy.Url = defaultServer;
 
         try
         {
-            // ====== try to join the network =====
-            localProxy.joinNetwork(ipAddress);
-            
             // ====== Begin client input ======
             string input;
             ClientUI clientUi = new ClientUI();
@@ -79,6 +76,34 @@ class XmlrpcClient
                         break;
 
                     case "4":
+                        // Menu 4: do election.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("Election held!!!");
+
+                        localProxy.DoLocalElection();
+                        string newMasterIp = localProxy.getIpMaster(ipAddress);
+
+                        Console.WriteLine("The new masternode is {0}", newMasterIp);
+                        Console.ReadKey();
+                        break;
+
+                    case "6":
+                        // Menu 6: Test Mutual Exclusion.
+                        Console.WriteLine("Processing Now...");
+                        bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
+                        if (isDirectProcessing)
+                        {
+                            Console.WriteLine("The process is complete!!!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("You are on pending.");
+                        }
+                        Console.ReadKey();
+                        break;
+
+                    case "14":
                         // Menu 4: add new message.
                         localProxy.checkMasterStatus();
 
@@ -87,7 +112,7 @@ class XmlrpcClient
                         localProxy.addNewMessage(newMessage);
                         break;
 
-                    case "5":
+                    case "15":
                         // Menu 5: get all messages.
                         localProxy.checkMasterStatus();
 
@@ -101,20 +126,9 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    case "6":
-                        // Menu 6: do election.
-                        localProxy.checkMasterStatus();
+                    
 
-                        Console.WriteLine("Election held!!!");
-
-                        localProxy.DoLocalElection();
-                        string newMasterIp = localProxy.getIpMaster(ipAddress);
-
-                        Console.WriteLine("The new masternode is {0}", newMasterIp);
-                        Console.ReadKey();
-                        break;
-
-                    case "7":
+                    case "17":
                         // Menu 7: show current Lamport clock.
                         localProxy.checkMasterStatus();
 
@@ -123,20 +137,7 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    case "8":
-                        // Menu 8: Test Mutual Exclusion.
-                        Console.WriteLine("Processing Now...");
-                        bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
-                        if (isDirectProcessing)
-                        {
-                            Console.WriteLine("The process is complete!!!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("You are on pending.");
-                        }
-                        Console.ReadKey();
-                        break;
+                    
                 }
             }
             while (input != "0");

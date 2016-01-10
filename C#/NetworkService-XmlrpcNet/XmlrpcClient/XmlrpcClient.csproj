@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>HelloWorldConsoleClient</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CookComputing.XmlRpcV2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -50,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="ClientHelper.cs" />
+    <Compile Include="HelloWorldClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

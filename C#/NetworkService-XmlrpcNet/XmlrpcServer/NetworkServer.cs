@@ -42,6 +42,8 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         // RequestPackage
         localRequestPackage = new RequestPackage();
+
+        joinNetwork(MyIpAddress);
     }
 
     ~NetworkServer() // Destructor
@@ -274,6 +276,73 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public void joinNetwork(string ipAddress, int inputLamportClock = 0)
     {
+        // step 1: ping neighbor and ask to join.
+        localLamportClock.UpdateLamportClock(inputLamportClock);
+        string baseIP = ipAddress.Substring(0, (ipAddress.LastIndexOf('.') + 1));
+
+        try
+        {
+            for (int i = 0; i < 255; i++)
+            {
+                string neighborIp = baseIP + i;
+                ServerStatusCheck ssc = new ServerStatusCheck();
+                bool serverUp = ssc.isServerUp(neighborIp, 1090, 300);
+
+                if (serverUp)
+                {
+                    string neighborServer = ServerUrlStart + neighborIp + ServerUrlEnd;
+                    INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                    neighborProxy.Url = neighborServer;
+
+                    string neighborIpReturn = neighborProxy.NeighborAskToJoin(ipAddress);
+
+                    if (neighborIpReturn != string.Empty)
+                        // Get Master's Ip;
+                        CurrentMasterNode = neighborProxy.getIpMaster(ipAddress);
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        if (CurrentMasterNode == "")
+        {
+            CurrentMasterNode = DefaultMasterNode;
+        }
+
+        // step 2: Asking the updated map from master node
+        try
+        {
+            MasterProxy.Url = ServerUrlStart + CurrentMasterNode + ServerUrlEnd;
+            NetworkMapStruct[] newMap = MasterProxy.ShowNetworkHashMap();
+            NetworkHashMap = ConvertStructToDictionary(newMap);
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
+    public string NeighborAskToJoin(string senderIpAddress)
+    {
+        if (CurrentMasterNode == DefaultMasterNode)
+        {
+            newMachineJoin(senderIpAddress);
+        }
+        else
+        {
+            MasterProxy.newMachineJoin(senderIpAddress);
+        }
+
+        return MyIpAddress;
+    }    
+
+    public void joinNetworkDummy(string ipAddress, int inputLamportClock = 0)
+    {
         localLamportClock.UpdateLamportClock(inputLamportClock);
 
         // step 1: ping all neighbor
@@ -335,6 +404,8 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("An error occured. {0}", ex.Message);
         }
     }
+
+
 
     public void changeMaster(string newMasterIp, int inputLamportClock = 0)
     {
@@ -428,7 +499,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             {
                 ReceiveMEReply();
                 return true;
-            }            
+            }
         }
         return false;
     }
@@ -456,14 +527,14 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         string result = localMutualExclusion.TryToAccess(senderIP, localLamportClock.getCurrentTime());
         if (result == MEStatus.Available)
         {
-            Console.WriteLine("Mutual Exclusion is available. Machine {0} will accessing the critical part now.", senderIP);            
+            Console.WriteLine("Mutual Exclusion is available. Machine {0} will accessing the critical part now.", senderIP);
         }
         else
         {
             int queueNumber = localMutualExclusion.GetQueueOrderByIp(senderIP);
             Console.WriteLine("Mutual Exclusion is busy. Machine {0} is in queue number {1}", senderIP, queueNumber);
         }
-        return result;  
+        return result;
     }
 
     public void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0)
@@ -484,7 +555,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("machine {0} finished accessing critical part.", senderIP);
             localMutualExclusion.FinishAccessing();
         }
-    }   
+    }
     // ==== Mutual Exclusion : Master part End ====
     #endregion
 

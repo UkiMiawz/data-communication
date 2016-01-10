@@ -16,12 +16,18 @@ public class ClientUI
         Console.WriteLine("1. Display master node's network hashmap");
         Console.WriteLine("2. Display localhost's network hashmap");
         Console.WriteLine("3. Display master node");
-        Console.WriteLine("4. Send message to server");
-        Console.WriteLine("5. Get message from server");
-        Console.WriteLine("6. Do Election");
-        Console.WriteLine("7. Get local Lamport Clock");
-        Console.WriteLine("8. Test Mutual Exclusion");
+        Console.WriteLine("4. Do Election");
+        Console.WriteLine("5. Ricart Agrawala Mutual Exclusion");
+        Console.WriteLine("6. Centralized Mutual Exclusion");
+        Console.WriteLine("7. Rejoin Network");
+        Console.WriteLine("99. Logout and shutdown server");
         Console.WriteLine("0. Exit");
+        Console.WriteLine("Un-official menu");
+        Console.WriteLine("14. Send message to server");
+        Console.WriteLine("15. Get message from server");
+        Console.WriteLine("16. Do Election");
+        Console.WriteLine("17. Get local Lamport Clock");
+               
         Console.Write("Enter your choice: ");
     }
 }

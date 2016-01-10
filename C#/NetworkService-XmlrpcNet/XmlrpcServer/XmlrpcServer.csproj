@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bully.cs" />
+    <Compile Include="Hello World.cs" />
     <Compile Include="NetworkPingService.cs" />
     <Compile Include="NetworkServer.cs" />
     <Compile Include="Server.cs" />
