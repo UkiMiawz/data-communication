@@ -83,7 +83,9 @@ public class XmlRpcHelper {
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.out.println("String is not valid");
-			} 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		System.out.print("Finished sending to all machines, success call " + success);

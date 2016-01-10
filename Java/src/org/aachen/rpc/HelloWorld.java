@@ -22,4 +22,15 @@ public class HelloWorld {
 		machines.put(3, "test3");
 		return machines;
 	}
+	
+	public int returnClassRequest(Request incomingRequest){
+		int clock = incomingRequest.getClock() + 1;
+		incomingRequest.setClock(clock);
+		return clock;
+	}
+	
+	public int returnClassRequest(int clock, String test, String test2){
+		int newClock = clock + 1;
+		return newClock;
+	}
 }

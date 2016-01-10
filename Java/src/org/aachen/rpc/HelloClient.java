@@ -23,6 +23,7 @@ public class HelloClient {
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(
 					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
+			config.setEnabledForExtensions(true);
 			client = new XmlRpcClient();
 			client.setConfig(config);
 			ip = InetAddress.getLocalHost();
@@ -78,6 +79,21 @@ public class HelloClient {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void printClassRequest(){
+		connect("localhost");
+		
+		Request newRequest = new Request(3, "localhost", "HelloWorld.returnClassRequest");
+		Object[] params = new Object[]{ newRequest };
+		
+		try {
+			int returnRequest = (int)client.execute("HelloWorld.returnClassRequest", params);
+			System.out.println("Clock " + returnRequest);
+		} catch (XmlRpcException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 		
 	public static void main (String [] args) {
 		
@@ -96,6 +112,8 @@ public class HelloClient {
                     keepRunning = false;
                 } else if("map".equals(command)){
                 	printHashMap();
+                } else if("request".equals(command)){
+                	printClassRequest();
                 } else if("local".equals(command)) {
                 	System.out.println("Enter ip address: ");
                     String ip =  reader.readLine();

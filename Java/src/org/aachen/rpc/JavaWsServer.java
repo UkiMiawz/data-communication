@@ -3,6 +3,7 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,12 +14,13 @@ import org.apache.xmlrpc.webserver.WebServer;
 
 public class JavaWsServer {
 	
+	/* ========= PROPERTIES SETTER AND GETTER ====== */
+	
 	private static final int PORT = 1090;
 	private static int timeout = 100;
 	private static WebServer webServer;
 	private static ElectionHelper electionHelper;
 	private static XmlRpcServer xmlRpcServer;
-	
 	
 	private static PropertyHandlerMapping propHandlerMapping;
 	public static PropertyHandlerMapping getMapping(){
@@ -29,6 +31,12 @@ public class JavaWsServer {
 	public static TreeMap<Integer, String> getMachines(){
 		return machines;
 	}
+	
+	public TreeMap<Integer, String> getMachines(String ipAddress){
+		System.out.println("Machines list request from " + ipAddress);
+		return machines;
+	}
+	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
 		machines = newMachines;
 	}
@@ -57,6 +65,29 @@ public class JavaWsServer {
 	public static String getIpMaster(){
 		return ipMaster;
 	}
+	
+	/* ========= SYNC PROPERTIES SETTER AND GETTER ====== */
+	
+	private static String sharedString = "";
+	public static String getSharedString(){
+		return sharedString;
+	}
+	public static String setSharedString(String newString){
+		sharedString = newString;
+		return sharedString;
+	}
+	
+	private static String myString = "";
+	public static String getMyString(){
+		return myString;
+	}
+	public static String setMyString(String newString){
+		myString = newString;
+		return myString;
+	}
+	
+	
+	/* ========= REGISTRATION METHODS ====== */
 	
 	public static String setMaster(Integer master){
 		System.out.println("Key Master : " + master);
@@ -89,7 +120,7 @@ public class JavaWsServer {
 		machines.put(lastPriority, ipAddress);
 		System.out.println("New Machine added with priority : " + lastPriority);
 		System.out.println("Total number of machines now :" + machines.size());
-		return machines.size();
+		return lastPriority;
 	}
 	
 	public static int addMachineToMap(String ipAddress, int priority){
@@ -105,6 +136,8 @@ public class JavaWsServer {
 		return machineIp;
 	}
 	
+	/* ========= SERVER SHUTDOWN METHODS ====== */
+	
 	public static void serverShutDown(){
 		Object[] params = new Object[] { myPriority };
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
@@ -117,6 +150,8 @@ public class JavaWsServer {
 		webServer.shutdown();
 		System.out.println("Server shutdown");
 	}
+	
+	/* ========= MAIN METHODS ====== */
 	
 	public static void main(String[] args) {
 		
@@ -134,6 +169,7 @@ public class JavaWsServer {
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
 			
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
+			serverConfig.setEnabledForExtensions(true);
 			webServer.start();
 			
 			//assign my IP
@@ -145,10 +181,12 @@ public class JavaWsServer {
 			keyMaster = myPriority;
 			
 			//join network
-			RegisterHandler.joinNetwork(myIpAddress);
+			//RegisterHandler.joinNetwork(myIpAddress);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
-				addMachineToMap(myIpAddress);
+				myPriority = addMachineToMap(myIpAddress);
+			} else {
+				myPriority = machines.lastKey();
 			}
 			
 			//wait for command
@@ -188,6 +226,8 @@ public class JavaWsServer {
 		}
 		
 	}
+	
+	/* ========= METHODS FOR TESTING ====== */
 	
 	public static String testConnection(String ipAddress, String command, Object[] params){
 		String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
