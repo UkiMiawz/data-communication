@@ -34,6 +34,7 @@ public class JavaWsServer {
 	
 	public TreeMap<Integer, String> getMachines(String ipAddress){
 		System.out.println(classNameLog + "Machines list request from " + ipAddress);
+		System.out.println(classNameLog + "Machines : " + machines);
 		return machines;
 	}
 	
@@ -169,7 +170,6 @@ public class JavaWsServer {
 			xmlRpcServer.setHandlerMapping(propHandlerMapping);
 			
 			XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
-			serverConfig.setEnabledForExtensions(true);
 			webServer.start();
 			
 			//assign my IP
@@ -188,6 +188,13 @@ public class JavaWsServer {
 			} else {
 				myPriority = machines.lastKey();
 			}
+			
+			//set myself as master if null
+			if(ipMaster == null){
+				setMaster(myPriority);
+			}
+			
+			System.out.println("Master IP now " + ipMaster);
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
