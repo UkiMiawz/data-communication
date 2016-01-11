@@ -21,8 +21,11 @@ public class JavaWsServer {
 	private static XmlRpcServer xmlRpcServer;
 	private static ElectionHelper electionHelper;
 	private static String classNameLog = "JavaWsServer : ";
-	private static PropertyHandlerMapping propHandlerMapping;
 	
+	private static PropertyHandlerMapping propHandlerMapping;
+	public static PropertyHandlerMapping getMapping(){
+		return propHandlerMapping;
+	}
 	
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	public static TreeMap<Integer, String> getMachines(){
