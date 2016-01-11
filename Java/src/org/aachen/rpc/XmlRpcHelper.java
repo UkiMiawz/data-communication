@@ -20,10 +20,10 @@ public class XmlRpcHelper {
 		try {
 			System.out.println("Connecting to " + ipAddress);
 			XmlRpcClient client;
-			System.out.println("XML-RPC Client call to : http://localhost:1090/xmlrpc/xmlrpc");
+			System.out.println("XML-RPC Client call to : http://" + ipAddress + ":1090/xmlrpc/xmlrpc");
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(
-					"http://localhost:1090/xml-rpc-example/xmlrpc"));
+					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
 			client = new XmlRpcClient();
 			client.setConfig(config);
 			return client;
@@ -38,15 +38,21 @@ public class XmlRpcHelper {
 	public static Object SendToOneMachine(String ipAddress, String command, Object[] params){
 		
 		try{
-			//send this machine IP address and priority
-			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-			config.setServerURL(new URL(
-					"http://"+ ipAddress + ":1090/xml-rpc-example/xmlrpc"));
-			XmlRpcClient client = new XmlRpcClient();
-			client.setConfig(config);
-			Object response = (Object) client.execute(command, params);
-			System.out.println("Message: " + response);
-			return response;
+			//don't send to self
+			String myIpAddress = InetAddress.getLocalHost().getHostAddress();
+			if(!ipAddress.equals(myIpAddress)){
+				//send this machine IP address and priority
+				XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+				config.setServerURL(new URL(
+						"http://"+ ipAddress + ":1090/xml-rpc-example/xmlrpc"));
+				XmlRpcClient client = new XmlRpcClient();
+				client.setConfig(config);
+				Object response = (Object) client.execute(command, params);
+				System.out.println("Message: " + response);
+				return response;
+			} else {
+				return "Sending to self is not permitable";
+			}
 		} catch (XmlRpcNoSuchHandlerException e){
 			return "Method not available";
 		} catch (XmlRpcException e) {
@@ -65,9 +71,11 @@ public class XmlRpcHelper {
 		
 		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
 			String ipAddress = entry.getValue();
-			  
+			
 			try {
-				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
+				//don't send to self
+				String myIpAddress = InetAddress.getLocalHost().getHostAddress();
+				if (!ipAddress.equals(myIpAddress) && InetAddress.getByName(ipAddress).isReachable(timeout)){
 					System.out.println("Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
 					  
 					  //check if machine is on
