@@ -19,7 +19,7 @@ public class HelloClient {
 	private static void connect(String ipAddress){
 		try {
 			
-			System.out.println("XML-RPC Client call to : http://" + ipAddress + ":1090/xmlrpc/xmlrpc");
+			System.out.println("XML-RPC Client call to : http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc");
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(
 					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
