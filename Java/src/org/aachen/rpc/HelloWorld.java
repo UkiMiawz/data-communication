@@ -1,5 +1,7 @@
 package org.aachen.rpc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class HelloWorld {
@@ -15,13 +17,42 @@ public class HelloWorld {
 		return response;
 	}
 	
-	public TreeMap<Integer, String> returnKeyMap(String ipAddress, int priority){
-		TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
-		machines.put(priority, ipAddress);
-		machines.put(1, "test1");
-		machines.put(3, "test3");
-		return machines;
+	public HashMap<String, String> returnKeyMap(String ipAddress, int priority){
+		System.out.println("Hashmap request from ip " + ipAddress + " with priority " + priority);
+		TreeMap<String, String> machines = new TreeMap<String, String>();
+		//machines.put(priority, ipAddress);
+		machines.put("1", "test1");
+		machines.put("3", "test3");
+		System.out.println("Machines number now " + machines.size());
+		HashMap<String, String> test = new HashMap<String, String>();
+		test.putAll(machines);
+		return test;
 	}
+	
+	public HashMap<String, String> returnKeyMap2(){
+		System.out.println("Hashmap request");
+		TreeMap<String, String> machines = new TreeMap<String, String>();
+		machines.put("1", "test1");
+		machines.put("3", "test3");
+		System.out.println("Machines number now " + machines.size());
+		HashMap<String, String> test = new HashMap<String, String>();
+		test.putAll(machines);
+		return test;
+	}
+	
+	/*public class Test{
+		public int networkPriority;
+		public String ipAddress;
+	}
+	
+	public Test[] returnKeyMap(String ipAddress, int priority){
+		System.out.println("Hashmap request from server " + ipAddress);
+		Test objectTest = new Test();
+		objectTest.ipAddress = ipAddress;
+		objectTest.networkPriority = priority;
+		Test[] testArray = new Test[] { objectTest };
+		return testArray;
+	}*/
 	
 	public int returnClassRequest(Request incomingRequest){
 		int clock = incomingRequest.getClock() + 1;

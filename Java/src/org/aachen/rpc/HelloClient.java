@@ -3,6 +3,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -22,7 +24,7 @@ public class HelloClient {
 			System.out.println("XML-RPC Client call to : http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc");
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(
-					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
+					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpchello"));
 			config.setEnabledForExtensions(true);
 			client = new XmlRpcClient();
 			client.setConfig(config);
@@ -63,17 +65,38 @@ public class HelloClient {
 		}
 	}
 	
+	public class Test{
+		public int networkPriority;
+		public String ipAddress;
+	}
+	
 	private static void printHashMap(){
-		connect("localhost");
 		Object[] params = new Object[]{ "localhost", 2 };
 		TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 		
 		try {
-			machines.putAll((HashMap<Integer, String>)client.execute("HelloWorld.returnKeyMap", params));
-			System.out.println(machines);
+			Object[] test = (Object[])client.execute("HelloWorld.returnKeyMap", params);
+			
+			//TODO PARSER
+			//check if contains string, if yes that mean it comes from C#
+			//parse like C#
+			System.out.println(Arrays.deepToString(test));
+			//machines.putAll((HashMap<Integer, String>)client.execute("HelloWorld.returnKeyMap", params));
+			
+			HashMap<Integer, String> testMap = (HashMap<Integer, String>)test[0];
+			System.out.println("Test map values : " + testMap.toString());
+			System.out.println(testMap.values());
+			
+			machines.putAll(testMap);
+			System.out.println("Machines value : " + machines.toString());
+			
+			//Test testString = (Test)test[0];
+			//System.out.println(testString.networkPriority);
 			for(Map.Entry<Integer,String> entry : machines.entrySet()) {
-				System.out.println(entry.getKey() + " " + entry.getValue());
+				System.out.println(entry.getKey().toString() + " " + entry.getValue().toString());
 			}
+			
+			//System.out.println("Machines count :" + machines.size());
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,6 +134,9 @@ public class HelloClient {
                 {
                     keepRunning = false;
                 } else if("map".equals(command)){
+                	System.out.println("Enter ip address: ");
+                	String ip =  reader.readLine();
+                	connect(ip);
                 	printHashMap();
                 } else if("request".equals(command)){
                 	printClassRequest();
