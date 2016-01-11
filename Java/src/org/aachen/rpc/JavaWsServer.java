@@ -3,7 +3,6 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -19,13 +18,11 @@ public class JavaWsServer {
 	private static final int PORT = 1090;
 	private static int timeout = 100;
 	private static WebServer webServer;
-	private static ElectionHelper electionHelper;
 	private static XmlRpcServer xmlRpcServer;
-	
+	private static ElectionHelper electionHelper;
+	private static String classNameLog = "JavaWsServer : ";
 	private static PropertyHandlerMapping propHandlerMapping;
-	public static PropertyHandlerMapping getMapping(){
-		return propHandlerMapping;
-	}
+	
 	
 	private static TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 	public static TreeMap<Integer, String> getMachines(){
@@ -33,7 +30,7 @@ public class JavaWsServer {
 	}
 	
 	public TreeMap<Integer, String> getMachines(String ipAddress){
-		System.out.println("Machines list request from " + ipAddress);
+		System.out.println(classNameLog + "Machines list request from " + ipAddress);
 		return machines;
 	}
 	
