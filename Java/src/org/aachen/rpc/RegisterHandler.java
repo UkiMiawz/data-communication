@@ -116,11 +116,11 @@ public class RegisterHandler {
 	
 	public String newMachineJoinNotification(String newIp, String callerIp){
 		System.out.println(classNameLog + "New machine notification " + newIp + " from " + callerIp);
-		addNewMachine(newIp, callerIp);
 		//inform all others
 		Object[] params = new Object[]{newIp, callerIp};
 		System.out.println(classNameLog + "Notification, telling all machines new machine IP ");
 		XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+		addNewMachine(newIp, callerIp);
 		return "Notification from " + callerIp + " Machine added " + newIp;
 	}
 	
@@ -138,8 +138,7 @@ public class RegisterHandler {
 				//if master is me, send to all other machines to add new machine
 				//add new machine to map
 				System.out.println(classNameLog + "Master is me, add new machine, send new ip");
-				XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
-				addNewMachine(ipAddress, myIp);
+				newMachineJoinNotification(ipAddress, myIp);
 			} else {
 				System.out.println(classNameLog + "I'm not master. Send notification to master");
 				//inform master and let master handle
