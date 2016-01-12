@@ -7,46 +7,48 @@ import java.util.TreeMap;
 
 public class ElectionHelper {
 	
-	private static int timeout = 200;
+	private static String classNameLog = "ElectionHelper : ";
 	
 	public String leaderElection(String ip) {
 		
-		System.out.println("Leader election on ip " + ip);
+		System.out.println(classNameLog + "Leader election on ip " + ip);
 		//get machines
+		System.out.println(classNameLog + "Get machines");
 		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
-		//get master
-		int keyMaster = JavaWsServer.getKeyMaster();
-		String ipMaster = JavaWsServer.getIpMaster();
+		System.out.println(machines);
 		
-		//check machines validity, remove unactive machines
+		//get own ip and priority
+		String myIp = JavaWsServer.getMyIpAddress();
+		int myPriority = JavaWsServer.getMyPriority();
+		System.out.println(classNameLog + "My IP =>" + myIp + " My Priority => " + myPriority);
 		
+		//TODO check machines validity, remove unactive machines
 		
-		//check if IP master not LocalHost and still active
-		try {
-			if(!ipMaster.equals(InetAddress.getLocalHost().getHostAddress()) && InetAddress.getByName(ipMaster).isReachable(timeout))
-			{
-				//put master back in machines for election
-				JavaWsServer.addMachineToMap(ipMaster, keyMaster);
-				machines.put(keyMaster, ipMaster);
-			}
-		} catch (UnknownHostException e) {
-			System.out.println("Leader Election: Unknown host from localhost");
-		} catch (IOException e) {
-			System.out.println("Leader Election: Get by name failed");
+		System.out.println(classNameLog + "Start Bully algorithm");
+		Bully bullyGenerator = new Bully(machines);
+		boolean iGaveUp = bullyGenerator.holdElection(myPriority);
+		
+		if(!iGaveUp){
+			//I'm the master, send message to all
+	    	int newKeyMaster = myPriority;
+			String newLeaderIp = JavaWsServer.setMaster(newKeyMaster);
+			System.out.println(classNameLog + "New Leader IP =>" + newLeaderIp + " New Leader Priority => " + newKeyMaster);
+			
+			Object[] params = new Object[] { newKeyMaster };
+			XmlRpcHelper.SendToAllMachines(machines, "Election.setNewLeader", params);
+			System.out.println(classNameLog + "New leader notification send to all");
 		}
 		
-		Bully bullyGenerator = new Bully(machines);
-		bullyGenerator.holdElection(1);
-		Integer newKeyMaster = bullyGenerator.getMaster();
-		String newLeaderIp = JavaWsServer.setMaster(newKeyMaster);
-		Object[] params = new Object[] { newLeaderIp };
-		
-		XmlRpcHelper.SendToAllMachines(machines, "Election.setNewLeader", params);
 		
 		//send new master to everyone
-		return newLeaderIp;
+		return JavaWsServer.getIpMaster();
 	}
 	
+	/****
+	 * Receiving end for new leader notification
+	 * @param keyMaster - new master key
+	 * @return
+	 */
 	public String setNewLeader(int keyMaster){
 		String newMaster = JavaWsServer.setMaster(keyMaster);
 		return "Leader set to machine with IP : " + newMaster;

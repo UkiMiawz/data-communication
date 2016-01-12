@@ -102,8 +102,6 @@ public class JavaWsServer {
 		keyMaster = master;
 		ipMaster = machines.get(keyMaster);
 		System.out.println(classNameLog + "IP Master : " + ipMaster);
-		//remove master from map
-		//machines.remove(keyMaster);
 		return ipMaster;
 	}
 	

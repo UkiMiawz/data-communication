@@ -19,7 +19,7 @@ public class JavaWsClient {
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
-			String response = (String) client.execute("Election.leaderElection", params);
+			String response = (String) localClient.execute("Election.leaderElection", params);
 			System.out.println("Message : " + response);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -133,8 +133,7 @@ public class JavaWsClient {
         	System.out.println("4. Do election");
         	System.out.println("5. Ricart Agrawala Mutual Exclusion");
         	System.out.println("6. Centralized Mutual Exclusion");
-        	
-        	//TODO Rejoin network
+        	//TODO Rejoin Network
         	System.out.println("7. Rejoin Network");
         	System.out.println("99. Logout and shutdown server");
         	System.out.println("0. Exit");
