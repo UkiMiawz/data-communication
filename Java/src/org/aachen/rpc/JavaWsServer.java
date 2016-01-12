@@ -195,12 +195,13 @@ public class JavaWsServer {
 			
 			
 			//join network
-			//RegisterHandler.joinNetwork(myIpAddress);
+			RegisterHandler.joinNetwork(myIpAddress);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
 				myPriority = addMachineToMap(myIpAddress);
 			} else {
-				myPriority = machines.lastKey();
+				//get priority
+				myPriority = Helper.getKeyByValue(machines, myIpAddress);
 			}
 			
 			//set myself as master if null
