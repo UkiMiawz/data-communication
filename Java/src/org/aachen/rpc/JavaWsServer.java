@@ -39,7 +39,14 @@ public class JavaWsServer {
 	}
 	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
-		machines = newMachines;
+		for(Map.Entry<Integer,String> entry : newMachines.entrySet()) {
+			System.out.println(entry.getKey() + " " + entry.getValue());
+			Object priorityObj = entry.getKey();
+			String priorityStr = (String) priorityObj;
+			int priority = Integer.parseInt(priorityStr);
+			String value = entry.getValue();
+			machines.put(priority, value);
+		}
 	}
 	
 	private static InetAddress myIp;
@@ -91,12 +98,12 @@ public class JavaWsServer {
 	/* ========= REGISTRATION METHODS ====== */
 	
 	public static String setMaster(Integer master){
-		System.out.println("Key Master : " + master);
+		System.out.println(classNameLog + "Key Master : " + master);
 		keyMaster = master;
 		ipMaster = machines.get(keyMaster);
-		System.out.println("IP Master : " + ipMaster);
+		System.out.println(classNameLog + "IP Master : " + ipMaster);
 		//remove master from map
-		machines.remove(keyMaster);
+		//machines.remove(keyMaster);
 		return ipMaster;
 	}
 	
@@ -117,17 +124,27 @@ public class JavaWsServer {
 	}
 	
 	public static int addMachineToMap(String ipAddress){
-		lastPriority += 1;
-		machines.put(lastPriority, ipAddress);
-		System.out.println("New Machine added with priority : " + lastPriority);
-		System.out.println("Total number of machines now :" + machines.size());
+		if(!machines.containsValue(ipAddress)){
+			lastPriority += 1;
+			machines.put(lastPriority, ipAddress);
+			System.out.println(classNameLog + "New Machine added with priority : " + lastPriority);
+			System.out.println(classNameLog + "Total number of machines now :" + machines.size());
+		} else {
+			System.out.println(classNameLog + "Machine already in the map" + ipAddress);
+		}
+		
 		return lastPriority;
 	}
 	
 	public static int addMachineToMap(String ipAddress, int priority){
-		machines.put(priority, ipAddress);
-		System.out.println("New Machine added with priority : " + priority);
-		System.out.println("Total number of machines now :" + machines.size());
+		if(!machines.containsValue(ipAddress)){
+			machines.put(priority, ipAddress);
+			System.out.println(classNameLog + "New Machine added with priority : " + priority);
+			System.out.println(classNameLog + "Total number of machines now :" + machines.size());
+		} else {
+			System.out.println(classNameLog + "Machine already in the map" + ipAddress);
+		}
+		
 		return machines.size();
 	}
 	
@@ -176,12 +193,9 @@ public class JavaWsServer {
 			myIp=InetAddress.getLocalHost();
 			myIpAddress = myIp.getHostAddress();
 			
-			//automatically set self as master
-			ipMaster = myIpAddress;
-			keyMaster = myPriority;
 			
 			//join network
-			RegisterHandler.joinNetwork(myIpAddress);
+			//RegisterHandler.joinNetwork(myIpAddress);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
 				myPriority = addMachineToMap(myIpAddress);
@@ -190,11 +204,15 @@ public class JavaWsServer {
 			}
 			
 			//set myself as master if null
-			if(ipMaster == null){
+			if(ipMaster.equals("localhost")){
 				setMaster(myPriority);
 			}
 			
-			System.out.println("Master IP now " + ipMaster);
+			System.out.println(classNameLog + "Master IP now " + ipMaster);
+			System.out.println(classNameLog + "Master Key now " + keyMaster);
+			System.out.println(classNameLog + "My IP now " + myIpAddress);
+			System.out.println(classNameLog + "My priority now " + myPriority);
+			System.out.println(classNameLog + "Machines now " + machines);
 			
 			//wait for command
 			BufferedReader reader = new BufferedReader(new InputStreamReader(

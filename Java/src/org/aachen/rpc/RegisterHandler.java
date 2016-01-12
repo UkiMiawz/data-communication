@@ -25,7 +25,9 @@ public class RegisterHandler {
 	
 	public TreeMap<Integer, String> getMachines(String callerIp){
 		System.out.println(classNameLog + callerIp + " requesting hashmap machines");
-		return JavaWsServer.getMachines();
+		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
+		System.out.println(classNameLog + machines);
+		return machines;
 	}
 	
 	public static void joinNetwork(String ipAddress) {
@@ -136,8 +138,8 @@ public class RegisterHandler {
 				//if master is me, send to all other machines to add new machine
 				//add new machine to map
 				System.out.println(classNameLog + "Master is me, add new machine, send new ip");
-				addNewMachine(ipAddress, myIp);
 				XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+				addNewMachine(ipAddress, myIp);
 			} else {
 				System.out.println(classNameLog + "I'm not master. Send notification to master");
 				//inform master and let master handle
