@@ -40,8 +40,8 @@ class XmlrpcClient
                         // Menu 1: Show master hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] networkHashMap = localProxy.ShowNetworkHashMap();
-                        
+                        NetworkMapStruct[] networkHashMap = localProxy.GetNetworkHashMap();
+
                         Console.WriteLine("The Masternode hashmap");
                         foreach (NetworkMapStruct ipItem in networkHashMap)
                         {
@@ -55,7 +55,7 @@ class XmlrpcClient
                         // Menu 1: Show local hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] localhostHashMap = localProxy.ShowNetworkHashMap(true);
+                        NetworkMapStruct[] localhostHashMap = localProxy.GetNetworkHashMap(true);
 
                         Console.WriteLine("The localhost hashmap");
                         foreach (NetworkMapStruct ipItem in localhostHashMap)
@@ -103,6 +103,13 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
+                    case "7":
+                        // Menu 7: Rejoining Network.
+                        localProxy.joinNetwork(ipAddress);
+                        Console.WriteLine("You successfully rejoin the network!!");
+                        Console.ReadKey();
+                        break;
+
                     case "14":
                         // Menu 4: add new message.
                         localProxy.checkMasterStatus();
@@ -117,16 +124,11 @@ class XmlrpcClient
                         localProxy.checkMasterStatus();
 
                         Console.WriteLine("===== Start of messages ===== ");
-                        string[] groupMessages = localProxy.getMessages();
-                        foreach (string msg in groupMessages)
-                        {
-                            Console.WriteLine("{0}", msg);
-                        }
+                        string groupMessages = localProxy.getMessages();
+                        Console.WriteLine("{0}", groupMessages);
                         Console.WriteLine("===== End of messages =====");
                         Console.ReadKey();
                         break;
-
-                    
 
                     case "17":
                         // Menu 7: show current Lamport clock.
@@ -137,7 +139,7 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    
+
                 }
             }
             while (input != "0");

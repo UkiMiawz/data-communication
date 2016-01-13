@@ -25,7 +25,6 @@ public class ClientUI
         Console.WriteLine("Un-official menu");
         Console.WriteLine("14. Send message to server");
         Console.WriteLine("15. Get message from server");
-        Console.WriteLine("16. Do Election");
         Console.WriteLine("17. Get local Lamport Clock");
                
         Console.Write("Enter your choice: ");

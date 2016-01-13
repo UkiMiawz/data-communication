@@ -24,7 +24,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         DefaultMasterNode = MyIpAddress;
 
         // default group messages
-        GroupMessages = new List<string>();
+        GroupMessages = string.Empty;
 
         // default master proxy
         MasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
@@ -60,7 +60,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string ServerUrlEnd = ":1090/networkServer.rem";
     public string DefaultMasterNode;
     public string MyIpAddress;
-    public List<string> GroupMessages;
+    public string GroupMessages;
     public INetworkServerClientProxy MasterProxy;
     public INetworkServerClientProxy LocalProxy;
     public LamportClock localLamportClock;
@@ -179,7 +179,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         
         if (CurrentMasterNode == DefaultMasterNode)
         {
-            GroupMessages.Add(newMessage);
+            GroupMessages = GroupMessages + " " + newMessage;
         }
         else
         {
@@ -187,12 +187,12 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public string[] getMessages()
+    public string getMessages()
     {
        
         if (CurrentMasterNode == DefaultMasterNode)
         {
-            return ConvertListToStruct(GroupMessages);
+            return GroupMessages;
         }
         else
         {
@@ -200,7 +200,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public NetworkMapStruct[] ShowNetworkHashMap(bool DoItLocally = false)
+    public NetworkMapStruct[] GetNetworkHashMap(bool DoItLocally = false)
     {
         
         if (CurrentMasterNode == DefaultMasterNode || DoItLocally == true)
@@ -210,7 +210,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
         else
         {
-            return MasterProxy.ShowNetworkHashMap(false);
+            return MasterProxy.GetNetworkHashMap(false);
         }
     }
 
@@ -233,7 +233,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
         else
         {
-            MasterProxy.ShowNetworkHashMap(false);
+            MasterProxy.GetNetworkHashMap(false);
         }
     }
 
@@ -300,13 +300,14 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         if (CurrentMasterNode == "")
         {
             CurrentMasterNode = DefaultMasterNode;
+            newMachineJoin(ipAddress);
         }
 
         // step 2: Asking the updated map from master node
         try
         {
             MasterProxy.Url = ServerUrlStart + CurrentMasterNode + ServerUrlEnd;
-            NetworkMapStruct[] newMap = MasterProxy.ShowNetworkHashMap();
+            NetworkMapStruct[] newMap = MasterProxy.GetNetworkHashMap();
             NetworkHashMap = ConvertStructToDictionary(newMap);
         }
         catch (Exception ex)
@@ -331,8 +332,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     }    
 
     public void joinNetworkDummy(string ipAddress)
-    {
-       
+    {       
         // step 1: ping all neighbor
         NetworkPingService nps = new NetworkPingService();
         nps.DetectAllNetwork(ipAddress);
@@ -384,7 +384,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             MasterProxy.newMachineJoin(ipAddress);
 
-            NetworkMapStruct[] newHashmap = MasterProxy.ShowNetworkHashMap(false);
+            NetworkMapStruct[] newHashmap = MasterProxy.GetNetworkHashMap(false);
             NetworkHashMap = ConvertStructToDictionary(newHashmap);
         }
         catch (Exception ex)
@@ -405,7 +405,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("New master Node is : {0}" + newMasterIp);
 
             //update Hash map from Master
-            NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap(false);
+            NetworkMapStruct[] updatedMap = MasterProxy.GetNetworkHashMap(false);
             NetworkHashMap.Clear();
             NetworkHashMap = ConvertStructToDictionary(updatedMap);
             Console.WriteLine("local hashmap has been updated from new master node.");
@@ -424,7 +424,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string receiveElectionSignal(string senderIP)
     {
         IAsyncResult asr;
-        asr = LocalProxy.BeginDoLocalElection(null, null);
+        asr = LocalProxy.BeginDoLocalElection();
         while (asr.IsCompleted == false)
         {
             return "Ok";
@@ -457,6 +457,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public void DoLocalElection()
     {
+        Console.WriteLine("An election is held!!!");
         Bully bullyObj = new Bully();
         string newMaster = bullyObj.doElection(MyIpAddress, NetworkHashMap);
 

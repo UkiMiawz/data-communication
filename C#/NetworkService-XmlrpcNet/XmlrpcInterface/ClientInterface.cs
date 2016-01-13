@@ -7,72 +7,66 @@ using System.Threading.Tasks;
 
 public interface INetworkServerClientProxy : IXmlRpcProxy
 {
-    [XmlRpcMethod("showNetworkHashMap")]
-    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false);
+    [XmlRpcMethod(GlobalMethodName.GetNetworkHashMap)]
+    NetworkMapStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
 
-    [XmlRpcMethod("newMachineJoin")]
+    [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     void newMachineJoin(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("neighborAskToJoin")]
+    [XmlRpcMethod(GlobalMethodName.neighborAskToJoin)]
     string NeighborAskToJoin(string senderIpAddress);
 
-    [XmlRpcMethod("getIpMaster")]
+    [XmlRpcMethod(GlobalMethodName.getIpMaster)]
     string getIpMaster(string callerIp);
 
-    [XmlRpcMethod("joinNetwork")]
+    [XmlRpcMethod(GlobalMethodName.joinNetwork)]
     void joinNetwork(string ipAddress);
 
-    [XmlRpcMethod("removeMachine")]
+    [XmlRpcMethod(GlobalMethodName.removeMachine)]
     void removeMachine(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("addNewMessage")]
+    [XmlRpcMethod(GlobalMethodName.addNewMessage)]
     void addNewMessage(string newMessage);
 
-    [XmlRpcMethod("getMessages")]
-    string[] getMessages();
+    [XmlRpcMethod(GlobalMethodName.getMessages)]
+    string getMessages();
 
-    [XmlRpcMethod("changeMaster")]
+    [XmlRpcMethod(GlobalMethodName.changeMaster)]
     void changeMaster(string newMasterIp);
 
-    [XmlRpcMethod("getCurrentLamportClock")]
+    [XmlRpcMethod(GlobalMethodName.getCurrentLamportClock)]
     int getCurrentLamportClock();
 
-    [XmlRpcMethod("receiveElectionSignal")]
+    [XmlRpcMethod(GlobalMethodName.receiveElectionSignal)]
     string receiveElectionSignal(string senderIP);
 
-    [XmlRpcMethod("checkMasterStatus")]
+    [XmlRpcMethod(GlobalMethodName.checkMasterStatus)]
     void checkMasterStatus();
 
-    [XmlRpcMethod("DoLocalElection")]
+    [XmlRpcMethod(GlobalMethodName.doLocalElection)]
     void DoLocalElection();
 
-    [XmlRpcBegin("DoLocalElection")]
+    [XmlRpcBegin(GlobalMethodName.doLocalElection)]
     IAsyncResult BeginDoLocalElection();
 
-    [XmlRpcBegin("DoLocalElection")]
-    IAsyncResult BeginDoLocalElection(AsyncCallback acb);
-
-    [XmlRpcBegin("DoLocalElection")]
-    IAsyncResult BeginDoLocalElection(AsyncCallback acb, object state);
-
-    [XmlRpcEnd("DoLocalElection")]
+    [XmlRpcEnd(GlobalMethodName.doLocalElection)]
     void EndDoLocalElection(IAsyncResult iars);
 
-    [XmlRpcMethod("MutualExclusion.SendMERequest")]
+    [XmlRpcMethod(GlobalMethodName.MESendRequest)]
     bool SendMERequestToServer(string methodName, string parameter);
 
-    [XmlRpcBegin("MutualExclusion.ReceiveMEReply")]
+    [XmlRpcBegin(GlobalMethodName.MEReceiveReply)]
     IAsyncResult BeginReceiveMEReply();
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMEReply")]
+    [XmlRpcMethod(GlobalMethodName.MEReceiveReply)]
     void ReceiveMEReply();
 
-    [XmlRpcEnd("MutualExclusion.ReceiveMEReply")]
+    [XmlRpcEnd(GlobalMethodName.MEReceiveReply)]
     void EndReceiveMEReply(IAsyncResult iars);
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
+    [XmlRpcMethod(GlobalMethodName.MEReceiveRequest)]
     string ReceiveMERequest(string ipAddress);
 
-    [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
+    [XmlRpcMethod(GlobalMethodName.MEAccessCriticalPart)]
     void AccessCriticalPart(string senderIP, string methodName, string parameter = "");
 }

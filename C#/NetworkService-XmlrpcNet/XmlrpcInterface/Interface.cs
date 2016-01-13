@@ -9,55 +9,55 @@ public struct NetworkMapStruct
 
 public interface INetworkServer 
 {
-    [XmlRpcMethod("showNetworkHashMap")]
-    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false);
+    [XmlRpcMethod(GlobalMethodName.GetNetworkHashMap)]
+    NetworkMapStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
 
-    [XmlRpcMethod("newMachineJoin")]
+    [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     void newMachineJoin(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("neighborAskToJoin")]
+    [XmlRpcMethod(GlobalMethodName.neighborAskToJoin)]
     string NeighborAskToJoin(string senderIpAddress);
 
-    [XmlRpcMethod("getIpMaster")]
+    [XmlRpcMethod(GlobalMethodName.getIpMaster)]
     string getIpMaster(string callerIp);
 
-    [XmlRpcMethod("joinNetwork")]
+    [XmlRpcMethod(GlobalMethodName.joinNetwork)]
     void joinNetwork(string ipAddress);
 
-    [XmlRpcMethod("removeMachine")]
+    [XmlRpcMethod(GlobalMethodName.removeMachine)]
     void removeMachine(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("addNewMessage")]
+    [XmlRpcMethod(GlobalMethodName.addNewMessage)]
     void addNewMessage(string newMessage);
 
-    [XmlRpcMethod("getMessages")]
-    string[] getMessages();
+    [XmlRpcMethod(GlobalMethodName.getMessages)]
+    string getMessages();
     
-    [XmlRpcMethod("changeMaster")]
+    [XmlRpcMethod(GlobalMethodName.changeMaster)]
     void changeMaster(string newMasterIp);
 
-    [XmlRpcMethod("getCurrentLamportClock")]
+    [XmlRpcMethod(GlobalMethodName.getCurrentLamportClock)]
     int getCurrentLamportClock();
 
-    [XmlRpcMethod("receiveElectionSignal")]
+    [XmlRpcMethod(GlobalMethodName.receiveElectionSignal)]
     string receiveElectionSignal(string senderIP);
 
-    [XmlRpcMethod("DoLocalElection")]
+    [XmlRpcMethod(GlobalMethodName.doLocalElection)]
     void DoLocalElection();
 
-    [XmlRpcMethod("checkMasterStatus")]
+    [XmlRpcMethod(GlobalMethodName.checkMasterStatus)]
     void checkMasterStatus();
 
-    [XmlRpcMethod("MutualExclusion.SendMERequest")]
+    [XmlRpcMethod(GlobalMethodName.MESendRequest)]
     bool SendMERequestToServer(string methodName, string parameter);
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMEReply")]
+    [XmlRpcMethod(GlobalMethodName.MEReceiveReply)]
     void ReceiveMEReply();
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
+    [XmlRpcMethod(GlobalMethodName.MEReceiveRequest)]
     string ReceiveMERequest(string ipAddress);
 
-    [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
+    [XmlRpcMethod(GlobalMethodName.MEAccessCriticalPart)]
     void AccessCriticalPart(string senderIP, string methodName, string parameter = "");   
 }
 
