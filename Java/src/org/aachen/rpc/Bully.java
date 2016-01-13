@@ -4,6 +4,10 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.TreeMap;
 
+import org.apache.xmlrpc.XmlRpcRequest;
+import org.apache.xmlrpc.client.AsyncCallback;
+import org.apache.xmlrpc.client.XmlRpcClient;
+
 public class Bully {
 	
 	private TreeMap<Integer, String> machines;
@@ -22,6 +26,20 @@ public class Bully {
     	System.out.println(classNameLog + "New instance of bully generator with machines " + machines);
     	System.out.println(classNameLog + "Key values array" + positionValue);
     	myIp = JavaWsServer.getMyIpAddress();
+    }
+    
+    private class callBack implements AsyncCallback{
+
+		@Override
+		public void handleError(XmlRpcRequest arg0, Throwable arg1) {
+			System.out.println(classNameLog + "Async call failed");
+		}
+
+		@Override
+		public void handleResult(XmlRpcRequest arg0, Object arg1) {
+			System.out.println(classNameLog + "success");
+		}
+    	
     }
 	
 	public boolean holdElection(int thisMachinePriority)
@@ -42,11 +60,15 @@ public class Bully {
 	                	holdElection(i+1);
 	                	Object[] params = new Object[]{ myIp };
 	                	try{
-	                		boolean response = (boolean)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, "Election.leaderElection", params);
+	                		//test if bigger node able to do election
+	                		boolean response = (boolean)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, "Election.checkLeaderValidity", params);
 	                		if(response){
 	                			//gave up election
 	                			System.out.println(classNameLog + "Someone bigger answer, I gave up");
 	                			gaveUp = true;
+	                			//trigger election in bigger node
+	                			XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress);
+	                			client.executeAsync("Election.leaderElection", params, new callBack());
 	                			break;
 	                		}
 	                	} catch (Exception exception){

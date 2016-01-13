@@ -53,5 +53,14 @@ public class ElectionHelper {
 		String newMaster = JavaWsServer.setMaster(keyMaster);
 		return "Leader set to machine with IP : " + newMaster;
 	}
-
+	
+	/***
+	 * Method to check for machine availability and the trigger leader election on machine
+	 * @param ip - requester ip
+	 * @return
+	 */
+	public boolean checkLeaderValidity(String ip){
+		System.out.println(classNameLog + ip + " asking for leader election. I am available. Returning true.");
+		return true;
+	}
 }

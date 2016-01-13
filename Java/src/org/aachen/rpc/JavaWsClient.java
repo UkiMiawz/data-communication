@@ -20,7 +20,7 @@ public class JavaWsClient {
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
 			String response = (String) localClient.execute("Election.leaderElection", params);
-			System.out.println("Message : " + response);
+			System.out.println("Election Result : " + response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
