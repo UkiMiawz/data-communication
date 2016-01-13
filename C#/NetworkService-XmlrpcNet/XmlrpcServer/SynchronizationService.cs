@@ -52,11 +52,11 @@ public class MutualExclusion
         CurrentStatus = MEStatus.Available;
     }
 
-    public string TryToAccess(string ipAddress, int inputLamportClock)
+    public string TryToAccess(string ipAddress)
     {
         if (CurrentStatus == MEStatus.InProgress || QueueList.Count > 0)
         {
-            QueueList.Add(inputLamportClock, ipAddress);
+            QueueList.Add(QueueList.Keys.Max() + 1, ipAddress);
             QueueList.OrderBy(x => x.Key);
             CurrentStatus = MEStatus.InProgress;
             return MEStatus.InProgress;

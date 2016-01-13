@@ -10,31 +10,31 @@ public struct NetworkMapStruct
 public interface INetworkServer 
 {
     [XmlRpcMethod("showNetworkHashMap")]
-    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false,int inputLamportClock = 0);
+    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false);
 
     [XmlRpcMethod("newMachineJoin")]
-    void newMachineJoin(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
+    void newMachineJoin(string ipAddress, bool DoItLocally = false);
 
     [XmlRpcMethod("neighborAskToJoin")]
     string NeighborAskToJoin(string senderIpAddress);
 
     [XmlRpcMethod("getIpMaster")]
-    string getIpMaster(string callerIp, int inputLamportClock = 0);
+    string getIpMaster(string callerIp);
 
     [XmlRpcMethod("joinNetwork")]
-    void joinNetwork(string ipAddress, int inputLamportClock = 0);
+    void joinNetwork(string ipAddress);
 
     [XmlRpcMethod("removeMachine")]
-    void removeMachine(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
+    void removeMachine(string ipAddress, bool DoItLocally = false);
 
     [XmlRpcMethod("addNewMessage")]
-    void addNewMessage(string newMessage, int inputLamportClock = 0);
+    void addNewMessage(string newMessage);
 
     [XmlRpcMethod("getMessages")]
-    string[] getMessages(int inputLamportClock = 0);
+    string[] getMessages();
     
     [XmlRpcMethod("changeMaster")]
-    void changeMaster(string newMasterIp, int inputLamportClock = 0);
+    void changeMaster(string newMasterIp);
 
     [XmlRpcMethod("getCurrentLamportClock")]
     int getCurrentLamportClock();
@@ -55,9 +55,9 @@ public interface INetworkServer
     void ReceiveMEReply();
 
     [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
-    string ReceiveMERequest(string ipAddress, int inputLamportClock);
+    string ReceiveMERequest(string ipAddress);
 
     [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
-    void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0);   
+    void AccessCriticalPart(string senderIP, string methodName, string parameter = "");   
 }
 

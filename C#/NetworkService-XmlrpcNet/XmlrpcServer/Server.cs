@@ -27,7 +27,6 @@ class XmlrpcServer
             new XmlRpcServerFormatterSinkProvider());
         ChannelServices.RegisterChannel(channel, false);
 
-
         RemotingConfiguration.RegisterWellKnownServiceType(
             typeof(HelloWorldService),
             "xml-rpc-example/xmlrpchello",
@@ -37,6 +36,7 @@ class XmlrpcServer
             typeof(NetworkServer),
             "xml-rpc-example/xmlrpc",
             WellKnownObjectMode.Singleton);
+
         Console.WriteLine("=====Xmlrpc-Server=====");
         Console.WriteLine("type 'exit' to end server");
         do

@@ -8,10 +8,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+
+public struct getMapResponse
+{
+    //public object Result;
+    public string key;    
+    public string value;
+}
+
 public interface IHelloWorld : IXmlRpcProxy
 {
     [XmlRpcMethod("HelloWorld.hello")]
     string HelloWorld(string ipAddress);
+
+    [XmlRpcMethod("HelloWorld.returnKeyMap")]
+    object getMap(string ipAddress, int priority);     
 }
 
 class HelloWorldConsoleClient
@@ -28,9 +39,16 @@ class HelloWorldConsoleClient
         string javaServer = "http://172.16.1.100:1090/xml-rpc-example/xmlrpc";
 
         IHelloWorld localProxy = XmlRpcProxyGen.Create<IHelloWorld>();
-        localProxy.Url = defaultServer;
+        localProxy.Url = javaServer;
 
         Console.WriteLine("{0}", localProxy.HelloWorld(ipAddress));
+
+        object myObject = localProxy.getMap(ipAddress, 1);
+
+        //foreach (KeyValuePair<int, string> mapDetail in newHashmap)
+        //{
+        //    Console.WriteLine("priority {0} : {1}", mapDetail.Key, mapDetail.Value);
+        //}
         Console.ReadKey();
     }
 }
