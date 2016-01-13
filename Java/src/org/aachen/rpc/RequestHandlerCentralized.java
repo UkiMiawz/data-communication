@@ -5,14 +5,11 @@ import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.client.AsyncCallback;
-import org.apache.xmlrpc.client.XmlRpcClient;
 
 public class RequestHandlerCentralized {
 
 	private static List<Request> queue;
 	private static String classNameLog = "RequestHandlerCentralized : ";
-	
-	private static int timeout = 200;
 	private static ResourceHandler resourceHandler;
 	
 	private static String masterIp;
@@ -71,7 +68,6 @@ public class RequestHandlerCentralized {
 		System.out.println(classNameLog + "Initiating resource handler. Want to write => " + wantWrite);
 		resourceHandler = new ResourceHandler();
 		this.wantWrite = wantWrite;
-		System.out.println(classNameLog + "Initiating clients for localhost and master");
 		
 		return sendRequest(wantWrite);
 	}

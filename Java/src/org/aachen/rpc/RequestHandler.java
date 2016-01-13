@@ -3,17 +3,18 @@ package org.aachen.rpc;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.TreeMap;
+
+import org.apache.xmlrpc.XmlRpcRequest;
+import org.apache.xmlrpc.client.AsyncCallback;
 
 public class RequestHandler {
 	
 	private static TreeMap<Integer, String> expectedRequestIps;
 	private static TreeMap<Integer, String> differedRequestIps;
 	private static LogicalClock localClock;
-	private static int timeout = 200;
+	private static int timeout = 3000;
 	private static ResourceHandler resourceHandler;
 	private static String classNameLog = "RequestHandler : ";
 	
@@ -30,13 +31,42 @@ public class RequestHandler {
 	
 	private int myKey;
 	
+	/**
+	 * class to handle async call back for ricart agrawala mutual exclusion
+	 * @author ukimiawz
+	 *
+	 */
+	private class CallBack implements AsyncCallback {
+		private String classNameLog = "callBack Ricart Agrawala : ";
+
+		@Override
+		public void handleError(XmlRpcRequest arg0, Throwable arg1) {
+			System.out.println(classNameLog + "Ricart Agrawala Async call failed");
+		}
+
+		@Override
+		public void handleResult(XmlRpcRequest arg0, Object arg1) {
+			System.out.println(classNameLog + "Ricart Agrawala Async call success");
+		}
+	}
+	
 	public String startMessage(boolean wantWrite){
-		System.out.println("Start string append");
-		//start sync, send messages to all nodes
+		
+		System.out.println(classNameLog + "Start mutual exclusion process");
 		masterIp = JavaWsServer.getIpMaster();
 		myIp = JavaWsServer.getMyIpAddress();
 		machines = JavaWsServer.getMachines();
 		myKey = JavaWsServer.getMyPriority();
+		System.out.println(classNameLog + "Master IP =>" + masterIp);
+		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
+		
+		//contact all machines to start
+		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
+		System.out.println(classNameLog + "Contacting all nodes " + machines);
+		Object[] params = new Object[]{true};
+		XmlRpcHelper.SendToAllMachinesAsync(machines, "Request.startMessage", params, new CallBack());
+		
+		System.out.println(classNameLog + "Initiating resource handler. Want to write => " + wantWrite);
 		resourceHandler = new ResourceHandler();
 		this.wantWrite = wantWrite;
 		return sendRequest();
@@ -187,19 +217,24 @@ public class RequestHandler {
 		}
 	}
 	
+	/*==== Machine array management ====*/
+	
 	private void removeMachineFromExpected(int machineKey){
+		System.out.println(classNameLog + "Remove machine key from expected request list => " + machineKey);
 		if(expectedRequestIps.containsKey(machineKey)){
 			expectedRequestIps.remove(machineKey);
 		}
 	}
 	
 	private void addMachineToDiffered(int machineKey, String ipAddress){
+		System.out.println(classNameLog + "Add machine key to differed request list => " + machineKey);
 		if(!differedRequestIps.containsKey(machineKey)){
 			differedRequestIps.put(machineKey, ipAddress);
 		}
 	}
 	
 	private void removeMachineFromDiffered(int machineKey){
+		System.out.println(classNameLog + "Remove machine key from differed request list => " + machineKey);
 		if(differedRequestIps.containsKey(machineKey)){
 			differedRequestIps.remove(machineKey);
 		}
