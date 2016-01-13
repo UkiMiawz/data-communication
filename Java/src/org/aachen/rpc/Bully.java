@@ -1,7 +1,6 @@
 package org.aachen.rpc;
 
 import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -28,18 +27,18 @@ public class Bully {
     	myIp = JavaWsServer.getMyIpAddress();
     }
     
-    private class callBack implements AsyncCallback{
+    private class CallBack implements AsyncCallback {
+    	private String classNameLog = "callBack Bully : ";
 
-		@Override
-		public void handleError(XmlRpcRequest arg0, Throwable arg1) {
-			System.out.println(classNameLog + "Async call failed");
-		}
+    	@Override
+    	public void handleError(XmlRpcRequest arg0, Throwable arg1) {
+    		System.out.println(classNameLog + "Bully Async call failed");
+    	}
 
-		@Override
-		public void handleResult(XmlRpcRequest arg0, Object arg1) {
-			System.out.println(classNameLog + "success");
-		}
-    	
+    	@Override
+    	public void handleResult(XmlRpcRequest arg0, Object arg1) {
+    		System.out.println(classNameLog + "Bully Async call success");
+    	}
     }
 	
 	public boolean holdElection(int thisMachinePriority)
@@ -67,9 +66,8 @@ public class Bully {
 	                			System.out.println(classNameLog + "Someone bigger answer, I gave up");
 	                			gaveUp = true;
 	                			//trigger election in bigger node
+	                			XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", params, new CallBack());
 	                			XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress);
-	                			client.executeAsync("Election.leaderElection", params, new callBack());
-	                			break;
 	                		}
 	                	} catch (Exception exception){
 	                		System.out.println(classNameLog + "Machine " + positionValue[i] + "gave up, continue election");

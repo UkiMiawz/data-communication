@@ -6,6 +6,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.metadata.XmlRpcSystemImpl;
 
 public class SystemHandler {
+	private static String classNameLog = "SystemHandler : ";
 	public String[] listMethods(){
 		try {
 			XmlRpcSystemImpl test = new XmlRpcSystemImpl(JavaWsServer.getMapping());
@@ -19,5 +20,13 @@ public class SystemHandler {
 			e.printStackTrace();
 			return new String[]{};
 		}
+	}
+	
+	public boolean stillAlive(){
+		//We do what we must because we can
+		//For the good of all of us. Except the ones who are dead.
+		System.out.println(classNameLog + "I'm doing science and I'm still alive.");
+		return true;
+		//That was a joke. Ha Ha. Fat Chance!
 	}
 }

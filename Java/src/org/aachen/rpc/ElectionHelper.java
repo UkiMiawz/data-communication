@@ -22,8 +22,6 @@ public class ElectionHelper {
 		int myPriority = JavaWsServer.getMyPriority();
 		System.out.println(classNameLog + "My IP =>" + myIp + " My Priority => " + myPriority);
 		
-		//TODO check machines validity, remove unactive machines
-		
 		System.out.println(classNameLog + "Start Bully algorithm");
 		Bully bullyGenerator = new Bully(machines);
 		boolean iGaveUp = bullyGenerator.holdElection(myPriority);
@@ -38,7 +36,6 @@ public class ElectionHelper {
 			XmlRpcHelper.SendToAllMachines(machines, "Election.setNewLeader", params);
 			System.out.println(classNameLog + "New leader notification send to all");
 		}
-		
 		
 		//send new master to everyone
 		return JavaWsServer.getIpMaster();

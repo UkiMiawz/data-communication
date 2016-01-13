@@ -15,6 +15,7 @@ public class RequestHandler {
 	private static LogicalClock localClock;
 	private static int timeout = 200;
 	private static ResourceHandler resourceHandler;
+	private static String classNameLog = "RequestHandler : ";
 	
 	private static String masterIp;
 	private static String myIp;
