@@ -34,8 +34,8 @@ public class HelloWorldService : MarshalByRefObject
         for (int i = 0; i < dict.Count; i++)
         {
             convertionResult[i] = new XmlRpcStruct();
-            convertionResult[i].Add("networkPriority", dict.Keys.ElementAt(i));
-            convertionResult[i].Add("ipAddress", dict.Values.ElementAt(i));
+            convertionResult[i].Add("NetworkPriority", dict.Keys.ElementAt(i));
+            convertionResult[i].Add("IpAddress", dict.Values.ElementAt(i));
         }
 
         return convertionResult;

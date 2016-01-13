@@ -40,12 +40,12 @@ class XmlrpcClient
                         // Menu 1: Show master hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] networkHashMap = localProxy.GetNetworkHashMap();
+                        XmlRpcStruct[] networkHashMap = localProxy.GetNetworkHashMap();
 
                         Console.WriteLine("The Masternode hashmap");
-                        foreach (NetworkMapStruct ipItem in networkHashMap)
+                        foreach (XmlRpcStruct ipItem in networkHashMap)
                         {
-                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
                         }
 
                         Console.ReadKey();
@@ -55,12 +55,12 @@ class XmlrpcClient
                         // Menu 1: Show local hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] localhostHashMap = localProxy.GetNetworkHashMap(true);
+                        XmlRpcStruct[] localhostHashMap = localProxy.GetNetworkHashMap();
 
                         Console.WriteLine("The localhost hashmap");
-                        foreach (NetworkMapStruct ipItem in localhostHashMap)
+                        foreach (XmlRpcStruct ipItem in localhostHashMap)
                         {
-                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
                         }
 
                         Console.ReadKey();

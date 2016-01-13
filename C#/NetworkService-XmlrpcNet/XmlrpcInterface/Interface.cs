@@ -1,16 +1,10 @@
 ﻿using CookComputing.XmlRpc;
 using System.Collections.Generic;
 
-public struct NetworkMapStruct
-{
-    public int NetworkPriority;
-    public string IpAddress;
-}
-
 public interface INetworkServer 
 {
     [XmlRpcMethod(GlobalMethodName.GetNetworkHashMap)]
-    NetworkMapStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
+    XmlRpcStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     void newMachineJoin(string ipAddress, bool DoItLocally = false);

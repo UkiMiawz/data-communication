@@ -126,25 +126,27 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         return NetworkHashMap.Keys.ToList().Max();
     }
 
-    private NetworkMapStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
+    private XmlRpcStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
     {
-        NetworkMapStruct[] convertionResult = new NetworkMapStruct[dict.Count()];
+        XmlRpcStruct[] convertionResult = new XmlRpcStruct[dict.Count()];
         for (int i = 0; i < dict.Count; i++)
         {
-            convertionResult[i] = new NetworkMapStruct();
-            convertionResult[i].IpAddress = dict.Values.ElementAt(i);
-            convertionResult[i].NetworkPriority = dict.Keys.ElementAt(i);
+            convertionResult[i] = new XmlRpcStruct();
+            convertionResult[i].Add("NetworkPriority", dict.Keys.ElementAt(i));
+            convertionResult[i].Add("IpAddress", dict.Values.ElementAt(i));
         }
 
         return convertionResult;
     }
 
-    private Dictionary<int, string> ConvertStructToDictionary(NetworkMapStruct[] netStruct)
+    private Dictionary<int, string> ConvertStructToDictionary(XmlRpcStruct[] netStruct)
     {
         Dictionary<int, string> convertionResult = new Dictionary<int, string>();
-        foreach (NetworkMapStruct netStructItem in netStruct)
+        foreach (XmlRpcStruct structItem in netStruct)
         {
-            convertionResult.Add(netStructItem.NetworkPriority, netStructItem.IpAddress);
+            int itemKey = (int)structItem["NetworkPriority"];
+            string itemValue = structItem["IpAddress"].ToString();
+            convertionResult.Add(itemKey,itemValue);
         }
 
         return convertionResult;
@@ -200,12 +202,11 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public NetworkMapStruct[] GetNetworkHashMap(bool DoItLocally = false)
-    {
-        
+    public XmlRpcStruct[] GetNetworkHashMap(bool DoItLocally = false)
+    {        
         if (CurrentMasterNode == DefaultMasterNode || DoItLocally == true)
         {
-            NetworkMapStruct[] result = ConvertDictionaryToStruct(NetworkHashMap);
+            XmlRpcStruct[] result = ConvertDictionaryToStruct(NetworkHashMap);
             return result;
         }
         else
@@ -268,6 +269,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     {
         // step 1: ping neighbor and ask to join.
         string baseIP = ipAddress.Substring(0, (ipAddress.LastIndexOf('.') + 1));
+        CurrentMasterNode = "";
 
         try
         {
@@ -307,7 +309,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         try
         {
             MasterProxy.Url = ServerUrlStart + CurrentMasterNode + ServerUrlEnd;
-            NetworkMapStruct[] newMap = MasterProxy.GetNetworkHashMap();
+            XmlRpcStruct[] newMap = MasterProxy.GetNetworkHashMap();
             NetworkHashMap = ConvertStructToDictionary(newMap);
         }
         catch (Exception ex)
@@ -384,7 +386,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             MasterProxy.newMachineJoin(ipAddress);
 
-            NetworkMapStruct[] newHashmap = MasterProxy.GetNetworkHashMap(false);
+            XmlRpcStruct[] newHashmap = MasterProxy.GetNetworkHashMap(false);
             NetworkHashMap = ConvertStructToDictionary(newHashmap);
         }
         catch (Exception ex)
@@ -405,8 +407,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("New master Node is : {0}" + newMasterIp);
 
             //update Hash map from Master
-            NetworkMapStruct[] updatedMap = MasterProxy.GetNetworkHashMap(false);
-            NetworkHashMap.Clear();
+            XmlRpcStruct[] updatedMap = MasterProxy.GetNetworkHashMap(false);
             NetworkHashMap = ConvertStructToDictionary(updatedMap);
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
@@ -468,7 +469,6 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             // 1. Update the hashmap
             Dictionary<int, string> updatedMap = bullyObj.getActiveMap(NetworkHashMap);
-            NetworkHashMap.Clear();
             NetworkHashMap = updatedMap;
 
             // 2. change my master

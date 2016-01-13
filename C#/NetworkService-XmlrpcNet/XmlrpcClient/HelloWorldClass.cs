@@ -9,20 +9,13 @@ using System.Threading.Tasks;
 
 
 
-public struct getMapResponse
-{
-    //public object Result;
-    public string key;    
-    public string value;
-}
-
 public interface IHelloWorld : IXmlRpcProxy
 {
     [XmlRpcMethod("HelloWorld.hello")]
     string HelloWorld(string ipAddress);
 
     [XmlRpcMethod("HelloWorld.returnKeyMap")]
-    object getMap(string ipAddress, int priority);     
+    XmlRpcStruct[] getMap(string ipAddress, int priority);     
 }
 
 class HelloWorldConsoleClient

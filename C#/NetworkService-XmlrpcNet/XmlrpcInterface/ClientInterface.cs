@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 public interface INetworkServerClientProxy : IXmlRpcProxy
 {
     [XmlRpcMethod(GlobalMethodName.GetNetworkHashMap)]
-    NetworkMapStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
+    XmlRpcStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     void newMachineJoin(string ipAddress, bool DoItLocally = false);
