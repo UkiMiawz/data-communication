@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 public class HelloWorld {
 	
+	public static boolean haveInterest;
+	
 	public String hello(String ipAddress){
 		System.out.println("Hello from IP : " + ipAddress);
 		return "Greetings IP " + ipAddress;
@@ -53,6 +55,28 @@ public class HelloWorld {
 		Test[] testArray = new Test[] { objectTest };
 		return testArray;
 	}*/
+	
+	public String haveInterest(){
+		System.out.println("Interest initiated");
+		haveInterest = true;
+		while(haveInterest){
+			try {
+				System.out.println(haveInterest);
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return "Interest removed";
+	}
+	
+	public String removeInterest(){
+		System.out.println("Interest removed");
+		haveInterest = false;
+		System.out.println(haveInterest);
+		return "Interest removed";
+	}
 	
 	public int returnClassRequest(Request incomingRequest){
 		int clock = incomingRequest.getClock() + 1;

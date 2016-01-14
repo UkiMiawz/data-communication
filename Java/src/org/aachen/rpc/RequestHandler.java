@@ -52,10 +52,12 @@ public class RequestHandler {
 	
 	public String startMessage(boolean wantWrite){
 		
+		//initialize variables
 		System.out.println(classNameLog + "Start mutual exclusion process");
 		masterIp = JavaWsServer.getIpMaster();
 		myIp = JavaWsServer.getMyIpAddress();
 		machines = JavaWsServer.getMachines();
+		
 		myKey = JavaWsServer.getMyPriority();
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
 		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
@@ -77,64 +79,82 @@ public class RequestHandler {
 		
 		//increment clock by 1
 		localClock.incrementClock();
-		//append all machines ip to list
+		System.out.println(classNameLog + "Lamport clock value incremented to " + localClock.getClockValue());
+		
+		//append all machines ip to list since we need to get permissions from all machine
 		expectedRequestIps.clear();
 		expectedRequestIps.putAll(machines);
 		haveInterest = true;
+		System.out.println(classNameLog + "Expecting permissions from " + expectedRequestIps);
 		
 		//request for permission to all machines
 		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
+			
 			String ipAddress = entry.getValue();
 			int machineKey = entry.getKey();
+			System.out.println(classNameLog + "Requesting permission from IP => " + ipAddress + " and machine key => " + machineKey);
 			
 			//remove me from request waiting list
 			if(ipAddress == myIp){
 				removeMachineFromExpected(machineKey);
+				System.out.println(classNameLog + "Removing myself from machines list. My key " + machineKey);
 			}
 			
 			try {
 				//check if machine is on
 				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println("Asking permission from machine " + entry.getKey() + " => " + ipAddress);
+					System.out.println(classNameLog + "Machine is alive. Asking permission from machine " + entry.getKey() + " => " + ipAddress);
 					
 					//ask permission to all
 					String requestString = "Request.askPermission";
 					Object[] params = new Object[]{localClock.getClockValue(), myKey, myIp, requestString};
 					Boolean replyOk = (Boolean) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
-					System.out.println("Reply :" + replyOk);
+					System.out.println(classNameLog + "Reply permission => " + replyOk);
 					
 					if(replyOk){
+						System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
 						removeMachineFromExpected(machineKey);
 					}
 					
 				} else {
 					removeMachineFromExpected(machineKey);
-					System.out.println("Machine is not active");
+					System.out.println(classNameLog + "Machine " + machineKey + " is not active. IP Address " + ipAddress);
 				}
 			} catch (UnknownHostException e) {
 				removeMachineFromExpected(machineKey);
-				System.out.println("IP is not valid");
+				System.out.println(classNameLog + "IP is not valid");
 			} catch (IOException e) {
 				removeMachineFromExpected(machineKey);
-				System.out.println("String is not valid");
+				System.out.println(classNameLog + "String is not valid");
 			} catch (Exception e){
 				e.printStackTrace();
 				removeMachineFromExpected(machineKey);
 			}
 		}
 		
-		//wait until all finished
-		while(haveInterest){
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		System.out.println(classNameLog + "Finished requesting permission");
+		
+		if(expectedRequestIps.isEmpty()){
+			System.out.println(classNameLog + "Everybody gave permission. Start resource access");
+			String resource = doResourceAccess();
+			System.out.println(classNameLog + "Resource value now " + resource);
+		} else {
+			System.out.println(classNameLog + "Wait until process finished");
+			//wait until all finished
+			while(haveInterest){
+				try {
+					System.out.println(".");
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
 		if(wantWrite){
 			//return written string
+			System.out.println(classNameLog + "Written String => " + myString);
 			return myString;
 		}
 		
@@ -144,6 +164,7 @@ public class RequestHandler {
 			containMyString = 1;
 		}
 		
+		System.out.println(classNameLog + "Read process finished, final result => " + finalString + ";" + containMyString);
 		return finalString + ";" + containMyString;
 	}
 

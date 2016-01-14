@@ -118,6 +118,28 @@ public class HelloClient {
 		}
 	}
 		
+	private static void waitStart(){
+		try {
+			connect("localhost");
+			Object[] params = new Object[] { };
+			String response = (String) client.execute("HelloWorld.haveInterest", params);
+			System.out.println("Message : " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void waitStop(){
+		try {
+			connect("localhost");
+			Object[] params = new Object[] { };
+			String response = (String) client.execute("HelloWorld.removeInterest", params);
+			System.out.println("Message : " + response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main (String [] args) {
 		
 		//wait for command
@@ -133,6 +155,12 @@ public class HelloClient {
                 if ("exit".equals(command))
                 {
                     keepRunning = false;
+                } else if("waitStart".equals(command)){
+                	//test several request
+                	waitStart();
+                } else if("waitStop".equals(command))
+                {
+                	waitStop();
                 } else if("map".equals(command)){
                 	System.out.println("Enter ip address: ");
                 	String ip =  reader.readLine();

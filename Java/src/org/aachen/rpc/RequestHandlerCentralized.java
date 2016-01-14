@@ -90,7 +90,7 @@ public class RequestHandlerCentralized {
 		haveInterest = true;
 		
 		//wait until all finished
-		System.out.println(classNameLog + "Wait until process finisheds");
+		System.out.println(classNameLog + "Wait until process finished");
 		while(haveInterest){
 			try {
 				System.out.print(".");
