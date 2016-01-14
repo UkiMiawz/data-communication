@@ -22,14 +22,14 @@ public class RequestHandler {
 	private static String myIp;
 	private static TreeMap<Integer, String> machines;
 	
-	private boolean haveInterest = false;
-	private boolean currentlyAccessing = false;
-	private boolean wantWrite = false;
+	private static boolean haveInterest = false;
+	private static boolean currentlyAccessing = false;
+	private static boolean wantWrite = false;
 	
-	private String finalString;
-	private String myString;
+	private static String finalString;
+	private static String myString;
 	
-	private int myKey;
+	private static int myKey;
 	
 	/**
 	 * class to handle async call back for ricart agrawala mutual exclusion
@@ -171,7 +171,10 @@ public class RequestHandler {
 	// receive message for ok permission, triggering resource access when all have given permission
 	public void receivePermission(int requestClock, int machineKey, String ipAddress){
 		//sync clock from message
+		System.out.println(classNameLog + "Received permission");
+		System.out.println(classNameLog + "Local clock " + localClock.getClockValue() + " request clock " + requestClock);
 		localClock.syncClock(requestClock);
+		System.out.println(classNameLog + "Local clock now " + localClock.getClockValue());
 		System.out.println("Permission given from " + ipAddress);
 		removeMachineFromExpected(machineKey);
 		//check if all machine clear
@@ -185,56 +188,79 @@ public class RequestHandler {
 	
 	//receive message request for permission
 	public boolean requestPermission(int requestClock, int machineKey, String ipAddress, String requestString){
-		//sync clock with clock from message
-		localClock.syncClock(requestClock);
+		System.out.println(classNameLog + ipAddress + " asking for permission");
 		//check if accessing resource
 		if(!currentlyAccessing && !haveInterest){
+			System.out.println(classNameLog + "I have no interest, go ahead");
 			return true;
 		} else if(currentlyAccessing) {
 			//add to differed ip
+			System.out.println(classNameLog + "I'm currently accessing the resource, put request to waiting list");
 			addMachineToDiffered(machineKey, ipAddress);
+			System.out.println(classNameLog + differedRequestIps);
 		} else if(haveInterest){
+			System.out.println(classNameLog + "I'm currently in waiting list");
 			if(requestClock < localClock.getClockValue()){
+				System.out.println(classNameLog + "Request clock is earlier. You can go ahead before me");
 				return true;
 			} else {
+				System.out.println(classNameLog + "Request clock is later. Please line up after me");
 				addMachineToDiffered(machineKey, ipAddress);
+				System.out.println(classNameLog + differedRequestIps);
 			}
 		}
+		
+		//sync clock with clock from message
+		System.out.println(classNameLog + "Local clock " + localClock.getClockValue() + " request clock " + requestClock);
+		localClock.syncClock(requestClock);
+		System.out.println(classNameLog + "Local clock now " + localClock.getClockValue());
 		
 		return false;
 	}
 	
 	private String doResourceAccess(){
+		System.out.println(classNameLog + "Accessing resource");
 		currentlyAccessing = true;
 		//clear permission, do request access
 		String nowResource;
 		if(wantWrite){
+			System.out.println(classNameLog + "Writing to shared resource");
 			myString = resourceHandler.generateRandomString();
+			System.out.println(classNameLog + "Generated random string " + myString);
 			nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
+			System.out.println(classNameLog + "Shared resource value now " + nowResource);
 		} else {
 			nowResource = resourceHandler.readNewString(myIp, masterIp); 
+			System.out.println(classNameLog + "Reading resource with value " + nowResource);
 		}
 		
 		//send ok to all machines in differedRequestIps
 		sendOkResponse();
 		haveInterest = false;
 		currentlyAccessing = false;
+		System.out.println(classNameLog + "Flags cleared to false");
 		
 		return nowResource;
 	}
 	
 	private void sendOkResponse(){
 		//increment clock by 1
+		System.out.println(classNameLog + "Sending signal that already finished accessing resource");
+		System.out.println(classNameLog + differedRequestIps);
 		localClock.incrementClock();
+		System.out.println(classNameLog + "Local clock incremented to " + localClock.getClockValue());
+		
 		for(Map.Entry<Integer,String> entry : differedRequestIps.entrySet()) {
 			String ipAddress = entry.getValue();
 			int machineKey = entry.getKey();
+			System.out.println(classNameLog + "Giving permission to " + ipAddress + " with machine number " + machineKey);
 			
 			Object[] params = new Object[]{localClock.getClockValue(), myKey, myIp};
-			XmlRpcHelper.SendToOneMachine(ipAddress, "Request.receivePermission", params);
+			XmlRpcHelper.SendToOneMachineAsync(ipAddress, "Request.receivePermission", params, new CallBack());
 			
-			System.out.println("Removing machine from differed request :" + machineKey);
+			System.out.println(classNameLog + "Removing machine from differed request :" + machineKey);
 			removeMachineFromDiffered(machineKey);
+			System.out.println(classNameLog + differedRequestIps);
 		}
 	}
 	

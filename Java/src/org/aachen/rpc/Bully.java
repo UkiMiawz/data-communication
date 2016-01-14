@@ -9,12 +9,12 @@ import org.apache.xmlrpc.client.XmlRpcClient;
 
 public class Bully {
 	
-	private TreeMap<Integer, String> machines;
-	private int n;
-    private Integer positionValue[] = new Integer[100];
-    private int timeout = 3000;
-    private String myIp;
-    private boolean gaveUp = false;
+	private static TreeMap<Integer, String> machines;
+	private static int n;
+    private static Integer positionValue[] = new Integer[100];
+    private static int timeout = 3000;
+    private static String myIp;
+    private static boolean gaveUp = false;
     
     private String classNameLog = "Bully : ";
     
