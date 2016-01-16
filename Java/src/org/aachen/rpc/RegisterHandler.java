@@ -30,42 +30,46 @@ public class RegisterHandler {
 		return machines;
 	}
 	
-	public static void joinNetwork(String ipAddress) {
+	public static void joinNetwork(String ipAddress, String neighbourIp) {
 		System.out.println(classNameLog + ipAddress + " joining network");
+		
 		try{
+			
 			//get IP addresses
 			String myIp = JavaWsServer.getMyIpAddress();
 		    String subnet = ipAddress.substring(0, ipAddress.lastIndexOf('.'));
 		    System.out.println(classNameLog + "Subnet : " + subnet);
-		    String ipNeighbor = null;
+		    String ipNeighbor = neighbourIp;
+		    
 		    int i = 2;
 		    
-		    //search for neighbor
-		    while (ipNeighbor == null && i<255){
-			       String host= subnet + "." + i;
-			       System.out.println(classNameLog + "Contacting " + host);
-			       
-			       if (!host.equals(ipAddress) && InetAddress.getByName(host).isReachable(timeout)){
-			           System.out.println(classNameLog + host + " is reachable. Checking validity");
-			           Object[] params = new Object[] { ipAddress };
-			           
-			           ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
-			           //check if ip neighbor is valid
-			           if(!InetAddresses.isInetAddress(ipNeighbor)){
-			        	   ipNeighbor = null;
-			           } else {
-			        	   System.out.println(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
-			           }
-			       } else {
-			    	   System.out.println(host + " is not reachable");
-			       }
-			       
-			       i++;
-			}
-		    
+			if(neighbourIp != null && !neighbourIp.isEmpty()){
+				//search for neighbor
+			    while (ipNeighbor == null && i<255){
+				       String host= subnet + "." + i;
+				       System.out.println(classNameLog + "Contacting " + host);
+				       
+				       if (!host.equals(ipAddress) && InetAddress.getByName(host).isReachable(timeout)){
+				           System.out.println(classNameLog + host + " is reachable. Checking validity");
+				           Object[] params = new Object[] { ipAddress };
+				           
+				           ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
+				           //check if ip neighbor is valid
+				           if(!InetAddresses.isInetAddress(ipNeighbor)){
+				        	   ipNeighbor = null;
+				           } else {
+				        	   System.out.println(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
+				           }
+				       } else {
+				    	   System.out.println(host + " is not reachable");
+				       }
+				       i++;
+				}
+			} 
+		
 		    System.out.println(classNameLog + "Finish registering to neighbor");
 		    
-		    if(ipNeighbor != null && !ipNeighbor.equals("error")){
+		    if(ipNeighbor != null && !ipNeighbor.equals("error") && !ipNeighbor.equals(myIp) && !ipNeighbor.equals("localhost")){
 				//you're not alone
 		    	System.out.println(classNameLog + "I'm not alone! Requesting key and ip of master");
 				//get master from neighbor

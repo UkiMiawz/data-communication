@@ -186,7 +186,25 @@ public class JavaWsServer {
 			myIpAddress = myIp.getHostAddress();
 			
 			//join network
-			//RegisterHandler.joinNetwork(myIpAddress);
+			String myNeighbourIp = "";
+			
+			//ask for neighbour ip or not
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        	System.out.println("=====Connecting to Network=====");        
+        	System.out.println("1. Input neighbour IP Address manually");
+        	System.out.println("2. Detect neighbour IP Address automatically");
+        	System.out.println("Enter choice, or 'exit' to quit: ");
+            String command =  reader.readLine();
+            
+            if(command.equals("1")){
+            	System.out.println("Please input neighbor IP address :");
+            	myNeighbourIp = reader.readLine();
+            }
+        	
+			System.out.println("");
+			
+			RegisterHandler.joinNetwork(myIpAddress, myNeighbourIp);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
 				myPriority = addMachineToMap(myIpAddress);
@@ -207,15 +225,14 @@ public class JavaWsServer {
 			System.out.println(classNameLog + "Machines now " + machines);
 			
 			//wait for command
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-		            System.in));
+			reader = new BufferedReader(new InputStreamReader(System.in));
 			
 	        boolean keepRunning = true;
 	        while (keepRunning)
 	        {       
 	        	try{
 	        		System.out.println("Enter command, or 'exit' to quit: ");
-	                String command =  reader.readLine();
+	                command =  reader.readLine();
 	                if ("exit".equals(command)) {
 	                    keepRunning = false;
 	                    System.out.println("Shutting down server...");
