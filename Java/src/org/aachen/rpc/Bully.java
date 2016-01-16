@@ -27,6 +27,12 @@ public class Bully {
     	myIp = JavaWsServer.getMyIpAddress();
     }
     
+    /**
+     * 
+     * 
+     * @author suchijulidayani
+     *
+     */
     private class CallBack implements AsyncCallback {
     	private String classNameLog = "callBack Bully : ";
 
