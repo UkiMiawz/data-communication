@@ -9,7 +9,7 @@ public class ElectionHelper {
 	
 	private static String classNameLog = "ElectionHelper : ";
 	
-	public String leaderElection(String ip) {
+	public String leaderElection(String ip) { 
 		
 		System.out.println(classNameLog + "Leader election on ip " + ip);
 		//get machines
