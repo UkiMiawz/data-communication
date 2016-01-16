@@ -43,8 +43,8 @@ public class RegisterHandler {
 		    
 		    int i = 2;
 		    
-			if(neighbourIp != null && !neighbourIp.isEmpty()){
-				//search for neighbor
+			if(neighbourIp == null && neighbourIp.isEmpty()){
+				//search for neighbor automatically
 			    while (ipNeighbor == null && i<255){
 				       String host= subnet + "." + i;
 				       System.out.println(classNameLog + "Contacting " + host);
@@ -65,7 +65,12 @@ public class RegisterHandler {
 				       }
 				       i++;
 				}
-			} 
+			} else {
+				if(!neighbourIp.equals(myIp) && !neighbourIp.equals("localhost")){
+					Object[] params = new Object[] { ipAddress };
+					ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(neighbourIp, "RegisterHandler.newMachineJoin", params);	
+				}
+			}
 		
 		    System.out.println(classNameLog + "Finish registering to neighbor");
 		    
