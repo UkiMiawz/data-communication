@@ -76,7 +76,7 @@ public class RegisterHandler {
 				
 				//get hashmap from master
 				TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
-				machines.putAll((HashMap<Integer, String>) XmlRpcHelper.SendToOneMachine(ipMaster, "RegisterHandler.getMachines", params));
+				machines = Helper.convertMapResponseToMachinesTreeMap(XmlRpcHelper.SendToOneMachine(ipMaster, "RegisterHandler.getMachines", params));
 				JavaWsServer.setMachines(machines);
 				System.out.println(classNameLog + "Machines set, number of machines " + machines.size());
 				

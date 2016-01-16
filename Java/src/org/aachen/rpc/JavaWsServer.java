@@ -39,14 +39,8 @@ public class JavaWsServer {
 	}
 	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
-		for(Map.Entry<Integer,String> entry : newMachines.entrySet()) {
-			System.out.println(entry.getKey() + " " + entry.getValue());
-			Object priorityObj = entry.getKey();
-			String priorityStr = (String) priorityObj;
-			int priority = Integer.parseInt(priorityStr);
-			String value = entry.getValue();
-			machines.put(priority, value);
-		}
+		machines = newMachines;
+		System.out.println(classNameLog + "New machines value " + newMachines);
 	}
 	
 	private static InetAddress myIp;

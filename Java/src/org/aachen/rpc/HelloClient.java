@@ -75,28 +75,9 @@ public class HelloClient {
 		TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
 		
 		try {
-			Object[] test = (Object[])client.execute("HelloWorld.returnKeyMap", params);
-			
-			//TODO PARSER
-			//check if contains string, if yes that mean it comes from C#
-			//parse like C#
-			System.out.println(Arrays.deepToString(test));
-			//machines.putAll((HashMap<Integer, String>)client.execute("HelloWorld.returnKeyMap", params));
-			
-			HashMap<Integer, String> testMap = (HashMap<Integer, String>)test[0];
-			System.out.println("Test map values : " + testMap.toString());
-			System.out.println(testMap.values());
-			
-			machines.putAll(testMap);
-			System.out.println("Machines value : " + machines.toString());
-			
-			//Test testString = (Test)test[0];
-			//System.out.println(testString.networkPriority);
-			for(Map.Entry<Integer,String> entry : machines.entrySet()) {
-				System.out.println(entry.getKey().toString() + " " + entry.getValue().toString());
-			}
-			
-			//System.out.println("Machines count :" + machines.size());
+			Object response = client.execute("HelloWorld.returnKeyMap", params);
+			machines = Helper.convertMapResponseToMachinesTreeMap(response);
+			System.out.println("Machines value now " + machines);
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -162,9 +143,10 @@ public class HelloClient {
                 {
                 	waitStop();
                 } else if("map".equals(command)){
-                	System.out.println("Enter ip address: ");
-                	String ip =  reader.readLine();
-                	connect(ip);
+                	//System.out.println("Enter ip address: ");
+                	//String ip =  reader.readLine();
+                	connect("172.16.1.102");
+                	//connect("localhost");
                 	printHashMap();
                 } else if("request".equals(command)){
                 	printClassRequest();
