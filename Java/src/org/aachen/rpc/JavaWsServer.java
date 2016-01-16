@@ -39,6 +39,7 @@ public class JavaWsServer {
 	}
 	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
+		machines = newMachines;
 		for(Map.Entry<Integer,String> entry : newMachines.entrySet()) {
 			System.out.println(entry.getKey() + " " + entry.getValue());
 			Object priorityObj = entry.getKey();
