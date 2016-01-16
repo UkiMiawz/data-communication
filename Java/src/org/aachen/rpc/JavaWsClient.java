@@ -44,7 +44,7 @@ public class JavaWsClient {
 	
 	private static void connectToMaster(){
 		//get and connect to current master if available
-		String masterIp = (String) consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster", true);
+		masterIp = (String) consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster", true);
 		if(!masterIp.equals("localhost")){
 			client = XmlRpcHelper.Connect(masterIp);
 			System.out.println("Master IP now " + masterIp);
