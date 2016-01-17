@@ -1,7 +1,6 @@
 package org.aachen.rpc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -17,12 +16,12 @@ public class RequestHandlerCentralized {
 	private static String myIp = JavaWsServer.getMyIpAddress();
 	private int myKey = JavaWsServer.getMyPriority();
 
-	private boolean currentlyAccessing = false;
-	private boolean wantWrite = false;
-	private boolean haveInterest = false;
+	private static boolean currentlyAccessing = false;
+	private static boolean wantWrite = false;
+	private static boolean haveInterest = false;
 	
-	private String finalString = "";
-	private String myString = "";
+	private static String finalString = "";
+	private static String myString = "";
 	
 	/**
 	 * class to handle async call back for centralized mutual exclusion
