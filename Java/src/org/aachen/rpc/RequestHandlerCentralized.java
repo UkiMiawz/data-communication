@@ -148,7 +148,8 @@ public class RequestHandlerCentralized {
 	}
 	
 	public String doResourceAccess(){
-		System.out.println(classNameLog + "Do resource access");
+		System.out.println(classNameLog + "Do resource access ");
+		System.out.println(classNameLog + "Want write " + wantWrite);
 		currentlyAccessing = true;
 		//clear permission, do request access
 		
@@ -186,12 +187,12 @@ public class RequestHandlerCentralized {
 		} else {
 			//send signal that its ok to request
 			System.out.println(classNameLog + "Master IP " + masterIp + " My IP " + myIp);
-			if(!masterIp.equals(myIp)){
-				System.out.println(classNameLog + "Sending request to master " + masterIp);
+			if(!requestIp.equals(myIp)){
+				System.out.println(classNameLog + "Give permission to " + requestIp);
 				Object[] params = new Object[] { requestIp, requestString };
-				XmlRpcHelper.SendToOneMachine(requestIp, "RequestCentral.getPermission", params);
+				XmlRpcHelper.SendToOneMachineAsync(requestIp, "RequestCentral.getPermission", params, new CallBack());
 			} else {
-				System.out.println(classNameLog + "I am master, receive request, start async on self");
+				System.out.println(classNameLog + "Request from myself as master, receive request, start async on self");
 				Thread a = new Thread(() -> {
 					getPermission(myIp, requestString);
 				});
@@ -219,6 +220,7 @@ public class RequestHandlerCentralized {
 			
 			System.out.println(classNameLog + "Processing request from IP => " + requestIp);
 			if(!myIp.equals(requestIp)){
+				//processing next IP request
 				Object[] params = new Object[] { nextRequest.getRequestIp(), nextRequest.getRequestString() };
 				XmlRpcHelper.SendToOneMachine(requestIp, "RequestCentral.getPermission", params);
 			} else {
