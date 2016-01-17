@@ -146,17 +146,23 @@ public class JavaWsServer {
 		return machineIp;
 	}
 	
+	public static int removeMachineFromMap(String ipAddress){
+		int machineKey = Helper.getKeyByValue(machines, ipAddress);
+		machines.remove(machineKey);
+		return machineKey;
+	}
+	
 	/* ========= SERVER SHUTDOWN METHODS ====== */
 	
 	public static void serverShutDown(){
-		Object[] params = new Object[] { myPriority };
-		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		Object[] params = new Object[] { myIp };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 	}
 	
 	public void serverShutDownFromClient(String ip){
 		System.out.println(ip + " client ask to shutdown server");
-		Object[] params = new Object[] { myPriority };
-		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		Object[] params = new Object[] { myIp };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 		webServer.shutdown();
 		System.out.println("Server shutdown");
 	}

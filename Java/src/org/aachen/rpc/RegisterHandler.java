@@ -123,6 +123,12 @@ public class RegisterHandler {
 		return "Machine removed " + removedIp;
 	}
 	
+	public static String removeMachineIp(String ipAddress){
+		System.out.println(classNameLog + "Remove machine with key " + ipAddress);
+		int removedKey = JavaWsServer.removeMachineFromMap(ipAddress);
+		return "Machine removed " + removedKey;
+	}
+	
 	public String newMachineJoinNotification(String newIp, String callerIp){
 		System.out.println(classNameLog + "New machine notification " + newIp + " from " + callerIp);
 		//inform all others
