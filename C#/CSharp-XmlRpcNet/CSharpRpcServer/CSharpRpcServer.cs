@@ -20,8 +20,7 @@ class CSharpRpcServer : MarshalByRefObject
     //public static PropertyHandlerMapping getMapping()
     //{
     //    return propHandlerMapping;
-    //}
-
+    //}   
     private static Dictionary<int, String> machines = new Dictionary<int, string>();
     public static Dictionary<int, String> getMachines()
     {
@@ -57,6 +56,12 @@ class CSharpRpcServer : MarshalByRefObject
     public static String getMyIpAddress()
     {
         return myIpAddress;
+    }
+
+    private static int keyMaster;
+    public static int getKeyMaster()
+    {
+        return keyMaster;
     }
 
     private static String ipMaster = "localhost";
