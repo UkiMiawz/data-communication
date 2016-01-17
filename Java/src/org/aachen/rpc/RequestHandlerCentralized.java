@@ -108,19 +108,19 @@ public class RequestHandlerCentralized {
 			System.out.println(classNameLog + "Written String => " + myString);
 			return myString;
 		
-		} else {
-			
-			System.out.println(classNameLog + "Read String check my string => " + myString);
-			System.out.println(classNameLog + "Final String => " + finalString);
-			int containMyString = 0;
-			if(finalString.contains(myString))
-			{
-				containMyString = 1;
-			}
-			
-			System.out.println(classNameLog + "Read process finished, final result => " + finalString + ";" + containMyString);
-			return finalString + ";" + containMyString;
 		}
+			
+		System.out.println(classNameLog + "Read String check my string => " + myString);
+		System.out.println(classNameLog + "Final String => " + finalString);
+		int containMyString = 0;
+		if(finalString.contains(myString))
+		{
+			containMyString = 1;
+		}
+		
+		System.out.println(classNameLog + "Read process finished, final result => " + finalString + ";" + containMyString);
+		return finalString + ";" + containMyString;
+		
 	}
 	
 	/***
