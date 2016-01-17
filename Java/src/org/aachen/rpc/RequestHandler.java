@@ -168,7 +168,7 @@ public class RequestHandler {
 	}
 
 	// receive message for ok permission, triggering resource access when all have given permission
-	public void receivePermission(int requestClock, int machineKey, String ipAddress){
+	public String receivePermission(int requestClock, int machineKey, String ipAddress){
 		//sync clock from message
 		System.out.println(classNameLog + "Received permission");
 		System.out.println(classNameLog + "Local clock " + localClock.getClockValue() + " request clock " + requestClock);
@@ -183,6 +183,8 @@ public class RequestHandler {
 			nowResource = doResourceAccess();
 			System.out.println("Resource value now : " + nowResource);
 		}
+		
+		return finalString;
 	}
 	
 	//receive message request for permission

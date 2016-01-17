@@ -1,6 +1,7 @@
 package org.aachen.rpc;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcRequest;
@@ -128,7 +129,7 @@ public class RequestHandlerCentralized {
 	 * @param requestIp
 	 * @param requestString
 	 */
-	public void getPermission(String requestIp, String requestString){
+	public String getPermission(String requestIp, String requestString){
 		System.out.println(classNameLog + "Server gave permission to access resource");
 		
 		doResourceAccess();
@@ -146,6 +147,8 @@ public class RequestHandlerCentralized {
 			});
 			a.start();
 		}
+		
+		return finalString;
 	}
 	
 	public String doResourceAccess(){
@@ -176,7 +179,7 @@ public class RequestHandlerCentralized {
 	 * @param requestIp
 	 * @param requestString
 	 */
-	public void receiveRequest(String requestIp, String requestString){
+	public String receiveRequest(String requestIp, String requestString){
 		System.out.println(classNameLog + "Receiving request from " + requestIp + " with request string " + requestString);
 		Request incomingRequest = new Request(0, requestIp, requestString);
 		System.out.println(classNameLog + "Currently accessing " + currentlyAccessing);
@@ -198,13 +201,15 @@ public class RequestHandlerCentralized {
 			a.start();
 			}
 		}
+		
+		return Integer.toString(queue.size());
 	}
 	
 	/**
 	 * A machine accessing node is signaling that its finished
 	 * @param requestIp
 	 */
-	public void finishRequest(String requestIp){
+	public String finishRequest(String requestIp){
 		System.out.println(classNameLog + requestIp + " finished with request");
 		//access next item in queue
 		System.out.println(classNameLog + "Queue value now " + queue);
@@ -229,5 +234,7 @@ public class RequestHandlerCentralized {
 			System.out.println(classNameLog + "Queue empty, clearing access flag");
 			currentlyAccessing = false;
 		}
+		
+		return Integer.toString(queue.size());
 	}
 }
