@@ -79,6 +79,7 @@ public class RequestHandler {
 		expectedRequestIps.putAll(machines);
 		haveInterest = true;
 		System.out.println(classNameLog + "Expecting permissions from " + expectedRequestIps);
+		System.out.println(classNameLog + "My IP " + myIp);
 		
 		//request for permission to all machines
 		for(Map.Entry<Integer,String> entry : machines.entrySet()) {
@@ -104,8 +105,13 @@ public class RequestHandler {
 					String replyOk = (String) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
 					System.out.println(classNameLog + "Reply permission => " + replyOk);
 					
-					if(replyOk.equals("true")){
-						System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
+					if(replyOk.equals("true") && replyOk.equals("false")){
+						if(replyOk.equals("true")){
+							System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
+							removeMachineFromExpected(machineKey);
+						}
+					} else {
+						System.out.println(classNameLog + "Reply not as expected, removing machine from waiting list");
 						removeMachineFromExpected(machineKey);
 					}
 					
@@ -182,12 +188,12 @@ public class RequestHandler {
 	}
 	
 	//receive message request for permission
-	public boolean requestPermission(int requestClock, int machineKey, String ipAddress, String requestString){
+	public String requestPermission(int requestClock, int machineKey, String ipAddress, String requestString){
 		System.out.println(classNameLog + ipAddress + " asking for permission");
 		//check if accessing resource
 		if(!currentlyAccessing && !haveInterest){
 			System.out.println(classNameLog + "I have no interest, go ahead");
-			return true;
+			return "true";
 		} else if(currentlyAccessing) {
 			//add to differed ip
 			System.out.println(classNameLog + "I'm currently accessing the resource, put request to waiting list");
@@ -197,7 +203,7 @@ public class RequestHandler {
 			System.out.println(classNameLog + "I'm currently in waiting list");
 			if(requestClock < localClock.getClockValue()){
 				System.out.println(classNameLog + "Request clock is earlier. You can go ahead before me");
-				return true;
+				return "true";
 			} else {
 				System.out.println(classNameLog + "Request clock is later. Please line up after me");
 				addMachineToDiffered(machineKey, ipAddress);
@@ -210,7 +216,7 @@ public class RequestHandler {
 		localClock.syncClock(requestClock);
 		System.out.println(classNameLog + "Local clock now " + localClock.getClockValue());
 		
-		return false;
+		return "false";
 	}
 	
 	private String doResourceAccess(){
