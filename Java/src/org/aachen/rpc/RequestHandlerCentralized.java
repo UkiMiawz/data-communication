@@ -1,6 +1,7 @@
 package org.aachen.rpc;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.client.AsyncCallback;
@@ -57,6 +58,12 @@ public class RequestHandlerCentralized {
 		myKey = JavaWsServer.getMyPriority();
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
 		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
+		
+		//contact all machines to start write and read process
+		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
+		System.out.println(classNameLog + "Contacting all nodes " + machines);
+		Object[] params = new Object[]{true};
+		XmlRpcHelper.SendToAllMachinesAsync(machines, "RequestCentral.startMessage", params, new CallBack());
 		
 		System.out.println(classNameLog + "Initiating resource handler. Want to write => " + wantWrite);
 		resourceHandler = new ResourceHandler();

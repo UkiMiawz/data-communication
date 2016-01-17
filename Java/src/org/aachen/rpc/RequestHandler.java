@@ -11,11 +11,11 @@ import org.apache.xmlrpc.client.AsyncCallback;
 
 public class RequestHandler {
 	
-	private static TreeMap<Integer, String> expectedRequestIps;
-	private static TreeMap<Integer, String> differedRequestIps;
-	private static LogicalClock localClock;
+	private static TreeMap<Integer, String> expectedRequestIps = new TreeMap<Integer, String>();
+	private static TreeMap<Integer, String> differedRequestIps = new TreeMap<Integer, String>();
+	private static LogicalClock localClock = new LogicalClock();
 	private static int timeout = 3000;
-	private static ResourceHandler resourceHandler;
+	private static ResourceHandler resourceHandler = new ResourceHandler();
 	private static String classNameLog = "RequestHandler : ";
 	
 	private static String masterIp;
@@ -26,8 +26,8 @@ public class RequestHandler {
 	private static boolean currentlyAccessing = false;
 	private static boolean wantWrite = false;
 	
-	private static String finalString;
-	private static String myString;
+	private static String finalString = "";
+	private static String myString = "";
 	
 	private static int myKey;
 	
@@ -68,8 +68,7 @@ public class RequestHandler {
 		Object[] params = new Object[]{true};
 		XmlRpcHelper.SendToAllMachinesAsync(machines, "Request.startMessage", params, new CallBack());
 		
-		System.out.println(classNameLog + "Initiating resource handler. Want to write => " + wantWrite);
-		resourceHandler = new ResourceHandler();
+		System.out.println(classNameLog + "Initiating... Want to write => " + wantWrite);
 		this.wantWrite = wantWrite;
 		return sendRequest();
 	}
@@ -108,10 +107,10 @@ public class RequestHandler {
 					//ask permission to all
 					String requestString = "Request.askPermission";
 					Object[] params = new Object[]{localClock.getClockValue(), myKey, myIp, requestString};
-					Boolean replyOk = (Boolean) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
+					String replyOk = (String) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
 					System.out.println(classNameLog + "Reply permission => " + replyOk);
 					
-					if(replyOk){
+					if(replyOk.equals("true")){
 						System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
 						removeMachineFromExpected(machineKey);
 					}
@@ -222,16 +221,15 @@ public class RequestHandler {
 		System.out.println(classNameLog + "Accessing resource");
 		currentlyAccessing = true;
 		//clear permission, do request access
-		String nowResource;
 		if(wantWrite){
 			System.out.println(classNameLog + "Writing to shared resource");
 			myString = resourceHandler.generateRandomString();
 			System.out.println(classNameLog + "Generated random string " + myString);
-			nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
-			System.out.println(classNameLog + "Shared resource value now " + nowResource);
+			finalString = resourceHandler.appendNewString(myIp, masterIp, myString);
+			System.out.println(classNameLog + "Shared resource value now " + finalString);
 		} else {
-			nowResource = resourceHandler.readNewString(myIp, masterIp); 
-			System.out.println(classNameLog + "Reading resource with value " + nowResource);
+			finalString = resourceHandler.readNewString(myIp, masterIp); 
+			System.out.println(classNameLog + "Reading resource with value " + finalString);
 		}
 		
 		//send ok to all machines in differedRequestIps
@@ -240,7 +238,7 @@ public class RequestHandler {
 		currentlyAccessing = false;
 		System.out.println(classNameLog + "Flags cleared to false");
 		
-		return nowResource;
+		return finalString;
 	}
 	
 	private void sendOkResponse(){
