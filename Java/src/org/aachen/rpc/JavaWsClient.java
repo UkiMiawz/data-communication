@@ -2,12 +2,15 @@ package org.aachen.rpc;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
+
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 public class JavaWsClient {
 	
@@ -27,6 +30,7 @@ public class JavaWsClient {
 	}
 	
 	private static Object consumeService(Object[] params, String command, boolean isLocal){
+		System.out.println("Consume service " + command + " with params " + Arrays.deepToString(params));
 		XmlRpcClient usingClient = new XmlRpcClient();
 		if(isLocal){
 			usingClient = localClient;
@@ -44,7 +48,7 @@ public class JavaWsClient {
 	
 	private static void connectToMaster(){
 		//get and connect to current master if available
-		String masterIp = (String) consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster", true);
+		masterIp = (String) consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster", true);
 		if(!masterIp.equals("localhost")){
 			client = XmlRpcHelper.Connect(masterIp);
 			System.out.println("Master IP now " + masterIp);
@@ -74,24 +78,26 @@ public class JavaWsClient {
 			}
 			
 			Thread.sleep(10000);
-			params = new Object[]{ false };
 			
 			//call mutual exclusion to read
-			params = new Object[]{ true };
+			params = new Object[]{ false };
 			if(isCentralized){
-				System.out.println("Start centralized mutual exclusion");
+				System.out.println("Start centralized mutual exclusion read");
 				response = (String)consumeService(params, "RequestCentral.startMessage",true);
+				System.out.println("Resource value now :" + response);
 			} else {
-				System.out.println("Start ricart agrawala mutual exclusion");
+				System.out.println("Start ricart agrawala mutual exclusion read");
 				response = (String)consumeService(params, "Request.startMessage",true);
+				System.out.println("Resource value now :" + response);
 			}
 			
 			String[] parts = response.split(";");
+			System.out.println("Split array value " + Arrays.deepToString(parts));
 			
-			if(parts[1] == "1"){
-				System.out.println("My string is in the final string");
+			if(parts[1].equals("1")){
+				System.out.println("!!!!My string is in the final string!!!!");
 			} else {
-				System.out.println("My string is not in the final string");
+				System.out.println("!!!!My string is not in the final string!!!!");
 			}
 			
 			System.out.println("Final String: " + parts[0]);

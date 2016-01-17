@@ -17,13 +17,14 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 
 public class XmlRpcHelper {
 
+	private static String classNameLog = "XmlRpcHelper : ";
 	
 	private static int timeout = 200;
 	public static XmlRpcClient Connect(String ipAddress){
 		try {
-			System.out.println("Connecting to " + ipAddress);
+			System.out.println(classNameLog + "Connecting to " + ipAddress);
 			XmlRpcClient client;
-			System.out.println("XML-RPC Client call to : http://" + ipAddress + ":1090/xmlrpc/xmlrpc");
+			System.out.println(classNameLog + "XML-RPC Client call to : http://" + ipAddress + ":1090/xmlrpc/xmlrpc");
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(
 					"http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
@@ -33,7 +34,7 @@ public class XmlRpcHelper {
 			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			System.out.println("URL is not valid");
+			System.out.println(classNameLog + "URL is not valid");
 			return null;
 		}
 	}
@@ -51,7 +52,7 @@ public class XmlRpcHelper {
 				client.setConfig(config);
 				client.executeAsync(command, params, callback);
 				String response = "Async call called";
-				System.out.println("Message: " + response);
+				System.out.println(classNameLog +  "Message: " + response);
 				return response;
 			} else {
 				return "Sending to self is not permitable";
@@ -81,7 +82,7 @@ public class XmlRpcHelper {
 				XmlRpcClient client = new XmlRpcClient();
 				client.setConfig(config);
 				Object response = (Object) client.execute(command, params);
-				System.out.println("Message: " + response);
+				System.out.println(classNameLog + "Message: " + response);
 				return response;
 			} else {
 				return "Sending to self is not permitable";
@@ -109,27 +110,27 @@ public class XmlRpcHelper {
 				//don't send to self
 				String myIpAddress = InetAddress.getLocalHost().getHostAddress();
 				if (!ipAddress.equals(myIpAddress) && InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println("Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
+					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
 					  
 					  //check if machine is on
 					  Object response = (Object)SendToOneMachine(ipAddress, command, params);
-					  System.out.println(response);
+					  System.out.println(classNameLog + response);
 					  success += 1;
 				} else {
-					System.out.println("Machine is not active");
+					System.out.println(classNameLog + "Machine is not active or my own machine");
 				}
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
-				System.out.println("IP is not valid");
+				System.out.println(classNameLog + "IP is not valid");
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("String is not valid");
+				System.out.println(classNameLog + "String is not valid");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		System.out.print("Finished sending to all machines, success call " + success);
+		System.out.println("Finished sending to all machines, success call " + success);
 	}
 	
 public static void SendToAllMachinesAsync(TreeMap<Integer, String> machines, String command, Object[] params, AsyncCallback callback){
@@ -143,24 +144,24 @@ public static void SendToAllMachinesAsync(TreeMap<Integer, String> machines, Str
 				//don't send to self and check if machine alive
 				String myIpAddress = InetAddress.getLocalHost().getHostAddress();
 				if (!ipAddress.equals(myIpAddress) && InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println("Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
+					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
 					  String response = (String)SendToOneMachineAsync(ipAddress, command, params, callback);
-					  System.out.println(response);
+					  System.out.println(classNameLog + response);
 					  success += 1;
 				} else {
-					System.out.println("Machine is not active");
+					System.out.println(classNameLog + "Machine is not active or my own machine");
 				}
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
-				System.out.println("IP is not valid");
+				System.out.println(classNameLog + "IP is not valid");
 			} catch (IOException e) {
 				e.printStackTrace();
-				System.out.println("String is not valid");
+				System.out.println(classNameLog + "String is not valid");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		System.out.print("Finished sending to all machines, success call " + success);
+		System.out.println(classNameLog + "Finished sending to all machines, success call " + success);
 	}
 }

@@ -1,60 +1,57 @@
 ﻿using CookComputing.XmlRpc;
 using System.Collections.Generic;
 
-public struct NetworkMapStruct
-{
-    public int NetworkPriority;
-    public string IpAddress;
-}
-
 public interface INetworkServer 
 {
-    [XmlRpcMethod("showNetworkHashMap")]
-    NetworkMapStruct[] ShowNetworkHashMap(bool ShowLocalMap = false,int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.GetNetworkHashMap)]
+    XmlRpcStruct[] GetNetworkHashMap(bool ShowLocalMap = false);
 
-    [XmlRpcMethod("newMachineJoin")]
-    void newMachineJoin(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
+    [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
+    void newMachineJoin(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("getIpMaster")]
-    string getIpMaster(string callerIp, int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.neighborAskToJoin)]
+    string NeighborAskToJoin(string senderIpAddress);
 
-    [XmlRpcMethod("joinNetwork")]
-    void joinNetwork(string ipAddress, int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.getIpMaster)]
+    string getIpMaster(string callerIp);
 
-    [XmlRpcMethod("removeMachine")]
-    void removeMachine(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false);
+    [XmlRpcMethod(GlobalMethodName.joinNetwork)]
+    void joinNetwork(string ipAddress);
 
-    [XmlRpcMethod("addNewMessage")]
-    void addNewMessage(string newMessage, int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.removeMachine)]
+    void removeMachine(string ipAddress, bool DoItLocally = false);
 
-    [XmlRpcMethod("getMessages")]
-    string[] getMessages(int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.addNewMessage)]
+    void addNewMessage(string newMessage);
+
+    [XmlRpcMethod(GlobalMethodName.getMessages)]
+    string getMessages();
     
-    [XmlRpcMethod("changeMaster")]
-    void changeMaster(string newMasterIp, int inputLamportClock = 0);
+    [XmlRpcMethod(GlobalMethodName.changeMaster)]
+    void changeMaster(string newMasterIp);
 
-    [XmlRpcMethod("getCurrentLamportClock")]
+    [XmlRpcMethod(GlobalMethodName.getCurrentLamportClock)]
     int getCurrentLamportClock();
 
-    [XmlRpcMethod("receiveElectionSignal")]
+    [XmlRpcMethod(GlobalMethodName.receiveElectionSignal)]
     string receiveElectionSignal(string senderIP);
 
-    [XmlRpcMethod("DoLocalElection")]
+    [XmlRpcMethod(GlobalMethodName.doLocalElection)]
     void DoLocalElection();
 
-    [XmlRpcMethod("checkMasterStatus")]
+    [XmlRpcMethod(GlobalMethodName.checkMasterStatus)]
     void checkMasterStatus();
 
-    [XmlRpcMethod("MutualExclusion.SendMERequest")]
+    [XmlRpcMethod(GlobalMethodName.MESendRequest)]
     bool SendMERequestToServer(string methodName, string parameter);
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMEReply")]
+    [XmlRpcMethod(GlobalMethodName.MEReceiveReply)]
     void ReceiveMEReply();
 
-    [XmlRpcMethod("MutualExclusion.ReceiveMERequest")]
-    string ReceiveMERequest(string ipAddress, int inputLamportClock);
+    [XmlRpcMethod(GlobalMethodName.MEReceiveRequest)]
+    string ReceiveMERequest(string ipAddress);
 
-    [XmlRpcMethod("MutualExclusion.AccessCriticalPart")]
-    void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0);   
+    [XmlRpcMethod(GlobalMethodName.MEAccessCriticalPart)]
+    void AccessCriticalPart(string senderIP, string methodName, string parameter = "");   
 }
 

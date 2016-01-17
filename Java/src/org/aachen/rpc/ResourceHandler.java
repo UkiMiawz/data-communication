@@ -37,6 +37,7 @@ public class ResourceHandler {
 		
 		System.out.println(classNameLog + "Append string " + myString);
 		String currentString = "";
+		String finalString = "";
 		
 		//get current string from master
 		
@@ -51,15 +52,15 @@ public class ResourceHandler {
 		
 		if(!masterIp.equals(myIp)){
 			Object[] params = new Object[] { currentString + myString, myIp };
-			String responseString = (String) XmlRpcHelper.SendToOneMachine(masterIp, "Resource.setString", params);
-			System.out.println(classNameLog + "String appended in master, shared string value now " + responseString);
+			finalString = (String) XmlRpcHelper.SendToOneMachine(masterIp, "Resource.setString", params);
+			System.out.println(classNameLog + "String appended in master, shared string value now " + finalString);
 		} else {
 			//generate random string of 10 chars and append
-			String finalString = setString(myString, myIp);
+			finalString = setString(currentString + myString, myIp);
 			System.out.println(classNameLog + "String appended to me as master, shared string value now " + finalString);
 		}
 		
-		return myString;
+		return finalString;
 	}
 		
 	//access shared resource

@@ -39,14 +39,8 @@ public class JavaWsServer {
 	}
 	
 	public static void setMachines(TreeMap<Integer, String> newMachines){
-		for(Map.Entry<Integer,String> entry : newMachines.entrySet()) {
-			System.out.println(entry.getKey() + " " + entry.getValue());
-			Object priorityObj = entry.getKey();
-			String priorityStr = (String) priorityObj;
-			int priority = Integer.parseInt(priorityStr);
-			String value = entry.getValue();
-			machines.put(priority, value);
-		}
+		machines = newMachines;
+		System.out.println(classNameLog + "New machines value " + newMachines);
 	}
 	
 	private static InetAddress myIp;
@@ -152,17 +146,23 @@ public class JavaWsServer {
 		return machineIp;
 	}
 	
+	public static int removeMachineFromMap(String ipAddress){
+		int machineKey = Helper.getKeyByValue(machines, ipAddress);
+		machines.remove(machineKey);
+		return machineKey;
+	}
+	
 	/* ========= SERVER SHUTDOWN METHODS ====== */
 	
 	public static void serverShutDown(){
-		Object[] params = new Object[] { myPriority };
-		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		Object[] params = new Object[] { myIp };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 	}
 	
 	public void serverShutDownFromClient(String ip){
 		System.out.println(ip + " client ask to shutdown server");
-		Object[] params = new Object[] { myPriority };
-		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachine", params);
+		Object[] params = new Object[] { myIp };
+		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 		webServer.shutdown();
 		System.out.println("Server shutdown");
 	}
@@ -192,7 +192,25 @@ public class JavaWsServer {
 			myIpAddress = myIp.getHostAddress();
 			
 			//join network
-			//RegisterHandler.joinNetwork(myIpAddress);
+			String myNeighbourIp = "";
+			
+			//ask for neighbour ip or not
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        	System.out.println("=====Connecting to Network=====");        
+        	System.out.println("1. Input neighbour IP Address manually");
+        	System.out.println("2. Detect neighbour IP Address automatically");
+        	System.out.println("Enter choice, or 'exit' to quit: ");
+            String command =  reader.readLine();
+            
+            if(command.equals("1")){
+            	System.out.println("Please input neighbor IP address :");
+            	myNeighbourIp = reader.readLine();
+            }
+        	
+			System.out.println("");
+			
+			RegisterHandler.joinNetwork(myIpAddress, myNeighbourIp);
 			if(!machines.containsValue(myIpAddress)){
 				System.out.println("Add myself to hashmap");
 				myPriority = addMachineToMap(myIpAddress);
@@ -213,15 +231,14 @@ public class JavaWsServer {
 			System.out.println(classNameLog + "Machines now " + machines);
 			
 			//wait for command
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-		            System.in));
+			reader = new BufferedReader(new InputStreamReader(System.in));
 			
 	        boolean keepRunning = true;
 	        while (keepRunning)
 	        {       
 	        	try{
 	        		System.out.println("Enter command, or 'exit' to quit: ");
-	                String command =  reader.readLine();
+	                command =  reader.readLine();
 	                if ("exit".equals(command)) {
 	                    keepRunning = false;
 	                    System.out.println("Shutting down server...");

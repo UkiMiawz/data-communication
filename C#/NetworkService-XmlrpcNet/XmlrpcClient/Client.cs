@@ -19,16 +19,13 @@ class XmlrpcClient
         HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        string defaultServer = "http://localhost:1090/networkServer.rem";
+        string defaultServer = "http://localhost:1090/xml-rpc-example/xmlrpc";
 
         INetworkServerClientProxy localProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
         localProxy.Url = defaultServer;
 
         try
         {
-            // ====== try to join the network =====
-            localProxy.joinNetwork(ipAddress);
-            
             // ====== Begin client input ======
             string input;
             ClientUI clientUi = new ClientUI();
@@ -43,12 +40,12 @@ class XmlrpcClient
                         // Menu 1: Show master hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] networkHashMap = localProxy.ShowNetworkHashMap();
-                        
+                        XmlRpcStruct[] networkHashMap = localProxy.GetNetworkHashMap();
+
                         Console.WriteLine("The Masternode hashmap");
-                        foreach (NetworkMapStruct ipItem in networkHashMap)
+                        foreach (XmlRpcStruct ipItem in networkHashMap)
                         {
-                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
                         }
 
                         Console.ReadKey();
@@ -58,12 +55,12 @@ class XmlrpcClient
                         // Menu 1: Show local hashmap.
                         localProxy.checkMasterStatus();
 
-                        NetworkMapStruct[] localhostHashMap = localProxy.ShowNetworkHashMap(true);
+                        XmlRpcStruct[] localhostHashMap = localProxy.GetNetworkHashMap();
 
                         Console.WriteLine("The localhost hashmap");
-                        foreach (NetworkMapStruct ipItem in localhostHashMap)
+                        foreach (XmlRpcStruct ipItem in localhostHashMap)
                         {
-                            Console.WriteLine("Priority {0} : {1}", ipItem.NetworkPriority, ipItem.IpAddress);
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
                         }
 
                         Console.ReadKey();
@@ -79,30 +76,7 @@ class XmlrpcClient
                         break;
 
                     case "4":
-                        // Menu 4: add new message.
-                        localProxy.checkMasterStatus();
-
-                        Console.WriteLine("write your new message: ");
-                        string newMessage = Console.ReadLine();
-                        localProxy.addNewMessage(newMessage);
-                        break;
-
-                    case "5":
-                        // Menu 5: get all messages.
-                        localProxy.checkMasterStatus();
-
-                        Console.WriteLine("===== Start of messages ===== ");
-                        string[] groupMessages = localProxy.getMessages();
-                        foreach (string msg in groupMessages)
-                        {
-                            Console.WriteLine("{0}", msg);
-                        }
-                        Console.WriteLine("===== End of messages =====");
-                        Console.ReadKey();
-                        break;
-
-                    case "6":
-                        // Menu 6: do election.
+                        // Menu 4: do election.
                         localProxy.checkMasterStatus();
 
                         Console.WriteLine("Election held!!!");
@@ -114,17 +88,8 @@ class XmlrpcClient
                         Console.ReadKey();
                         break;
 
-                    case "7":
-                        // Menu 7: show current Lamport clock.
-                        localProxy.checkMasterStatus();
-
-                        int lampClock = localProxy.getCurrentLamportClock();
-                        Console.WriteLine("The current Lamport Clock is: {0}", lampClock);
-                        Console.ReadKey();
-                        break;
-
-                    case "8":
-                        // Menu 8: Test Mutual Exclusion.
+                    case "6":
+                        // Menu 6: Test Mutual Exclusion.
                         Console.WriteLine("Processing Now...");
                         bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
                         if (isDirectProcessing)
@@ -137,6 +102,44 @@ class XmlrpcClient
                         }
                         Console.ReadKey();
                         break;
+
+                    case "7":
+                        // Menu 7: Rejoining Network.
+                        localProxy.joinNetwork(ipAddress);
+                        Console.WriteLine("You successfully rejoin the network!!");
+                        Console.ReadKey();
+                        break;
+
+                    case "14":
+                        // Menu 4: add new message.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("write your new message: ");
+                        string newMessage = Console.ReadLine();
+                        localProxy.addNewMessage(newMessage);
+                        break;
+
+                    case "15":
+                        // Menu 5: get all messages.
+                        localProxy.checkMasterStatus();
+
+                        Console.WriteLine("===== Start of messages ===== ");
+                        string groupMessages = localProxy.getMessages();
+                        Console.WriteLine("{0}", groupMessages);
+                        Console.WriteLine("===== End of messages =====");
+                        Console.ReadKey();
+                        break;
+
+                    case "17":
+                        // Menu 7: show current Lamport clock.
+                        localProxy.checkMasterStatus();
+
+                        int lampClock = localProxy.getCurrentLamportClock();
+                        Console.WriteLine("The current Lamport Clock is: {0}", lampClock);
+                        Console.ReadKey();
+                        break;
+
+
                 }
             }
             while (input != "0");

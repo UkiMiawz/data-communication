@@ -24,7 +24,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         DefaultMasterNode = MyIpAddress;
 
         // default group messages
-        GroupMessages = new List<string>();
+        GroupMessages = string.Empty;
 
         // default master proxy
         MasterProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
@@ -42,12 +42,12 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
         // RequestPackage
         localRequestPackage = new RequestPackage();
+
+        joinNetwork(MyIpAddress);
     }
 
     ~NetworkServer() // Destructor
     {
-        localLamportClock.UpdateLamportClock();
-        removeMachine(MyIpAddress, localLamportClock.getCurrentTime());
         if (CurrentMasterNode == MyIpAddress && NetworkHashMap.Count() > 0)
         {
             masterNodeResign();
@@ -60,7 +60,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string ServerUrlEnd = ":1090/networkServer.rem";
     public string DefaultMasterNode;
     public string MyIpAddress;
-    public List<string> GroupMessages;
+    public string GroupMessages;
     public INetworkServerClientProxy MasterProxy;
     public INetworkServerClientProxy LocalProxy;
     public LamportClock localLamportClock;
@@ -97,15 +97,15 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
                     switch (command)
                     {
                         case "addNewMachine":
-                            slaveProxy.newMachineJoin(ipAddress, localLamportClock.getCurrentTime(), true);
+                            slaveProxy.newMachineJoin(ipAddress, true);
                             break;
 
                         case "removeMachine":
-                            slaveProxy.removeMachine(ipAddress, localLamportClock.getCurrentTime(), true);
+                            slaveProxy.removeMachine(ipAddress, true);
                             break;
 
                         case "changeMaster":
-                            slaveProxy.changeMaster(ipAddress, localLamportClock.getCurrentTime());
+                            slaveProxy.changeMaster(ipAddress);
                             break;
                     }
                 }
@@ -126,25 +126,27 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         return NetworkHashMap.Keys.ToList().Max();
     }
 
-    private NetworkMapStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
+    private XmlRpcStruct[] ConvertDictionaryToStruct(Dictionary<int, string> dict)
     {
-        NetworkMapStruct[] convertionResult = new NetworkMapStruct[dict.Count()];
+        XmlRpcStruct[] convertionResult = new XmlRpcStruct[dict.Count()];
         for (int i = 0; i < dict.Count; i++)
         {
-            convertionResult[i] = new NetworkMapStruct();
-            convertionResult[i].IpAddress = dict.Values.ElementAt(i);
-            convertionResult[i].NetworkPriority = dict.Keys.ElementAt(i);
+            convertionResult[i] = new XmlRpcStruct();
+            convertionResult[i].Add("NetworkPriority", dict.Keys.ElementAt(i));
+            convertionResult[i].Add("IpAddress", dict.Values.ElementAt(i));
         }
 
         return convertionResult;
     }
 
-    private Dictionary<int, string> ConvertStructToDictionary(NetworkMapStruct[] netStruct)
+    private Dictionary<int, string> ConvertStructToDictionary(XmlRpcStruct[] netStruct)
     {
         Dictionary<int, string> convertionResult = new Dictionary<int, string>();
-        foreach (NetworkMapStruct netStructItem in netStruct)
+        foreach (XmlRpcStruct structItem in netStruct)
         {
-            convertionResult.Add(netStructItem.NetworkPriority, netStructItem.IpAddress);
+            int itemKey = (int)structItem["NetworkPriority"];
+            string itemValue = structItem["IpAddress"].ToString();
+            convertionResult.Add(itemKey,itemValue);
         }
 
         return convertionResult;
@@ -174,53 +176,47 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public void addNewMessage(string newMessage, int inputLamportClock = 0)
+    public void addNewMessage(string newMessage)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
+        
         if (CurrentMasterNode == DefaultMasterNode)
         {
-            GroupMessages.Add(newMessage);
+            GroupMessages = GroupMessages + " " + newMessage;
         }
         else
         {
-            MasterProxy.addNewMessage(newMessage, localLamportClock.getCurrentTime());
+            MasterProxy.addNewMessage(newMessage);
         }
     }
 
-    public string[] getMessages(int inputLamportClock = 0)
+    public string getMessages()
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
+       
         if (CurrentMasterNode == DefaultMasterNode)
         {
-            return ConvertListToStruct(GroupMessages);
+            return GroupMessages;
         }
         else
         {
-            return MasterProxy.getMessages(localLamportClock.getCurrentTime());
+            return MasterProxy.getMessages();
         }
     }
 
-    public NetworkMapStruct[] ShowNetworkHashMap(bool DoItLocally = false, int inputLamportClock = 0)
-    {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
+    public XmlRpcStruct[] GetNetworkHashMap(bool DoItLocally = false)
+    {        
         if (CurrentMasterNode == DefaultMasterNode || DoItLocally == true)
         {
-            NetworkMapStruct[] result = ConvertDictionaryToStruct(NetworkHashMap);
+            XmlRpcStruct[] result = ConvertDictionaryToStruct(NetworkHashMap);
             return result;
         }
         else
         {
-            return MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
+            return MasterProxy.GetNetworkHashMap(false);
         }
     }
 
-    public void newMachineJoin(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false)
+    public void newMachineJoin(string ipAddress, bool DoItLocally = false)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
         if (CurrentMasterNode == DefaultMasterNode || DoItLocally == true)
         {
             if (NetworkHashMap.Count() > 0 && NetworkHashMap.ContainsValue(ipAddress))
@@ -238,14 +234,12 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
         else
         {
-            MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
+            MasterProxy.GetNetworkHashMap(false);
         }
     }
 
-    public void removeMachine(string ipAddress, int inputLamportClock = 0, bool DoItLocally = false)
+    public void removeMachine(string ipAddress, bool DoItLocally = false)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
         if (CurrentMasterNode == MyIpAddress || DoItLocally)
         {
             KeyValuePair<int, string> removedIp = NetworkHashMap.FirstOrDefault(x => x.Value == ipAddress);
@@ -256,14 +250,13 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
         else
         {
-            MasterProxy.removeMachine(ipAddress, localLamportClock.getCurrentTime());
+            MasterProxy.removeMachine(ipAddress);
         }
     }
 
-    public string getIpMaster(string callerIp, int inputLamportClock = 0)
+    public string getIpMaster(string callerIp)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
-
+        
         if (CurrentMasterNode == string.Empty)
             return DefaultMasterNode;
         else
@@ -272,10 +265,76 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public void joinNetwork(string ipAddress, int inputLamportClock = 0)
+    public void joinNetwork(string ipAddress)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
+        // step 1: ping neighbor and ask to join.
+        string baseIP = ipAddress.Substring(0, (ipAddress.LastIndexOf('.') + 1));
+        CurrentMasterNode = "";
 
+        try
+        {
+            for (int i = 0; i < 255; i++)
+            {
+                string neighborIp = baseIP + i;
+                ServerStatusCheck ssc = new ServerStatusCheck();
+                bool serverUp = ssc.isServerUp(neighborIp, 1090, 300);
+
+                if (serverUp)
+                {
+                    string neighborServer = ServerUrlStart + neighborIp + ServerUrlEnd;
+                    INetworkServerClientProxy neighborProxy = XmlRpcProxyGen.Create<INetworkServerClientProxy>();
+                    neighborProxy.Url = neighborServer;
+
+                    string neighborIpReturn = neighborProxy.NeighborAskToJoin(ipAddress);
+
+                    if (neighborIpReturn != string.Empty)
+                        // Get Master's Ip;
+                        CurrentMasterNode = neighborProxy.getIpMaster(ipAddress);
+                    break;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        if (CurrentMasterNode == "")
+        {
+            CurrentMasterNode = DefaultMasterNode;
+            newMachineJoin(ipAddress);
+        }
+
+        // step 2: Asking the updated map from master node
+        try
+        {
+            MasterProxy.Url = ServerUrlStart + CurrentMasterNode + ServerUrlEnd;
+            XmlRpcStruct[] newMap = MasterProxy.GetNetworkHashMap();
+            NetworkHashMap = ConvertStructToDictionary(newMap);
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
+    public string NeighborAskToJoin(string senderIpAddress)
+    {
+        if (CurrentMasterNode == DefaultMasterNode)
+        {
+            newMachineJoin(senderIpAddress);
+        }
+        else
+        {
+            MasterProxy.newMachineJoin(senderIpAddress);
+        }
+
+        return MyIpAddress;
+    }    
+
+    public void joinNetworkDummy(string ipAddress)
+    {       
         // step 1: ping all neighbor
         NetworkPingService nps = new NetworkPingService();
         nps.DetectAllNetwork(ipAddress);
@@ -327,7 +386,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
             MasterProxy.newMachineJoin(ipAddress);
 
-            NetworkMapStruct[] newHashmap = MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
+            XmlRpcStruct[] newHashmap = MasterProxy.GetNetworkHashMap(false);
             NetworkHashMap = ConvertStructToDictionary(newHashmap);
         }
         catch (Exception ex)
@@ -336,11 +395,11 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         }
     }
 
-    public void changeMaster(string newMasterIp, int inputLamportClock = 0)
-    {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
 
-        try
+
+    public void changeMaster(string newMasterIp)
+    {
+       try
         {
             //change Masternode
             MasterProxy.Url = ServerUrlStart + newMasterIp + ServerUrlEnd;
@@ -348,7 +407,8 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("New master Node is : {0}" + newMasterIp);
 
             //update Hash map from Master
-            NetworkMapStruct[] updatedMap = MasterProxy.ShowNetworkHashMap(false, localLamportClock.getCurrentTime());
+            XmlRpcStruct[] updatedMap = MasterProxy.GetNetworkHashMap(false);
+            NetworkHashMap = ConvertStructToDictionary(updatedMap);
             Console.WriteLine("local hashmap has been updated from new master node.");
         }
         catch (Exception ex)
@@ -365,7 +425,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     public string receiveElectionSignal(string senderIP)
     {
         IAsyncResult asr;
-        asr = LocalProxy.BeginDoLocalElection(null, null);
+        asr = LocalProxy.BeginDoLocalElection();
         while (asr.IsCompleted == false)
         {
             return "Ok";
@@ -398,15 +458,29 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     public void DoLocalElection()
     {
+        Console.WriteLine("An election is held!!!");
         Bully bullyObj = new Bully();
         string newMaster = bullyObj.doElection(MyIpAddress, NetworkHashMap);
 
         if (newMaster != string.Empty)
         {
-            // 1. tell other notes that I'm the new master, update my hashmap
-            changeMaster(newMaster);
-            // 2. tell other notes to update their hashmap
+            // If the bully return something, that means I am the master. 
+            Console.WriteLine("You are the new master!");
+
+            // 1. Update the hashmap
+            Dictionary<int, string> updatedMap = bullyObj.getActiveMap(NetworkHashMap);
+            NetworkHashMap = updatedMap;
+
+            // 2. change my master
+            MasterProxy.Url = ServerUrlStart + MyIpAddress + ServerUrlEnd;
+            CurrentMasterNode = MyIpAddress;
+
+            // 3. tell other notes that I'm the new master, and to update their hashmap
             sendToAllSlave("changeMaster", newMaster);
+        }
+        else
+        {
+            Console.WriteLine("Another node with higher priority has answered. your job is done.");
         }
 
     }
@@ -418,17 +492,16 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
     // ==== Mutual Exclusion : Slave part ===== 
     public bool SendMERequestToServer(string methodName, string parameter)
     {
-        localLamportClock.UpdateLamportClock();
-        bool isRequestAvailable = localRequestPackage.CreateNewRequest(methodName, parameter);
+       bool isRequestAvailable = localRequestPackage.CreateNewRequest(methodName, parameter);
         if (isRequestAvailable == true)
         {
-            string meRequestStatus = MasterProxy.ReceiveMERequest(MyIpAddress, localLamportClock.getCurrentTime());
+            string meRequestStatus = MasterProxy.ReceiveMERequest(MyIpAddress);
             // If master available, do the process immediately.
             if (meRequestStatus == MEStatus.Available)
             {
                 ReceiveMEReply();
                 return true;
-            }            
+            }
         }
         return false;
     }
@@ -439,8 +512,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
         // This is an Async method!!
         if (localRequestPackage.getIsWaitingProcess())
         {
-            localLamportClock.UpdateLamportClock();
-            MasterProxy.AccessCriticalPart(MyIpAddress, localRequestPackage.methodName, localRequestPackage.parameter, localLamportClock.getCurrentTime());
+            MasterProxy.AccessCriticalPart(MyIpAddress, localRequestPackage.methodName, localRequestPackage.parameter);
             localRequestPackage.FinishSending();
         }
     }
@@ -449,26 +521,24 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
 
     #region Mutual Exclusion : Master part
     // ==== Mutual Exclusion : Master part ====
-    public string ReceiveMERequest(string senderIP, int inputLamportClock)
+    public string ReceiveMERequest(string senderIP)
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
         Console.WriteLine("machine {0} request access to critical part.", senderIP);
-        string result = localMutualExclusion.TryToAccess(senderIP, localLamportClock.getCurrentTime());
+        string result = localMutualExclusion.TryToAccess(senderIP);
         if (result == MEStatus.Available)
         {
-            Console.WriteLine("Mutual Exclusion is available. Machine {0} will accessing the critical part now.", senderIP);            
+            Console.WriteLine("Mutual Exclusion is available. Machine {0} will accessing the critical part now.", senderIP);
         }
         else
         {
             int queueNumber = localMutualExclusion.GetQueueOrderByIp(senderIP);
             Console.WriteLine("Mutual Exclusion is busy. Machine {0} is in queue number {1}", senderIP, queueNumber);
         }
-        return result;  
+        return result;
     }
 
-    public void AccessCriticalPart(string senderIP, string methodName, string parameter = "", int inputLamportClock = 0)
+    public void AccessCriticalPart(string senderIP, string methodName, string parameter = "")
     {
-        localLamportClock.UpdateLamportClock(inputLamportClock);
         if (CurrentMasterNode == MyIpAddress)
         {
             localMutualExclusion.AccessingTheCriticalPart();
@@ -484,7 +554,7 @@ public class NetworkServer : MarshalByRefObject, INetworkServer
             Console.WriteLine("machine {0} finished accessing critical part.", senderIP);
             localMutualExclusion.FinishAccessing();
         }
-    }   
+    }
     // ==== Mutual Exclusion : Master part End ====
     #endregion
 
