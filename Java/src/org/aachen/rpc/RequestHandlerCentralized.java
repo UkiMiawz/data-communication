@@ -1,14 +1,13 @@
 package org.aachen.rpc;
 
-import java.util.List;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.client.AsyncCallback;
 
 public class RequestHandlerCentralized {
 
-	private static List<Request> queue;
+	private static ArrayList<Request> queue = new ArrayList<Request>();
 	private static String classNameLog = "RequestHandlerCentralized : ";
 	private static ResourceHandler resourceHandler;
 	
@@ -19,8 +18,8 @@ public class RequestHandlerCentralized {
 	private boolean wantWrite = false;
 	private boolean haveInterest = false;
 	
-	private String finalString;
-	private String myString;
+	private String finalString = "";
+	private String myString = "";
 	
 	private int myKey;
 	
@@ -78,6 +77,7 @@ public class RequestHandlerCentralized {
 			Thread a = new Thread(() -> {
 			    receiveRequest(myIp, "RequestCentral.wantAccess");
 			});
+			a.start();
 		}
 		
 		//set have interest to trigger waiting
@@ -96,20 +96,24 @@ public class RequestHandlerCentralized {
 		}
 				
 		if(wantWrite){
+		
 			//return written string
 			System.out.println(classNameLog + "Written String => " + myString);
 			return myString;
+		
+		} else {
+			
+			System.out.println(classNameLog + "Read String check my string => " + myString);
+			System.out.println(classNameLog + "Final String => " + finalString);
+			int containMyString = 0;
+			if(finalString.contains(myString))
+			{
+				containMyString = 1;
+			}
+			
+			System.out.println(classNameLog + "Read process finished, final result => " + finalString + ";" + containMyString);
+			return finalString + ";" + containMyString;
 		}
-		
-		int containMyString = 0;
-		if(finalString.contains(myString))
-		{
-			containMyString = 1;
-		}
-		
-		System.out.println(classNameLog + "Read process finished, final result => " + finalString + ";" + containMyString);
-		return finalString + ";" + containMyString;
-		
 	}
 	
 	/***
@@ -119,21 +123,21 @@ public class RequestHandlerCentralized {
 	 */
 	public void getPermission(String requestIp, String requestString){
 		System.out.println(classNameLog + "Server gave permission to access resource");
-		doResourceAccess();
-		//notify master that finished access
 		
-		haveInterest = false;
-		currentlyAccessing = false;
+		doResourceAccess();
+		
+		//notify master that finished access
 		System.out.println(classNameLog + "Finished accessing resource");
 		
 		if(!masterIp.equals(myIp)){
 			Object[] params = new Object[]{ myIp };
 			XmlRpcHelper.SendToOneMachineAsync(masterIp, "RequestCentral.finishRequest", params, new CallBack());
 		} else {
-			System.out.println(classNameLog + "I am master, start async on self");
+			System.out.println(classNameLog + "Finishing request with me as master, start async on self");
 			Thread a = new Thread(() -> {
 			    finishRequest(myIp);
 			});
+			a.start();
 		}
 	}
 	
@@ -141,23 +145,21 @@ public class RequestHandlerCentralized {
 		System.out.println(classNameLog + "Do resource access");
 		currentlyAccessing = true;
 		//clear permission, do request access
-		String nowResource;
 		
 		if(wantWrite){
 			System.out.println(classNameLog + "Write random string to resource");
 			myString = resourceHandler.generateRandomString();
 			System.out.println(classNameLog + "Random string generated => " + myString);
-			nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
+			finalString = resourceHandler.appendNewString(myIp, masterIp, myString);
 		} else {
 			System.out.println(classNameLog + "Read shared string");
-			nowResource = resourceHandler.readNewString(myIp, masterIp); 
+			finalString = resourceHandler.readNewString(myIp, masterIp); 
 		}
 		
-		System.out.println(classNameLog + "Resource value now => " + nowResource);
+		System.out.println(classNameLog + "Want write " + wantWrite + " Resource value now => " + finalString);
 		haveInterest = false;
-		currentlyAccessing = false;
 		
-		return nowResource;
+		return finalString;
 	}
 	
 	//============MASTER SIDE===================
@@ -168,20 +170,25 @@ public class RequestHandlerCentralized {
 	 * @param requestString
 	 */
 	public void receiveRequest(String requestIp, String requestString){
+		System.out.println(classNameLog + "Receiving request from " + requestIp + " with request string " + requestString);
 		Request incomingRequest = new Request(0, requestIp, requestString);
+		System.out.println(classNameLog + "Currently accessing " + currentlyAccessing);
 		if(currentlyAccessing){
 			//add to queue
 			queue.add(incomingRequest);
+			System.out.println(classNameLog + "New request added to queue " + queue);
 		} else {
 			//send signal that its ok to request
 			if(!masterIp.equals(myIp)){
+				System.out.println(classNameLog + "Sending request to master " + masterIp);
 				Object[] params = new Object[] { requestIp, requestString };
 				XmlRpcHelper.SendToOneMachine(requestIp, "RequestCentral.getPermission", params);
 			} else {
-				System.out.println(classNameLog + "I am master, start async on self");
+				System.out.println(classNameLog + "I am master, receive request, start async on self");
 				Thread a = new Thread(() -> {
 					getPermission(myIp, requestString);
 				});
+			a.start();
 			}
 		}
 	}
@@ -191,8 +198,9 @@ public class RequestHandlerCentralized {
 	 * @param requestIp
 	 */
 	public void finishRequest(String requestIp){
-		System.out.println(requestIp + " finished with request");
+		System.out.println(classNameLog + requestIp + " finished with request");
 		//access next item in queue
+		System.out.println(classNameLog + "Queue value now " + queue);
 		if(!queue.isEmpty()){
 			System.out.println(classNameLog + "Processing next item in the list");
 			
