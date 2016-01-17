@@ -18,9 +18,10 @@ public class RequestHandler {
 	private static ResourceHandler resourceHandler = new ResourceHandler();
 	private static String classNameLog = "RequestHandler : ";
 	
-	private static String masterIp;
-	private static String myIp;
-	private static TreeMap<Integer, String> machines;
+	private static String masterIp = JavaWsServer.getIpMaster();
+	private static String myIp = JavaWsServer.getMyIpAddress();
+	private static int myKey = JavaWsServer.getMyPriority();
+	private static TreeMap<Integer, String> machines = JavaWsServer.getMachines();
 	
 	private static boolean haveInterest = false;
 	private static boolean currentlyAccessing = false;
@@ -28,8 +29,6 @@ public class RequestHandler {
 	
 	private static String finalString = "";
 	private static String myString = "";
-	
-	private static int myKey;
 	
 	/**
 	 * class to handle async call back for ricart agrawala mutual exclusion
@@ -54,11 +53,6 @@ public class RequestHandler {
 		
 		//initialize variables
 		System.out.println(classNameLog + "Start mutual exclusion process");
-		masterIp = JavaWsServer.getIpMaster();
-		myIp = JavaWsServer.getMyIpAddress();
-		machines = JavaWsServer.getMachines();
-		
-		myKey = JavaWsServer.getMyPriority();
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
 		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
 		

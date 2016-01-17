@@ -13,8 +13,9 @@ public class RequestHandlerCentralized {
 	private static String classNameLog = "RequestHandlerCentralized : ";
 	private static ResourceHandler resourceHandler;
 	
-	private static String masterIp;
-	private static String myIp;
+	private static String masterIp = JavaWsServer.getIpMaster();
+	private static String myIp = JavaWsServer.getMyIpAddress();
+	private int myKey = JavaWsServer.getMyPriority();
 
 	private boolean currentlyAccessing = false;
 	private boolean wantWrite = false;
@@ -22,8 +23,6 @@ public class RequestHandlerCentralized {
 	
 	private String finalString = "";
 	private String myString = "";
-	
-	private int myKey;
 	
 	/**
 	 * class to handle async call back for centralized mutual exclusion
@@ -54,9 +53,6 @@ public class RequestHandlerCentralized {
 	public String startMessage(boolean wantWrite){
 		
 		System.out.println(classNameLog + "Start mutual exclusion process");
-		masterIp = JavaWsServer.getIpMaster();
-		myIp = JavaWsServer.getMyIpAddress();
-		myKey = JavaWsServer.getMyPriority();
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
 		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
 		
@@ -189,6 +185,7 @@ public class RequestHandlerCentralized {
 			System.out.println(classNameLog + "New request added to queue " + queue);
 		} else {
 			//send signal that its ok to request
+			System.out.println(classNameLog + "Master IP " + masterIp + " My IP " + myIp);
 			if(!masterIp.equals(myIp)){
 				System.out.println(classNameLog + "Sending request to master " + masterIp);
 				Object[] params = new Object[] { requestIp, requestString };
