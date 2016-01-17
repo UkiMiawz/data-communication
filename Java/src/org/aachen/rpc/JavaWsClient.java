@@ -149,7 +149,8 @@ public class JavaWsClient {
                 String command =  reader.readLine();
                 if ("0".equals(command))
                 {
-                    keepRunning = false;
+                    //exit the application
+                	keepRunning = false; 
                 } else if("1".equals(command)){
                 	Object[] params = new Object[]{ip.getHostAddress()};
                 	TreeMap<Integer, String> machines = new TreeMap<Integer, String>();
