@@ -10,8 +10,6 @@ import java.util.TreeMap;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
 public class JavaWsClient {
 	
 	private static XmlRpcClient client;
@@ -19,6 +17,9 @@ public class JavaWsClient {
 	private static InetAddress ip;
 	private static String masterIp;
 	
+	/***
+	 * Start election from client
+	 */
 	private static void startElection(){
 		try {
 			Object[] params = new Object[] { ip.getHostAddress() };
@@ -29,6 +30,9 @@ public class JavaWsClient {
 		}
 	}
 	
+	/***
+	 * Consume service from client side
+	 */
 	private static Object consumeService(Object[] params, String command, boolean isLocal){
 		System.out.println("Consume service " + command + " with params " + Arrays.deepToString(params));
 		XmlRpcClient usingClient = new XmlRpcClient();
@@ -46,6 +50,9 @@ public class JavaWsClient {
 		}
 	}
 	
+	/***
+	 * Establish connection to current master
+	 */
 	private static void connectToMaster(){
 		//get and connect to current master if available
 		masterIp = (String) consumeService(new Object[] { ip.getHostAddress() }, "RegisterHandler.getIpMaster", true);
@@ -59,6 +66,10 @@ public class JavaWsClient {
 		
 	}
 	
+	/***
+	 * Start mutual exclusion process
+	 * @param isCentralized To choose whether mutual exclusion using centralized or ricart
+	 */
 	private static void StartMutualExclusion(boolean isCentralized){
 		try {
 			//wait for random time
@@ -108,6 +119,9 @@ public class JavaWsClient {
 		}
 	}
 		
+	/***
+	 * Main client process
+	 */
 	public static void main (String [] args) {
 		
 		try {
