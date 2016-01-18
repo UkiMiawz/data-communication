@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 public class RegisterHandler
 {
@@ -121,22 +124,28 @@ public class RegisterHandler
 
             int i = 2;
 
+            ServerStatusCheck ssc = new ServerStatusCheck();
+            Ping pinger = new Ping();
+           
             if (neighbourIp == null && neighbourIp == string.Empty)
             {
+
+
                 //search for neighbor automatically
                 while (ipNeighbor == null && i < 255)
                 {
                     String host = subnet + "." + i;
                     Console.WriteLine(classNameLog + "Contacting " + host);
+                    PingReply pingresult = pinger.Send(host);
 
-                    if (host != ipAddress && InetAddress.getByName(host).isReachable(timeout))
+                    if (host != ipAddress && pingresult.Status == IPStatus.Success)
                     {
                         Console.WriteLine(classNameLog + host + " is reachable. Checking validity");
                         Object[] parameters = new Object[] { ipAddress };
 
                         ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", parameters);
                         //check if ip neighbor is valid
-                        if (!InetAddresses.isInetAddress(ipNeighbor))
+                        if (ssc.isServerUp(host, 1090, 300) == false)
                         {
                             ipNeighbor = null;
                         }
@@ -177,7 +186,7 @@ public class RegisterHandler
                 Dictionary<int, String> machines = new Dictionary<int, string>();
                 //machines = Helper.convertMapResponseToMachinesTreeMap(XmlRpcHelper.SendToOneMachine(ipMaster, "RegisterHandler.getMachines", parameters));
                 CSharpRpcServer.setMachines(machines);
-                Console.WriteLine(classNameLog + "Machines set, number of machines " + machines.Count());
+                Console.WriteLine(classNameLog + "Machines set, number of machines " + machines.Count);
 
                 //set ip master
                 CSharpRpcServer.setMaster(keyMaster);
