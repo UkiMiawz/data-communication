@@ -60,8 +60,29 @@ public class XmlRpcHelper
                 object response;
                 switch(command)
                 {
+                    case GlobalMethodName.getMachines:
+                        response = newProxy.getMachines();
+                        break;
+
+                    case GlobalMethodName.serverShutDownFromClient:
+                        newProxy.serverShutDownFromClient();
+                        response = "success";
+                        break;
+
+                    case GlobalMethodName.leaderElection:
+                        response = newProxy.leaderElection(parameter[0].ToString());
+                        break;
+
+                    case GlobalMethodName.getIpMaster:
+                        response = newProxy.getIpMaster(parameter[0].ToString());
+                        break;
+
                     case GlobalMethodName.removeMachineIp:
                         response = newProxy.removeMachineIp(parameter[0].ToString());
+                        break;
+
+                    case GlobalMethodName.newMachineJoin:
+                        response = newProxy.newMachineJoin(parameter[0].ToString());
                         break;
 
                     default:

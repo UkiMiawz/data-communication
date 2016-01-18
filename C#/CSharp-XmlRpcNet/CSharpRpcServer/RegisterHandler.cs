@@ -76,6 +76,7 @@ public class RegisterHandler
         return "Notification from " + callerIp + " Machine added " + newIp;
     }
 
+    [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     public String newMachineJoin(String ipAddress)
     {
         Console.WriteLine(classNameLog + "Join request from neighbor " + ipAddress);
@@ -166,7 +167,7 @@ public class RegisterHandler
                 if (neighbourIp != myIp && neighbourIp != "localhost")
                 {
                     Object[] parameters = new Object[] { ipAddress };
-                    ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(neighbourIp, "RegisterHandler.newMachineJoin", parameters);
+                    ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(neighbourIp, GlobalMethodName.newMachineJoin, parameters);
                 }
             }
 

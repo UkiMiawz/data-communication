@@ -10,19 +10,22 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     [XmlRpcMethod("Hello")]
     string HelloWorld(string input);
 
-    [XmlRpcMethod("Server.getMachines")]
+    [XmlRpcMethod(GlobalMethodName.getMachines)]
     XmlRpcStruct[] getMachines();
 
-    [XmlRpcMethod("Server.serverShutDownFromClient")]
+    [XmlRpcMethod(GlobalMethodName.serverShutDownFromClient)]
     void serverShutDownFromClient();
 
-    [XmlRpcMethod("Election.leaderElection")]
+    [XmlRpcMethod(GlobalMethodName.leaderElection)]
     string leaderElection(string ipadress);
 
-    [XmlRpcMethod("RegisterHandler.getIpMaster")]
+    [XmlRpcMethod(GlobalMethodName.getIpMaster)]
     string getIpMaster(string ipaddress);
     
     [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
     string removeMachineIp(String ipAddress);
+
+    [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
+    String newMachineJoin(String ipAddress);
 }
 
