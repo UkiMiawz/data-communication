@@ -246,9 +246,7 @@ public class JavaWsServer {
 	                } else if ("ip".equals(command)) {
 	                	System.out.println("This machine ip :" + myIpAddress);
 	                } else if ("print".equals(command)) {
-	                	printAllMachinesInLan();
-	                } else if("leader".equals(command)) {
-	                	
+	                	printAllMachinesInLan();	
 	                } else {
 	                    System.out.println("Command " + command + " not recognized");
 	                }
