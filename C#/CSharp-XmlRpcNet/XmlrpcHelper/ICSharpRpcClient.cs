@@ -7,5 +7,7 @@ using System.Threading.Tasks;
 
 public interface ICSharpRpcClient : IXmlRpcProxy
 {
+    [XmlRpcMethod("Hello")]
+    string HelloWorld(string input);
 }
 

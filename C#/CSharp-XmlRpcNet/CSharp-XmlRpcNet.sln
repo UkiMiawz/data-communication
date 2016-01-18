@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorldClient", "HelloWo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlrpcHelper", "XmlrpcHelper\XmlrpcHelper.csproj", "{61CDB7B3-FA3A-4BBE-8BB4-B04E7632498F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpRpcClient", "CSharpRpcClient\CSharpRpcClient.csproj", "{A9B632A9-0879-477C-A4C6-2666CA5ACC97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{61CDB7B3-FA3A-4BBE-8BB4-B04E7632498F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61CDB7B3-FA3A-4BBE-8BB4-B04E7632498F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61CDB7B3-FA3A-4BBE-8BB4-B04E7632498F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9B632A9-0879-477C-A4C6-2666CA5ACC97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9B632A9-0879-477C-A4C6-2666CA5ACC97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9B632A9-0879-477C-A4C6-2666CA5ACC97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9B632A9-0879-477C-A4C6-2666CA5ACC97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

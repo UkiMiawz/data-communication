@@ -291,4 +291,10 @@ class CSharpRpcServer : MarshalByRefObject
         Console.WriteLine("Shutting down server...");
         serverShutDown();
     }
+
+    [XmlRpcMethod("Hello")]
+    public string HelloWorld(string input)
+    {
+        return "Hello " + input;
+    }
 }
