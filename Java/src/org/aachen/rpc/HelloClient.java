@@ -143,10 +143,7 @@ public class HelloClient {
                 {
                 	waitStop();
                 } else if("map".equals(command)){
-                	//System.out.println("Enter ip address: ");
-                	//String ip =  reader.readLine();
                 	connect("172.16.1.102");
-                	//connect("localhost");
                 	printHashMap();
                 } else if("request".equals(command)){
                 	printClassRequest();
@@ -157,13 +154,6 @@ public class HelloClient {
                 	sayHello();
                 	sayHelloServer();
                 	tryUnexistingMethod();
-                } else if("server".equals(command)) {
-                	System.out.println("Enter ip address: ");
-                    String ipAddress =  reader.readLine();
-                    Object[] params = new Object[] { ip.getHostAddress() };
-                	JavaWsServer.testConnection(ipAddress, "HelloWorld.hello", params);
-                } else if("print".equals(command)) {
-                	JavaWsServer.printAllMachinesInLan();
                 } else {
                 	System.out.println("Command " + command + " not recognized");
                 }

@@ -12,12 +12,16 @@ public class Bully {
 	private static TreeMap<Integer, String> machines;
 	private static int n;
     private static Integer positionValue[] = new Integer[100];
-    private static int timeout = 3000;
+    private static int timeout = 2000;
     private static String myIp;
     private static boolean gaveUp = false;
     
     private String classNameLog = "Bully : ";
     
+    /***
+     * Bully class constructor
+     * @param machines machines list in the network
+     */
     Bully(TreeMap<Integer, String> machines){
     	this.machines = machines;
     	this.n = machines.size();
@@ -47,6 +51,11 @@ public class Bully {
     	}
     }
 	
+    /***
+     * Do election
+     * @param thisMachinePriority current trigger machine priority
+     * @return status whether giving up or not
+     */
 	public boolean holdElection(int thisMachinePriority)
     {
 		try {

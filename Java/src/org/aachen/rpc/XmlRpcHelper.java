@@ -17,9 +17,14 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 
 public class XmlRpcHelper {
 
-	private static String classNameLog = "XmlRpcHelper : ";
+	private static String classNameLog = "XmlRpcHelper : ";	
+	private static int timeout = 2000;
 	
-	private static int timeout = 200;
+	/***
+	 * Create a xml rpc client to connect to a specific remote machine
+	 * @param ipAddress IP Address of remote machine to connect
+	 * @return return created xml rpc client
+	 */
 	public static XmlRpcClient Connect(String ipAddress){
 		try {
 			System.out.println(classNameLog + "Connecting to " + ipAddress);
@@ -39,6 +44,14 @@ public class XmlRpcHelper {
 		}
 	}
 	
+	/***
+	 * Trigger remote machine service async-ly
+	 * @param ipAddress machine ip address
+	 * @param command service to be called from remote machine
+	 * @param params parameters for service calling
+	 * @param callback async callback 
+	 * @return
+	 */
 	public static String SendToOneMachineAsync(String ipAddress, String command, Object[] params, AsyncCallback callback){
 		try{
 			//don't send to self
@@ -69,6 +82,13 @@ public class XmlRpcHelper {
 		}
 	}
 	
+	/***
+	 * Trigger remote machine service no async
+	 * @param ipAddress machine ip address
+	 * @param command service to be called from remote machine
+	 * @param params parameters for service calling
+	 * @return
+	 */
 	public static Object SendToOneMachine(String ipAddress, String command, Object[] params){
 		
 		try{
@@ -99,6 +119,13 @@ public class XmlRpcHelper {
 		}
 	}
 	
+	/***
+	 * Trigger service in several remote machines
+	 * @param machines machine list
+	 * @param command service to be called from remote machine
+	 * @param params parameters for service calling
+	 * @return
+	 */
 	public static void SendToAllMachines(TreeMap<Integer, String> machines, String command, Object[] params){
 		
 		int success = 0;
@@ -133,7 +160,15 @@ public class XmlRpcHelper {
 		System.out.println("Finished sending to all machines, success call " + success);
 	}
 	
-public static void SendToAllMachinesAsync(TreeMap<Integer, String> machines, String command, Object[] params, AsyncCallback callback){
+	/***
+	 * Trigger service in several remote machines async-ly
+	 * @param machines machine list
+	 * @param command service to be called from remote machine
+	 * @param params parameters for service calling
+	 * @param callback async callback 
+	 * @return
+	 */
+	public static void SendToAllMachinesAsync(TreeMap<Integer, String> machines, String command, Object[] params, AsyncCallback callback){
 		
 		int success = 0;
 		

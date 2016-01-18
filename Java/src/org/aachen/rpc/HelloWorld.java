@@ -13,12 +13,6 @@ public class HelloWorld {
 		return "Greetings IP " + ipAddress;
 	}
 	
-	public String helloServer(String ipAddress, String command, Object[] params){
-		String response = JavaWsServer.testConnection(ipAddress, command, params);
-		System.out.println("Response from Server : " + response);
-		return response;
-	}
-	
 	public HashMap<String, String> returnKeyMap(String ipAddress, int priority){
 		System.out.println("Hashmap request from ip " + ipAddress + " with priority " + priority);
 		TreeMap<String, String> machines = new TreeMap<String, String>();

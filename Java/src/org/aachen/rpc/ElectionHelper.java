@@ -1,14 +1,15 @@
 package org.aachen.rpc;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.TreeMap;
 
 public class ElectionHelper {
 	
 	private static String classNameLog = "ElectionHelper : ";
 	
+	/***
+	 * Trigger leader election in current machine
+	 * @param ip IP of caller machine
+	 * @return new master if not giving up
+	 */
 	public String leaderElection(String ip) { 
 		
 		System.out.println(classNameLog + "Leader election on ip " + ip);
@@ -44,7 +45,7 @@ public class ElectionHelper {
 	/****
 	 * Receiving end for new leader notification
 	 * @param keyMaster - new master key
-	 * @return
+	 * @return notification info
 	 */
 	public String setNewLeader(int keyMaster){
 		String newMaster = JavaWsServer.setMaster(keyMaster);
@@ -54,7 +55,7 @@ public class ElectionHelper {
 	/***
 	 * Method to check for machine availability and the trigger leader election on machine
 	 * @param ip - requester ip
-	 * @return
+	 * @return true because if this method is available means this machine is available
 	 */
 	public boolean checkLeaderValidity(String ip){
 		System.out.println(classNameLog + ip + " asking for leader election. I am available. Returning true.");

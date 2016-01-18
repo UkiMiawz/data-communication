@@ -245,8 +245,6 @@ public class JavaWsServer {
 	                    serverShutDown();
 	                } else if ("ip".equals(command)) {
 	                	System.out.println("This machine ip :" + myIpAddress);
-	                } else if ("print".equals(command)) {
-	                	printAllMachinesInLan();	
 	                } else {
 	                    System.out.println("Command " + command + " not recognized");
 	                }
@@ -263,48 +261,6 @@ public class JavaWsServer {
 			exception.printStackTrace();
 		}
 		
-	}
-	
-	/* ========= METHODS FOR TESTING ====== */
-	
-	public static String testConnection(String ipAddress, String command, Object[] params){
-		String response = (String)XmlRpcHelper.SendToOneMachine(ipAddress, command, params);
-		return response;
-	}
-	
-	public static void printAllMachinesInLan(){
-		try{
-			//get IP addresses
-			String ipAddress = myIp.getHostAddress();
-		    String subnet = ipAddress.substring(0, ipAddress.lastIndexOf('.'));
-		    System.out.println("Subnet : " + subnet);
-			
-		    int counter = 0;
-		    long startTime = System.nanoTime();
-		    for (int i=1;i<255;i++){
-			       String host= subnet + "." + i;
-			       if (InetAddress.getByName(host).isReachable(timeout)){
-			           System.out.println(host + " is reachable");
-			           counter++;
-			       } else {
-			    	   System.out.println(host + " is not reachable");
-			       }
-			}
-		    
-		    long endTime = System.nanoTime();
-		    long duration = (endTime - startTime)/1000000;
-		    System.out.println("Number of machines detected: " + counter);
-		    System.out.println("Operation time in second: " + duration/1000);
-		    
-		    System.out.println("Finish checking");
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public static String hello(String ipAddress) {
-		return "Server is running! Hello " + ipAddress;
 	}
 
 }
