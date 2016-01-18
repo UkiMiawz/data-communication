@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CookComputing.XmlRpc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -56,6 +57,7 @@ public class RegisterHandler
         return "Machine removed " + removedIp;
     }
 
+    [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
     public static String removeMachineIp(String ipAddress)
     {
         Console.WriteLine(classNameLog + "Remove machine with key " + ipAddress);
@@ -129,8 +131,6 @@ public class RegisterHandler
            
             if (neighbourIp == null && neighbourIp == string.Empty)
             {
-
-
                 //search for neighbor automatically
                 while (ipNeighbor == null && i < 255)
                 {

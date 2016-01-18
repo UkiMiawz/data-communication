@@ -31,8 +31,7 @@ public class XmlRpcHelper
             string newProxyUrl = ServerUrlStart + ipaddress + ServerUrlEnd;
             newProxy.Url = newProxyUrl;
 
-            Console.WriteLine("XML-RPC Client call to : http://" + ipaddress + ":1090/xmlrpc/xmlrpc");
-            
+            Console.WriteLine("XML-RPC Client call to : http://" + ipaddress + ":1090/xmlrpc/xmlrpc");            
 
             return newProxy;
         }
@@ -57,21 +56,12 @@ public class XmlRpcHelper
 
             if (ipAddress != myIpAddress)
             {
-                //send this machine IP address and priority
-                //XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-                //config.setServerURL(new URL(
-                //        "http://" + ipAddress + ":1090/xml-rpc-example/xmlrpc"));
-                //XmlRpcClient client = new XmlRpcClient();
-                //client.setConfig(config);
-                //Object response = (Object)client.execute(command, params);
-                //Console.WriteLine(classNameLog + "Message: " + response);
-                //return response;
                 newProxy.Url = ServerUrlStart + ipAddress + ServerUrlEnd;
                 object response;
                 switch(command)
                 {
-                    case "Hello":
-                        response = newProxy.HelloWorld(parameter.ToString());
+                    case GlobalMethodName.removeMachineIp:
+                        response = newProxy.removeMachineIp(parameter[0].ToString());
                         break;
 
                     default:
@@ -100,7 +90,40 @@ public class XmlRpcHelper
 
     public static void SendToAllMachines(Dictionary<int, String> machines, String command, Object[] parameter)
     {
-        throw new NotImplementedException();
+        int success = 0;
+
+        foreach(KeyValuePair<int, string> entry in machines)
+        {
+            String ipAddress = entry.Value;
+
+            try
+            {
+                //don't send to self
+                NetworkPingService nps = new NetworkPingService();
+                ServerStatusCheck ssc = new ServerStatusCheck();
+                String myIpAddress = nps.GetMyIpAddress();
+
+                if (ipAddress != myIpAddress && ssc.isServerUp(ipAddress,1090,300))
+                {
+                    Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
+
+                    //check if machine is on
+                    Object response = (Object)SendToOneMachine(ipAddress, command, parameter);
+                    Console.WriteLine(classNameLog + response);
+                    success += 1;
+                }
+                else
+                {
+                    Console.WriteLine(classNameLog + "Machine is not active or my own machine");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("{0}", ex.Message);
+            }
+        }
+
+        Console.WriteLine("Finished sending to all machines, success call " + success);
     }
 
 }

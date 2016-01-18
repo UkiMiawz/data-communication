@@ -13,14 +13,9 @@ using System.Threading.Tasks;
 class CSharpRpcServer : MarshalByRefObject
 {
     private static int timeout = 100;
-    // private static ElectionHelper electionHelper;
+    private static ElectionHelper electionHelper;
     private static String classNameLog = "CSharpServer : ";
 
-    //private static PropertyHandlerMapping propHandlerMapping;
-    //public static PropertyHandlerMapping getMapping()
-    //{
-    //    return propHandlerMapping;
-    //}   
     private static Dictionary<int, String> machines = new Dictionary<int, string>();
     public static Dictionary<int, String> getMachines()
     {
@@ -171,15 +166,15 @@ class CSharpRpcServer : MarshalByRefObject
 
     public static void serverShutDown()
     {
-        // Object[] params = new Object[] { myIp };
-        //XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
+        Object[] parameters = new Object[] { myIp };
+        XmlRpcHelper.SendToAllMachines(machines, GlobalMethodName.removeMachineIp, parameters);
     }
 
     public void serverShutDownFromClient(String ip)
     {
         Console.WriteLine(ip + " client ask to shutdown server");
-        // Object[] params = new Object[] { myIp };
-        //XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
+        Object[] parameters = new Object[] { myIp };
+        XmlRpcHelper.SendToAllMachines(machines, GlobalMethodName.removeMachineIp, parameters);
         Console.WriteLine("Server shutdown");
     }
 
@@ -202,63 +197,69 @@ class CSharpRpcServer : MarshalByRefObject
             "xml-rpc-example/xmlrpc",
             WellKnownObjectMode.Singleton);
 
-        //propHandlerMapping = new PropertyHandlerMapping();
-        //propHandlerMapping.load(Thread.currentThread().getContextClassLoader(), "handler.properties");
-        //xmlRpcServer.setHandlerMapping(propHandlerMapping);
-
-        //assign my IP
-        myIp = Dns.GetHostEntry(Dns.GetHostName());
-        foreach (IPAddress localIp in myIp.AddressList)
+        #region Section 1
+        // ===========================Section 1: Joining the network================================
+        try
         {
-            if (localIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            electionHelper = new ElectionHelper();
+
+            //assign my IP
+            NetworkPingService nps = new NetworkPingService();
+            myIp = Dns.GetHostEntry(Dns.GetHostName());
+            myIpAddress = nps.GetMyIpAddress();
+
+            //join network
+            String myNeighbourIp = "";
+
+            //ask for neighbour ip or not
+
+            Console.WriteLine("=====Connecting to Network=====");
+            Console.WriteLine("1. Input neighbour IP Address manually");
+            Console.WriteLine("2. Detect neighbour IP Address automatically");
+            Console.WriteLine("Enter choice, or 'exit' to quit: ");
+            String command = Console.ReadLine();
+
+            if (command == "1")
             {
-                myIpAddress = localIp.ToString();
+                Console.WriteLine("Please input neighbor IP address :");
+                myNeighbourIp = Console.ReadLine();
             }
+
+            Console.WriteLine("");
+
+            RegisterHandler.joinNetwork(myIpAddress, myNeighbourIp);
+            if (!machines.ContainsValue(myIpAddress))
+            {
+                Console.WriteLine("Add myself to hashmap");
+                myPriority = addMachineToMap(myIpAddress);
+            }
+            else
+            {
+                //get priority
+                myPriority = machines.First(x => x.Value == myIpAddress).Key;
+            }
+
+            //set myself as master if null
+            if (ipMaster == ("localhost"))
+            {
+                setMaster(myPriority);
+            }
+
+            Console.WriteLine(classNameLog + "Master IP now " + ipMaster);
+            Console.WriteLine(classNameLog + "Master Key now {0}", machines.First(x => x.Value == ipMaster).Value);
+            Console.WriteLine(classNameLog + "My IP now " + myIpAddress);
+            Console.WriteLine(classNameLog + "My priority now " + myPriority);
+            Console.WriteLine(classNameLog + "Machines now " + machines);
         }
-
-        //join network
-        String myNeighbourIp = "";
-
-        //ask for neighbour ip or not
-
-        Console.WriteLine("=====Connecting to Network=====");
-        Console.WriteLine("1. Input neighbour IP Address manually");
-        Console.WriteLine("2. Detect neighbour IP Address automatically");
-        Console.WriteLine("Enter choice, or 'exit' to quit: ");
-        String command = Console.ReadLine();
-
-        if (command == "1")
+        catch(Exception ex)
         {
-            Console.WriteLine("Please input neighbor IP address :");
-            myNeighbourIp = Console.ReadLine();
+            Console.WriteLine("{0}", ex.Message);
         }
+        // ====================================End of Section 1========================================
+        #endregion
 
-        Console.WriteLine("");
-
-        //RegisterHandler.joinNetwork(myIpAddress, myNeighbourIp);
-        if (!machines.ContainsValue(myIpAddress))
-        {
-            Console.WriteLine("Add myself to hashmap");
-            myPriority = addMachineToMap(myIpAddress);
-        }
-        else
-        {
-            //get priority
-            myPriority = machines.First(x => x.Value == myIpAddress).Key;
-        }
-
-        //set myself as master if null
-        if (ipMaster == ("localhost"))
-        {
-            setMaster(myPriority);
-        }
-
-        Console.WriteLine(classNameLog + "Master IP now " + ipMaster);
-        Console.WriteLine(classNameLog + "Master Key now {0}", machines.First(x => x.Value == ipMaster).Value);
-        Console.WriteLine(classNameLog + "My IP now " + myIpAddress);
-        Console.WriteLine(classNameLog + "My priority now " + myPriority);
-        Console.WriteLine(classNameLog + "Machines now " + machines);
-
+        #region Section 2
+        // =============================Section 2: Begin service===========================================
         string input;
         do
         {
@@ -270,14 +271,9 @@ class CSharpRpcServer : MarshalByRefObject
                 {
                     case "ip":
                         Console.WriteLine("This machine ip :" + myIpAddress);
-                        break;
-                    case "print":
-                        //printAllMachinesInLan();
-                        break;
-                    case "leader":
-                        break;
+                        break;                   
                     default:
-                        Console.WriteLine("Command " + command + " not recognized");
+                        Console.WriteLine("Command " + input + " not recognized");
                         break;
                 }
             }
@@ -287,6 +283,8 @@ class CSharpRpcServer : MarshalByRefObject
             }
         }
         while (input != "exit");
+        // ================================End of Section 2=============================================
+        #endregion
 
         Console.WriteLine("Shutting down server...");
         serverShutDown();

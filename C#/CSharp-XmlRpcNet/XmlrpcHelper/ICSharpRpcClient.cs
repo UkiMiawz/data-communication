@@ -21,7 +21,8 @@ public interface ICSharpRpcClient : IXmlRpcProxy
 
     [XmlRpcMethod("RegisterHandler.getIpMaster")]
     string getIpMaster(string ipaddress);
-
-
+    
+    [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
+    string removeMachineIp(String ipAddress);
 }
 
