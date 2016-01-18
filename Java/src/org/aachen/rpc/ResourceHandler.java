@@ -6,17 +6,33 @@ public class ResourceHandler {
 	
 	private static String classNameLog = "ResourceHandler : ";
 
+	/*======= MASTER SIDE ========*/
+	
+	/**
+	 * Read shared string in server
+	 * @param ipAddress caller ip address
+	 * @return shared string value
+	 */
 	public String getString(String ipAddress){
 		System.out.println(classNameLog + "Read resource request from " + ipAddress);
 		return JavaWsServer.getSharedString();
 	}
 	
+	/**
+	 * Write new string to shared string in server
+	 * @param ipAddress caller ip address
+	 * @return shared string value
+	 */
 	public String setString(String newString, String ipAddress){
 		System.out.println(classNameLog + "Write resource request from " + ipAddress + " with new string " + newString);
 		return JavaWsServer.setSharedString(newString);
 	}
 	
 	/*====== RANDOM STRING GENERATOR ======*/
+	/***
+	 * Generate random string to append to shared string
+	 * @return random string generated
+	 */
 	public String generateRandomString(){
 		System.out.println(classNameLog + "Generate random string");
 		char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
@@ -31,8 +47,15 @@ public class ResourceHandler {
 		return output;
 	}
 	
-	/*============= CLIENT SIDE ==============*/
-	//access shared resource
+	/*============= SLAVE SIDE ==============*/
+	
+	/***
+	 * Service for slave to write to shared string in master
+	 * @param myIp current machine ip address
+	 * @param masterIp master ip address
+	 * @param myString current machine random generated string to be appended
+	 * @return shared string value
+	 */
 	public String appendNewString(String myIp, String masterIp, String myString){
 		
 		System.out.println(classNameLog + "Append string " + myString);
@@ -63,7 +86,12 @@ public class ResourceHandler {
 		return finalString;
 	}
 		
-	//access shared resource
+	/***
+	 * Service for slave to read shared string in master
+	 * @param myIp current machine ip address
+	 * @param masterIp master ip address
+	 * @return shared string value
+	 */
 	public String readNewString(String myIp, String masterIp){
 		String currentString = "";
 		System.out.println(classNameLog + "Read shared string");

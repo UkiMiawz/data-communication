@@ -1,5 +1,10 @@
 package org.aachen.rpc;
 
+/***
+ * Request object for mutual exclusion
+ * @author ukimiawz
+ *
+ */
 public class Request implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
