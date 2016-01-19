@@ -205,9 +205,8 @@ class CSharpRpcServer : MarshalByRefObject
             electionHelper = new ElectionHelper();
 
             //assign my IP
-            NetworkPingService nps = new NetworkPingService();
             myIp = Dns.GetHostEntry(Dns.GetHostName());
-            myIpAddress = nps.GetMyIpAddress();
+            myIpAddress = NetworkHelper.GetMyIpAddress();
 
             //join network
             String myNeighbourIp = "";

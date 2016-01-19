@@ -124,15 +124,11 @@ public class RegisterHandler: MarshalByRefObject
             String subnet = ipAddress.Substring(0, (ipAddress.LastIndexOf('.')));
             Console.WriteLine(classNameLog + "Subnet : " + subnet);
             String ipNeighbor = inputtedNeighbourIp;
-
-            int i = 2;
-
-            ServerStatusCheck ssc = new ServerStatusCheck();
-            Ping pinger = new Ping();
-
+            
             if (inputtedNeighbourIp == string.Empty)
             {
                 //search for neighbor automatically
+                int i = 2;
                 while (ipNeighbor == string.Empty && i < 255)
                 {
                     try
@@ -145,7 +141,7 @@ public class RegisterHandler: MarshalByRefObject
                         {
                             Console.WriteLine(host + " is my own ip address!!");
                         }
-                        else if (ssc.isServerUp(host, 1090, 300) == false)
+                        else if (NetworkHelper.isServerUp(host, 1090, 300) == false)
                         {
                             ipNeighbor = string.Empty;
                             Console.WriteLine(host + " is not reachable");
@@ -155,7 +151,7 @@ public class RegisterHandler: MarshalByRefObject
                             Console.WriteLine(classNameLog + host + " is reachable. Checking validity");
                             Object[] parameters = new Object[] { ipAddress };
                             string neighborResponse = (String)XmlRpcHelper.SendToOneMachine(host, GlobalMethodName.newMachineJoin, parameters);
-                            if(ssc.isValidIpAddress(neighborResponse))
+                            if(NetworkHelper.isValidIpAddress(neighborResponse))
                             {
                                 ipNeighbor = neighborResponse;
                                 Console.WriteLine(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);

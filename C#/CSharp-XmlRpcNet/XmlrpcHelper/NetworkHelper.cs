@@ -74,9 +74,9 @@ class TimeOutSocket
     }
 }
 
-public class ServerStatusCheck
+public class NetworkHelper
 {
-    public bool isServerUp(string ip, int port, int timout)
+    public static bool isServerUp(string ip, int port, int timout)
     {
         IPAddress validIP;
         if (IPAddress.TryParse(ip, out validIP))
@@ -91,7 +91,7 @@ public class ServerStatusCheck
         }
     }
 
-    public bool isValidIpAddress(string checkedIp)
+    public static bool isValidIpAddress(string checkedIp)
     {
         IPAddress validIpAddress;
         IPAddress.TryParse(checkedIp, out validIpAddress);
@@ -100,5 +100,20 @@ public class ServerStatusCheck
             return true;
         }
         return false;
+    }
+
+    public static string GetMyIpAddress()
+    {
+        string myIpAddress = string.Empty;
+        IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+        foreach (IPAddress localIp in host.AddressList)
+        {
+            if (localIp.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+            {
+                myIpAddress = localIp.ToString();
+            }
+        }
+
+        return myIpAddress;
     }
 }

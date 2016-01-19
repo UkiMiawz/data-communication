@@ -45,7 +45,6 @@
     <Compile Include="Global.cs" />
     <Compile Include="ICSharpRpcClient.cs" />
     <Compile Include="NetworkHelper.cs" />
-    <Compile Include="NetworkPingService.cs" />
     <Compile Include="XmlrpcHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

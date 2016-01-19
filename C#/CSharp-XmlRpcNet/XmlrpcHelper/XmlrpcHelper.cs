@@ -52,8 +52,7 @@ public class XmlRpcHelper
         try
         {
             //don't send to self
-            NetworkPingService nps = new NetworkPingService();
-            String myIpAddress = nps.GetMyIpAddress();
+            String myIpAddress = NetworkHelper.GetMyIpAddress();
 
             if (ipAddress != myIpAddress)
             {
@@ -134,11 +133,9 @@ public class XmlRpcHelper
             try
             {
                 //don't send to self
-                NetworkPingService nps = new NetworkPingService();
-                ServerStatusCheck ssc = new ServerStatusCheck();
-                String myIpAddress = nps.GetMyIpAddress();
+                String myIpAddress = NetworkHelper.GetMyIpAddress();
 
-                if (ipAddress != myIpAddress && ssc.isServerUp(ipAddress, 1090, 300))
+                if (ipAddress != myIpAddress && NetworkHelper.isServerUp(ipAddress, 1090, 300))
                 {
                     Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
 
