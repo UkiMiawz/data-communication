@@ -181,17 +181,16 @@ public class Helper
     {
         Dictionary<int, string> convertionResult = new Dictionary<int, string>();
 
-        if (typeof(IDictionary).IsAssignableFrom(inputObj.GetType()))
+        if(inputObj.GetType().Name == "XmlRpcStruct[]")
         {
-            IDictionary objDict = (IDictionary)inputObj;
-            foreach (Object structItem in objDict.Keys)
+            XmlRpcStruct[] structInput = (XmlRpcStruct[])inputObj;
+            foreach(XmlRpcStruct structItem in structInput)
             {
-                convertionResult.Add((int)structItem, objDict[structItem].ToString());
-                //int itemKey = (int)structItem["NetworkPriority"];
-                //string itemValue = structItem["IpAddress"].ToString();
-                //convertionResult.Add(itemKey, itemValue);
+                int itemKey = (int)structItem["NetworkPriority"];
+                string itemValue = structItem["IpAddress"].ToString();
+                convertionResult.Add(itemKey, itemValue);
             }
-        }        
+        }
 
         return convertionResult;
     }

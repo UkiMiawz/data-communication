@@ -154,8 +154,12 @@ public class RegisterHandler: MarshalByRefObject
                         {
                             Console.WriteLine(classNameLog + host + " is reachable. Checking validity");
                             Object[] parameters = new Object[] { ipAddress };
-                            ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(host, GlobalMethodName.newMachineJoin, parameters);
-                            Console.WriteLine(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
+                            string neighborResponse = (String)XmlRpcHelper.SendToOneMachine(host, GlobalMethodName.newMachineJoin, parameters);
+                            if(ssc.isValidIpAddress(neighborResponse))
+                            {
+                                ipNeighbor = neighborResponse;
+                                Console.WriteLine(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
+                            }                                                        
                         }
                         
                         i++;

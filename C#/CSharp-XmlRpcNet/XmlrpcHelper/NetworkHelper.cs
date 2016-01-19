@@ -90,4 +90,15 @@ public class ServerStatusCheck
             return false;
         }
     }
+
+    public bool isValidIpAddress(string checkedIp)
+    {
+        IPAddress validIpAddress;
+        IPAddress.TryParse(checkedIp, out validIpAddress);
+        if(validIpAddress.AddressFamily == AddressFamily.InterNetwork)
+        {
+            return true;
+        }
+        return false;
+    }
 }

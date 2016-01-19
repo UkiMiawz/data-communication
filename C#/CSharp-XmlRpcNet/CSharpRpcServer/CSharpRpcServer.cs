@@ -240,7 +240,7 @@ class CSharpRpcServer : MarshalByRefObject
             }
 
             //set myself as master if null
-            if (ipMaster == ("localhost"))
+            if (ipMaster == "localhost" || ipMaster == null || ipMaster == string.Empty)
             {
                 setMaster(myPriority);
             }
@@ -249,7 +249,7 @@ class CSharpRpcServer : MarshalByRefObject
             Console.WriteLine(classNameLog + "Master Key now {0}", machines.First(x => x.Value == ipMaster).Value);
             Console.WriteLine(classNameLog + "My IP now " + myIpAddress);
             Console.WriteLine(classNameLog + "My priority now " + myPriority);
-            Console.WriteLine(classNameLog + "Machines now " + machines);
+            Console.WriteLine(classNameLog + "Machines now " + machines.Count());
         }
         catch(Exception ex)
         {

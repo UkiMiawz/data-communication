@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-class CSharpServerImplementation: MarshalByRefObject
+class CSharpServerImplementation : MarshalByRefObject
 {
     RegisterHandler myRegisterHandler;
-    
+
     public CSharpServerImplementation()
     {
         myRegisterHandler = new RegisterHandler();
@@ -22,7 +22,7 @@ class CSharpServerImplementation: MarshalByRefObject
     }
 
     [XmlRpcMethod(GlobalMethodName.getMachines)]
-    XmlRpcStruct[] getMachines(string callerIp)
+    public XmlRpcStruct[] getMachines(string callerIp)
     {
         XmlRpcStruct[] result = Helper.ConvertDictToStruct(myRegisterHandler.getMachines(callerIp));
         return result;
@@ -35,25 +35,25 @@ class CSharpServerImplementation: MarshalByRefObject
     }
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoinNotification)]
-    String newMachineJoinNotification(String newIp, String callerIp)
+    public String newMachineJoinNotification(String newIp, String callerIp)
     {
         return myRegisterHandler.newMachineJoinNotification(newIp, callerIp);
     }
 
     [XmlRpcMethod(GlobalMethodName.addNewMachine)]
-    String addNewMachine(String newIpAddress, String callerIpAddress)
+    public String addNewMachine(String newIpAddress, String callerIpAddress)
     {
         return myRegisterHandler.addNewMachine(newIpAddress, callerIpAddress);
     }
 
     [XmlRpcMethod(GlobalMethodName.getIpMaster)]
-    string getIpMaster(string ipaddress)
+    public string getIpMaster(string ipaddress)
     {
         return myRegisterHandler.getIpMaster(ipaddress);
     }
 
     [XmlRpcMethod(GlobalMethodName.getKeyMaster)]
-    int getKeyMaster(String callerIp)
+    public int getKeyMaster(String callerIp)
     {
         return myRegisterHandler.getKeyMaster(callerIp);
     }
