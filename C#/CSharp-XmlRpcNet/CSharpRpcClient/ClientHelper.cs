@@ -22,11 +22,7 @@ public class ClientUI
         Console.WriteLine("7. Rejoin Network");
         Console.WriteLine("99. Logout and shutdown server");
         Console.WriteLine("0. Exit");
-        Console.WriteLine("Un-official menu");
-        Console.WriteLine("14. Send message to server");
-        Console.WriteLine("15. Get message from server");
-        Console.WriteLine("17. Get local Lamport Clock");
-               
+                      
         Console.Write("Enter your choice: ");
     }
 }

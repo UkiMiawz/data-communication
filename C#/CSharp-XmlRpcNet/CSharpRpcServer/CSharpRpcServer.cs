@@ -94,6 +94,7 @@ class CSharpRpcServer : MarshalByRefObject
     public static String setMaster(int master)
     {
         Console.WriteLine(classNameLog + "Key Master : " + master);
+        keyMaster = master;
         ipMaster = machines.FirstOrDefault(x => x.Key == master).Value;
         Console.WriteLine(classNameLog + "IP Master : " + ipMaster);
         return ipMaster;

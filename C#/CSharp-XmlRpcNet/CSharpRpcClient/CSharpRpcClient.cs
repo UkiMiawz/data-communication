@@ -13,7 +13,7 @@ class CSharpRpcClient
     static void Main(string[] args)
     {
         ClientObject co = new ClientObject();
-        string ipAddress = co.GetClientIpAdress();
+        string myIpAddress = co.GetClientIpAdress();
 
         HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
@@ -30,54 +30,55 @@ class CSharpRpcClient
 
             do
             {
-                clientUi.DisplayMainMenu(ipAddress);
+                clientUi.DisplayMainMenu(myIpAddress);
                 input = Console.ReadLine();
                 switch (input)
                 {
-                    //case "1":
-                    //    // Menu 1: Show master hashmap.
-                    //    localProxy.checkMasterStatus();
+                    case "1":
+                        // Menu 1: Show master hashmap.
+                        // localProxy.checkMasterStatus();
 
-                    //    XmlRpcStruct[] networkHashMap = localProxy.GetNetworkHashMap();
+                        XmlRpcStruct[] networkHashMap = masterProxy.getMachines(myIpAddress);
 
-                    //    Console.WriteLine("The Masternode hashmap");
-                    //    foreach (XmlRpcStruct ipItem in networkHashMap)
-                    //    {
-                    //        Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                    //    }
+                        Console.WriteLine("The Masternode hashmap");
+                        foreach (XmlRpcStruct ipItem in networkHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
+                        }
 
-                    //    Console.ReadKey();
-                    //    break;
+                        Console.ReadKey();
+                        break;
 
-                    //case "2":
-                    //    // Menu 1: Show local hashmap.
-                    //    localProxy.checkMasterStatus();
+                    case "2":
+                        // Menu 1: Show local hashmap.
+                       // localProxy.checkMasterStatus();
 
-                    //    XmlRpcStruct[] localhostHashMap = localProxy.GetNetworkHashMap();
+                        XmlRpcStruct[] localhostHashMap = localProxy.getMachines(myIpAddress);
 
-                    //    Console.WriteLine("The localhost hashmap");
-                    //    foreach (XmlRpcStruct ipItem in localhostHashMap)
-                    //    {
-                    //        Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                    //    }
+                        Console.WriteLine("The localhost hashmap");
+                        foreach (XmlRpcStruct ipItem in localhostHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
+                        }
 
-                    //    Console.ReadKey();
-                    //    break;
+                        Console.ReadKey();
+                        break;
 
-                    //case "3":
-                    //    // Menu 3: Get Master Ip.
-                    //    localProxy.checkMasterStatus();
+                    case "3":
+                        // Menu 3: Get Master Ip.
+                        //localProxy.checkMasterStatus();
 
-                    //    string result = localProxy.getIpMaster(ipAddress);
-                    //    Console.WriteLine("the masterNode is {0}", result);
-                    //    Console.ReadKey();
-                    //    break;
+                        string result = masterProxy.getIpMaster(myIpAddress);
+                        Console.WriteLine("the masterNode is {0}", result);
+                        Console.ReadKey();
+                        break;
 
                     //case "4":
-                    //    // Menu 4: do election.
-                    //    localProxy.checkMasterStatus();
+                    //    Menu 4: do election.
+                    //   localProxy.checkMasterStatus();
 
-                    //    Console.WriteLine("Election held!!!");
+
+                    //   Console.WriteLine("Election held!!!");
 
                     //    localProxy.DoLocalElection();
                     //    string newMasterIp = localProxy.getIpMaster(ipAddress);
@@ -102,16 +103,16 @@ class CSharpRpcClient
                     //    break;
 
                     //case "7":
-                    //    // Menu 7: Rejoining Network.
-                    //    localProxy.joinNetwork(ipAddress);
+                    //    Menu 7: Rejoining Network.
+                    //    localProxy.
                     //    Console.WriteLine("You successfully rejoin the network!!");
                     //    Console.ReadKey();
-                    //    break;             
+                    //    break;
                     default:
                         Console.WriteLine("from master {0}", masterProxy.HelloWorld("master Aderick"));
                         Console.WriteLine("from local {0}", localProxy.HelloWorld("Aderick"));
                         Console.ReadKey();
-                        break;       
+                        break;
                 }
             }
             while (input != "0");

@@ -189,6 +189,7 @@ public class RegisterHandler: MarshalByRefObject
                 Object[] parameters = new Object[] { myIp };
                 int keyMaster = (int)XmlRpcHelper.SendToOneMachine(ipNeighbor, GlobalMethodName.getKeyMaster, parameters);
                 String ipMaster = (String)XmlRpcHelper.SendToOneMachine(ipNeighbor, GlobalMethodName.getIpMaster, parameters);
+                CSharpRpcServer.setMaster(keyMaster);
                 Console.WriteLine(classNameLog + "Ip Master -> " + ipMaster + " Key Master -> " + keyMaster);
 
                 //get hashmap from master
