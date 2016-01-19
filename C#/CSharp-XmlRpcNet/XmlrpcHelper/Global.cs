@@ -12,4 +12,7 @@ public static class GlobalMethodName
     public const string leaderElection = "Election.leaderElection";
     public const string getIpMaster = "RegisterHandler.getIpMaster";
     public const string newMachineJoin = "RegisterHandler.newMachineJoin";
+    public const string newMachineJoinNotification = "RegisterHandler.newMachineJoinNotification";
+    public const string addNewMachine = "RegisterHandler.addNewMachine";
+    public const string getKeyMaster = "RegisterHandler.getKeyMaster";
 }

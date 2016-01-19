@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Bully.cs" />
     <Compile Include="CSharpRpcServer.cs" />
+    <Compile Include="CSharpServerImplementation.cs" />
     <Compile Include="ElectionHelper.cs" />
     <Compile Include="LogicalClock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

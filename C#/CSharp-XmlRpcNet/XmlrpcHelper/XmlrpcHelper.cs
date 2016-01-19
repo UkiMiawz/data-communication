@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using CookComputing.XmlRpc;
 using System.Runtime.Remoting.Channels.Http;
 using System.Runtime.Remoting.Channels;
+using System.Collections;
 
 public class XmlRpcHelper
 {
@@ -31,7 +32,7 @@ public class XmlRpcHelper
             string newProxyUrl = ServerUrlStart + ipaddress + ServerUrlEnd;
             newProxy.Url = newProxyUrl;
 
-            Console.WriteLine("XML-RPC Client call to : http://" + ipaddress + ":1090/xmlrpc/xmlrpc");            
+            Console.WriteLine("XML-RPC Client call to : http://" + ipaddress + ":1090/xmlrpc/xmlrpc");
 
             return newProxy;
         }
@@ -56,12 +57,13 @@ public class XmlRpcHelper
 
             if (ipAddress != myIpAddress)
             {
+                newProxy = XmlRpcProxyGen.Create<ICSharpRpcClient>();
                 newProxy.Url = ServerUrlStart + ipAddress + ServerUrlEnd;
                 object response;
-                switch(command)
+                switch (command)
                 {
                     case GlobalMethodName.getMachines:
-                        response = newProxy.getMachines();
+                        response = newProxy.getMachines(parameter[0].ToString());
                         break;
 
                     case GlobalMethodName.serverShutDownFromClient:
@@ -85,6 +87,18 @@ public class XmlRpcHelper
                         response = newProxy.newMachineJoin(parameter[0].ToString());
                         break;
 
+                    case GlobalMethodName.newMachineJoinNotification:
+                        response = newProxy.newMachineJoinNotification(parameter[0].ToString(), parameter[1].ToString());
+                        break;
+
+                    case GlobalMethodName.addNewMachine:
+                        response = newProxy.addNewMachine(parameter[0].ToString(), parameter[1].ToString());
+                        break;
+
+                    case GlobalMethodName.getKeyMaster:
+                        response = newProxy.getKeyMaster(parameter[0].ToString());
+                        break;
+
                     default:
                         response = "No such command";
                         break;
@@ -97,11 +111,11 @@ public class XmlRpcHelper
             {
                 return "Sending to self is not permitable";
             }
-        }       
+        }
         catch (XmlRpcException e)
         {
             return "Connection refused";
-        }        
+        }
         catch (Exception e)
         {
             Console.WriteLine("{0}", e.Message);
@@ -113,7 +127,7 @@ public class XmlRpcHelper
     {
         int success = 0;
 
-        foreach(KeyValuePair<int, string> entry in machines)
+        foreach (KeyValuePair<int, string> entry in machines)
         {
             String ipAddress = entry.Value;
 
@@ -124,7 +138,7 @@ public class XmlRpcHelper
                 ServerStatusCheck ssc = new ServerStatusCheck();
                 String myIpAddress = nps.GetMyIpAddress();
 
-                if (ipAddress != myIpAddress && ssc.isServerUp(ipAddress,1090,300))
+                if (ipAddress != myIpAddress && ssc.isServerUp(ipAddress, 1090, 300))
                 {
                     Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
 
@@ -146,6 +160,40 @@ public class XmlRpcHelper
 
         Console.WriteLine("Finished sending to all machines, success call " + success);
     }
+}
 
+public class Helper
+{
+    public static XmlRpcStruct[] ConvertDictToStruct(Dictionary<int, string> inputDict)
+    {
+        XmlRpcStruct[] convertionResult = new XmlRpcStruct[inputDict.Count()];
+        for (int i = 0; i < inputDict.Count; i++)
+        {
+            convertionResult[i] = new XmlRpcStruct();
+            convertionResult[i].Add("NetworkPriority", inputDict.Keys.ElementAt(i));
+            convertionResult[i].Add("IpAddress", inputDict.Values.ElementAt(i));
+        }
+
+        return convertionResult;
+    }
+
+    public static Dictionary<int, string> ConvertObjToDict(Object inputObj)
+    {
+        Dictionary<int, string> convertionResult = new Dictionary<int, string>();
+
+        if (typeof(IDictionary).IsAssignableFrom(inputObj.GetType()))
+        {
+            IDictionary objDict = (IDictionary)inputObj;
+            foreach (Object structItem in objDict.Keys)
+            {
+                convertionResult.Add((int)structItem, objDict[structItem].ToString());
+                //int itemKey = (int)structItem["NetworkPriority"];
+                //string itemValue = structItem["IpAddress"].ToString();
+                //convertionResult.Add(itemKey, itemValue);
+            }
+        }        
+
+        return convertionResult;
+    }
 }
 

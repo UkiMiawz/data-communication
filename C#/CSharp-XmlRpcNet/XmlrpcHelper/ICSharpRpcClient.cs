@@ -11,7 +11,7 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     string HelloWorld(string input);
 
     [XmlRpcMethod(GlobalMethodName.getMachines)]
-    XmlRpcStruct[] getMachines();
+    XmlRpcStruct[] getMachines(string callerIp);
 
     [XmlRpcMethod(GlobalMethodName.serverShutDownFromClient)]
     void serverShutDownFromClient();
@@ -27,5 +27,15 @@ public interface ICSharpRpcClient : IXmlRpcProxy
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
     String newMachineJoin(String ipAddress);
+
+    [XmlRpcMethod(GlobalMethodName.newMachineJoinNotification)]
+    String newMachineJoinNotification(String newIp, String callerIp);
+
+    [XmlRpcMethod(GlobalMethodName.addNewMachine)]
+    String addNewMachine(String newIpAddress, String callerIpAddress);
+
+    [XmlRpcMethod(GlobalMethodName.getKeyMaster)]
+    int getKeyMaster(String callerIp);
 }
+
 

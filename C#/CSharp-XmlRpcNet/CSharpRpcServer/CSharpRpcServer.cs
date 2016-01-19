@@ -193,7 +193,7 @@ class CSharpRpcServer : MarshalByRefObject
         ChannelServices.RegisterChannel(channel, false);
 
         RemotingConfiguration.RegisterWellKnownServiceType(
-            typeof(CSharpRpcServer),
+            typeof(CSharpServerImplementation),
             "xml-rpc-example/xmlrpc",
             WellKnownObjectMode.Singleton);
 
@@ -288,11 +288,5 @@ class CSharpRpcServer : MarshalByRefObject
 
         Console.WriteLine("Shutting down server...");
         serverShutDown();
-    }
-
-    [XmlRpcMethod("Hello")]
-    public string HelloWorld(string input)
-    {
-        return "Hello " + input;
-    }
+    }    
 }

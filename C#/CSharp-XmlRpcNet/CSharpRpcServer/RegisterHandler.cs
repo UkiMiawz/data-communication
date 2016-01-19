@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-public class RegisterHandler
+public class RegisterHandler: MarshalByRefObject
 {
     private static int timeout = 200;
     private static String classNameLog = "RegisterHandler : ";
@@ -71,7 +71,7 @@ public class RegisterHandler
         //inform all others
         Object[] parameters = new Object[] { newIp, callerIp };
         Console.WriteLine(classNameLog + "Notification, telling all machines new machine IP ");
-        // XmlRpcHelper.SendToAllMachines(JavaWsServer.getMachines(), "RegisterHandler.addNewMachine", params);
+        XmlRpcHelper.SendToAllMachines(CSharpRpcServer.getMachines(), GlobalMethodName.addNewMachine, parameters);
         addNewMachine(newIp, callerIp);
         return "Notification from " + callerIp + " Machine added " + newIp;
     }
@@ -89,7 +89,7 @@ public class RegisterHandler
             Console.WriteLine(classNameLog + "My IP " + myIp + " Master IP " + masterIp);
 
             //check master
-            if (masterIp == myIp)
+            if (masterIp == myIp || masterIp == "localhost")
             {
                 //if master is me, send to all other machines to add new machine
                 //add new machine to map
@@ -100,8 +100,8 @@ public class RegisterHandler
             {
                 Console.WriteLine(classNameLog + "I'm not master. Send notification to master");
                 //inform master and let master handle
-                //String response = (String)XmlRpcHelper.SendToOneMachine(masterIp, "RegisterHandler.newMachineJoinNotification", params);
-                //System.out.println(response);
+                String response = (String)XmlRpcHelper.SendToOneMachine(masterIp, GlobalMethodName.newMachineJoinNotification, parameters);
+                Console.WriteLine(response);
             }
 
             return myIp;
@@ -113,7 +113,7 @@ public class RegisterHandler
         }
     }
 
-    public static void joinNetwork(String ipAddress, String neighbourIp)
+    public static void joinNetwork(String ipAddress, String inputtedNeighbourIp)
     {
         Console.WriteLine(classNameLog + ipAddress + " joining network");
 
@@ -121,71 +121,76 @@ public class RegisterHandler
         {
             //get IP addresses
             String myIp = CSharpRpcServer.getMyIpAddress();
-            String subnet = ipAddress.Substring(0, (ipAddress.LastIndexOf('.') + 1));
+            String subnet = ipAddress.Substring(0, (ipAddress.LastIndexOf('.')));
             Console.WriteLine(classNameLog + "Subnet : " + subnet);
-            String ipNeighbor = neighbourIp;
+            String ipNeighbor = inputtedNeighbourIp;
 
             int i = 2;
 
             ServerStatusCheck ssc = new ServerStatusCheck();
             Ping pinger = new Ping();
-           
-            if (neighbourIp == null && neighbourIp == string.Empty)
+
+            if (inputtedNeighbourIp == string.Empty)
             {
                 //search for neighbor automatically
-                while (ipNeighbor == null && i < 255)
+                while (ipNeighbor == string.Empty && i < 255)
                 {
-                    String host = subnet + "." + i;
-                    Console.WriteLine(classNameLog + "Contacting " + host);
-                    PingReply pingresult = pinger.Send(host);
-
-                    if (host != ipAddress && pingresult.Status == IPStatus.Success)
+                    try
                     {
-                        Console.WriteLine(classNameLog + host + " is reachable. Checking validity");
-                        Object[] parameters = new Object[] { ipAddress };
+                        String host = subnet + "." + i;
+                        Console.WriteLine(classNameLog + "Contacting " + host);
 
-                        ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", parameters);
                         //check if ip neighbor is valid
-                        if (ssc.isServerUp(host, 1090, 300) == false)
+                        if (host == myIp)
                         {
-                            ipNeighbor = null;
+                            Console.WriteLine(host + " is my own ip address!!");
+                        }
+                        else if (ssc.isServerUp(host, 1090, 300) == false)
+                        {
+                            ipNeighbor = string.Empty;
+                            Console.WriteLine(host + " is not reachable");
                         }
                         else
                         {
+                            Console.WriteLine(classNameLog + host + " is reachable. Checking validity");
+                            Object[] parameters = new Object[] { ipAddress };
+                            ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(host, GlobalMethodName.newMachineJoin, parameters);
                             Console.WriteLine(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
                         }
+                        
+                        i++;
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        Console.WriteLine(host + " is not reachable");
+                        // Just continue around.
                     }
-                    i++;
                 }
             }
             else
             {
-                if (neighbourIp != myIp && neighbourIp != "localhost")
+                if (inputtedNeighbourIp != myIp && inputtedNeighbourIp != "localhost")
                 {
                     Object[] parameters = new Object[] { ipAddress };
-                    ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(neighbourIp, GlobalMethodName.newMachineJoin, parameters);
+                    ipNeighbor = (String)XmlRpcHelper.SendToOneMachine(inputtedNeighbourIp, GlobalMethodName.newMachineJoin, parameters);
                 }
             }
 
             Console.WriteLine(classNameLog + "Finish registering to neighbor");
 
-            if (ipNeighbor != null && ipNeighbor != "error" && ipNeighbor != myIp && ipNeighbor != "localhost")
+            if (ipNeighbor != string.Empty && ipNeighbor != "error" && ipNeighbor != myIp && ipNeighbor != "localhost")
             {
                 //you're not alone
                 Console.WriteLine(classNameLog + "I'm not alone! Requesting key and ip of master");
                 //get master from neighbor
                 Object[] parameters = new Object[] { myIp };
-                int keyMaster = (int)XmlRpcHelper.SendToOneMachine(ipNeighbor, "RegisterHandler.getKeyMaster", parameters);
-                String ipMaster = (String)XmlRpcHelper.SendToOneMachine(ipNeighbor, "RegisterHandler.getIpMaster", parameters);
+                int keyMaster = (int)XmlRpcHelper.SendToOneMachine(ipNeighbor, GlobalMethodName.getKeyMaster, parameters);
+                String ipMaster = (String)XmlRpcHelper.SendToOneMachine(ipNeighbor, GlobalMethodName.getIpMaster, parameters);
                 Console.WriteLine(classNameLog + "Ip Master -> " + ipMaster + " Key Master -> " + keyMaster);
 
                 //get hashmap from master
-                Dictionary<int, String> machines = new Dictionary<int, string>();
-                //machines = Helper.convertMapResponseToMachinesTreeMap(XmlRpcHelper.SendToOneMachine(ipMaster, "RegisterHandler.getMachines", parameters));
+                // machines = Helper.ConvertStructToDict(XmlRpcHelper.SendToOneMachine(ipMaster, GlobalMethodName.getMachines, parameters));
+                object result = XmlRpcHelper.SendToOneMachine(ipMaster, GlobalMethodName.getMachines, parameters);
+                Dictionary<int, String> machines = Helper.ConvertObjToDict(result);
                 CSharpRpcServer.setMachines(machines);
                 Console.WriteLine(classNameLog + "Machines set, number of machines " + machines.Count);
 
