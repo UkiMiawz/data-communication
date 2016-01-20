@@ -17,4 +17,10 @@ public static class GlobalMethodName
     public const string getKeyMaster = "RegisterHandler.getKeyMaster";
     public const string checkLeaderValidity = "Election.checkLeaderValidity";
     public const string setNewLeader = "Election.setNewLeader";
+
+    #region Request Handler
+    public const string requestHandlerStartMessage = "Request.startMessage";
+    public const string requestHandlerReceivePermission = "Request.receivePermission";
+    public const string requestHandlerRequestPermission = "Request.requestPermission";
+    #endregion
 }

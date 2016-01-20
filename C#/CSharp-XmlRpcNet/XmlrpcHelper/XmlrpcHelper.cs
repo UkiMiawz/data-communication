@@ -62,6 +62,11 @@ public class XmlRpcHelper
                         response = "Async call called";
                         break;
 
+                    case GlobalMethodName.requestHandlerReceivePermission:
+                        newProxy.requestReceivePermission((int)parameters[0], (int)parameters[1], parameters[2].ToString());
+                        response = "Async call receive permission called";
+                        break;
+
                     default:
                         response = "no such command";
                         break;
@@ -87,7 +92,7 @@ public class XmlRpcHelper
         }
     }
 
-    public static void SendToAllMachinesAsync(Dictionary<int, String> machines, String command, Object[] parameter, AsyncCallback callback)
+    public static void SendToAllMachinesAsync(Dictionary<int, String> machines, String command, Object[] parameter)
     {
         throw new NotImplementedException();
     }
@@ -150,6 +155,20 @@ public class XmlRpcHelper
                     case GlobalMethodName.setNewLeader:
                         response = newProxy.setNewLeader((int)parameter[0]);
                         break;
+
+                    #region Request Handler
+                    case GlobalMethodName.requestHandlerStartMessage:
+                        response = newProxy.requestStartMessage(Convert.ToBoolean(parameter[0]), Convert.ToBoolean(parameter[1]));
+                        break;
+
+                    case GlobalMethodName.requestHandlerReceivePermission:
+                        response = newProxy.requestReceivePermission((int)parameter[0], (int)parameter[1], parameter[2].ToString());
+                        break;
+
+                    case GlobalMethodName.requestHandlerRequestPermission:
+                        response = newProxy.requestRequestPermission((int)parameter[0], (int)parameter[1], parameter[2].ToString(), parameter[3].ToString());
+                        break;
+                    #endregion
 
                     default:
                         response = "No such command";
