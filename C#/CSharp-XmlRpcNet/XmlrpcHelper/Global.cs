@@ -15,4 +15,6 @@ public static class GlobalMethodName
     public const string newMachineJoinNotification = "RegisterHandler.newMachineJoinNotification";
     public const string addNewMachine = "RegisterHandler.addNewMachine";
     public const string getKeyMaster = "RegisterHandler.getKeyMaster";
+    public const string checkLeaderValidity = "Election.checkLeaderValidity";
+    public const string setNewLeader = "Election.setNewLeader";
 }

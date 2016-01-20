@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 class CSharpServerImplementation : MarshalByRefObject
 {
     RegisterHandler myRegisterHandler;
+    ElectionHelper myElectionHelper;
 
     public CSharpServerImplementation()
     {
         myRegisterHandler = new RegisterHandler();
+        myElectionHelper = new ElectionHelper();
     }
 
     [XmlRpcMethod("Hello")]
@@ -26,6 +28,20 @@ class CSharpServerImplementation : MarshalByRefObject
     {
         XmlRpcStruct[] result = Helper.ConvertDictToStruct(myRegisterHandler.getMachines(callerIp));
         return result;
+    }
+
+    [XmlRpcMethod(GlobalMethodName.leaderElection)]
+    public string leaderElection(string ipAddress)
+    {
+        try
+        {
+            return myElectionHelper.leaderElection(ipAddress);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error : {0}", ex.Message);
+            return string.Empty;
+        }
     }
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
@@ -47,15 +63,28 @@ class CSharpServerImplementation : MarshalByRefObject
     }
 
     [XmlRpcMethod(GlobalMethodName.getIpMaster)]
-    public string getIpMaster(string ipaddress)
+    public string getIpMaster(string ipAddress)
     {
-        return myRegisterHandler.getIpMaster(ipaddress);
+        return myRegisterHandler.getIpMaster(ipAddress);
     }
 
     [XmlRpcMethod(GlobalMethodName.getKeyMaster)]
     public int getKeyMaster(String callerIp)
     {
         return myRegisterHandler.getKeyMaster(callerIp);
+    }
+
+    [XmlRpcMethod(GlobalMethodName.checkLeaderValidity)]
+    public bool checkLeaderValidity(String callerIp)
+    {
+        return myElectionHelper.checkLeaderValidity(callerIp);
+    }
+
+
+    [XmlRpcMethod(GlobalMethodName.setNewLeader)]
+    String setNewLeader(int keyMaster)
+    {
+        return myElectionHelper.setNewLeader(keyMaster);
     }
 }
 

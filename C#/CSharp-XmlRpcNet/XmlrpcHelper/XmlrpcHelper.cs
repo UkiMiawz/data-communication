@@ -42,6 +42,51 @@ public class XmlRpcHelper
         }
     }
 
+    public static async Task<string> SendToOneMachineAsync(String ipAddress, String command, Object[] parameters)
+    {
+        await Task.Delay(100);
+        try
+        {
+            //don't send to self
+            String myIpAddress = NetworkHelper.GetMyIpAddress();
+            if (ipAddress != myIpAddress)
+            {
+                newProxy = XmlRpcProxyGen.Create<ICSharpRpcClient>();
+                newProxy.Url = ServerUrlStart + ipAddress + ServerUrlEnd;
+                object response;
+
+                switch (command)
+                {
+                    case GlobalMethodName.leaderElection:
+                        newProxy.leaderElection(parameters[0].ToString());
+                        response = "Async call called";
+                        break;
+
+                    default:
+                        response = "no such command";
+                        break;
+                }
+
+                Console.WriteLine(classNameLog + "Message: " + response);
+
+                return response.ToString();
+            }
+            else
+            {
+                return "Sending to self is not permitable";
+            }
+        }
+        catch (XmlRpcException e)
+        {
+            return "Connection refused";
+        }        
+        catch (Exception e)
+        {
+            Console.WriteLine("{0}", e.InnerException);
+            return e.Message;
+        }
+    }
+
     public static void SendToAllMachinesAsync(Dictionary<int, String> machines, String command, Object[] parameter, AsyncCallback callback)
     {
         throw new NotImplementedException();
@@ -96,6 +141,14 @@ public class XmlRpcHelper
 
                     case GlobalMethodName.getKeyMaster:
                         response = newProxy.getKeyMaster(parameter[0].ToString());
+                        break;
+
+                    case GlobalMethodName.checkLeaderValidity:
+                        response = newProxy.checkLeaderValidity(parameter[0].ToString());
+                        break;
+
+                    case GlobalMethodName.setNewLeader:
+                        response = newProxy.setNewLeader((int)parameter[0]);
                         break;
 
                     default:

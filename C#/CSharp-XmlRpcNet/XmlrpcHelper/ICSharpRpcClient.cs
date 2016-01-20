@@ -17,10 +17,10 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     void serverShutDownFromClient();
 
     [XmlRpcMethod(GlobalMethodName.leaderElection)]
-    string leaderElection(string ipadress);
+    string leaderElection(string ipAddress);
 
     [XmlRpcMethod(GlobalMethodName.getIpMaster)]
-    string getIpMaster(string ipaddress);
+    string getIpMaster(string ipAddress);
     
     [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
     string removeMachineIp(String ipAddress);
@@ -36,6 +36,12 @@ public interface ICSharpRpcClient : IXmlRpcProxy
 
     [XmlRpcMethod(GlobalMethodName.getKeyMaster)]
     int getKeyMaster(String callerIp);
+
+    [XmlRpcMethod(GlobalMethodName.checkLeaderValidity)]
+    bool checkLeaderValidity(String callerIp);
+
+    [XmlRpcMethod(GlobalMethodName.setNewLeader)]
+    String setNewLeader(int keyMaster);
 }
 
 
