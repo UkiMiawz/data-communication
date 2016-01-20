@@ -71,7 +71,6 @@ public class Bully {
 	                String nextBiggerPriorityIpAddress = machines.get(i);
 	                if(InetAddress.getByName(nextBiggerPriorityIpAddress).isReachable(timeout)){
 	                	//send message to bigger value machines to hold election
-	                	holdElection(i+1);
 	                	Object[] params = new Object[]{ myIp };
 	                	try{
 	                		//test if bigger node able to do election
@@ -82,7 +81,6 @@ public class Bully {
 	                			gaveUp = true;
 	                			//trigger election in bigger node
 	                			XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", params, new CallBack());
-	                			XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress);
 	                		}
 	                	} catch (Exception exception){
 	                		System.out.println(classNameLog + "Machine " + positionValue[i] + "gave up, continue election");
