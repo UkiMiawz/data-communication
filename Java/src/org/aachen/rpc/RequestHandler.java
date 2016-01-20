@@ -49,18 +49,21 @@ public class RequestHandler {
 		}
 	}
 	
-	public String startMessage(boolean wantWrite){
+	public String startMessage(boolean wantWrite, boolean isSignal){
 		
 		//initialize variables
 		System.out.println(classNameLog + "Start mutual exclusion process");
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
 		System.out.println(classNameLog + "My IP => " + myIp + " My key => " + myKey);
 		
-		//contact all machines to start
-		TreeMap<Integer, String> machines = JavaWsServer.getMachines();
-		System.out.println(classNameLog + "Contacting all nodes " + machines);
-		Object[] params = new Object[]{true};
-		XmlRpcHelper.SendToAllMachinesAsync(machines, "Request.startMessage", params, new CallBack());
+		if(!isSignal){
+			//start signal from client, inform others
+			//contact all machines to start
+			TreeMap<Integer, String> machines = JavaWsServer.getMachines();
+			System.out.println(classNameLog + "Contacting all nodes " + machines);
+			Object[] params = new Object[]{true};
+			XmlRpcHelper.SendToAllMachinesAsync(machines, "Request.startMessage", params, new CallBack());
+		}
 		
 		System.out.println(classNameLog + "Initiating... Want to write => " + wantWrite);
 		this.wantWrite = wantWrite;
@@ -157,9 +160,13 @@ public class RequestHandler {
 			return myString;
 		}
 		
+		System.out.println(classNameLog + "Read String check my string => " + myString);
+		System.out.println(classNameLog + "Final String => " + finalString);
 		int containMyString = 0;
+		
 		if(finalString.contains(myString))
 		{
+			System.out.println(classNameLog + "!!!!My string is in the final string!!!!");
 			containMyString = 1;
 		}
 		
