@@ -53,13 +53,13 @@ public class Bully
         try
         {
             //array position from 0, priority from 1
-            int thisMachineArrayPosition = thisMachinePriority;
+            int thisMachineArrayPosition = thisMachinePriority - 1;
 
             for (int i = 1; i < n; i++)
             {
                 if (positionValue[thisMachineArrayPosition] < positionValue[i])
                 {
-                    Console.WriteLine(classNameLog + "Election message is sent from " + (positionValue[thisMachineArrayPosition + 1]) + " to " + (positionValue[i + 1]));
+                    Console.WriteLine(classNameLog + "Election message is sent from " + (positionValue[thisMachineArrayPosition + 1]) + " to " + (positionValue[i]));
                     String nextBiggerPriorityIpAddress = machines.ElementAt(i).Value;
                     
                     if (NetworkHelper.isServerUp(nextBiggerPriorityIpAddress, 1090, 500))

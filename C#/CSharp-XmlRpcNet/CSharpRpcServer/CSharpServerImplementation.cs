@@ -79,10 +79,9 @@ class CSharpServerImplementation : MarshalByRefObject
     {
         return myElectionHelper.checkLeaderValidity(callerIp);
     }
-
-
+    
     [XmlRpcMethod(GlobalMethodName.setNewLeader)]
-    String setNewLeader(int keyMaster)
+    public String setNewLeader(int keyMaster)
     {
         return myElectionHelper.setNewLeader(keyMaster);
     }
