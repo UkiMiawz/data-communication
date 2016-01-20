@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{64DAE46E-6B60-43F9-978F-8D5A173189F8}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{61CDB7B3-FA3A-4BBE-8BB4-B04E7632498F}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetworkService_XmlrpcNet</RootNamespace>
-    <AssemblyName>NetworkService-XmlrpcNet</AssemblyName>
+    <RootNamespace>XmlrpcHelper</RootNamespace>
+    <AssemblyName>XmlrpcHelper</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,14 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>CSharpRpcClient</StartupObject>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CookComputing.XmlRpcV2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\xml-rpc.net.2.5.0\src\obj\Debug\CookComputing.XmlRpcV2.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Remoting" />
@@ -51,21 +42,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
-    <Compile Include="ClientHelper.cs" />
-    <Compile Include="HelloWorldClass.cs" />
-    <Compile Include="ICSharpRpcServer.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="ICSharpRpcClient.cs" />
+    <Compile Include="NetworkHelper.cs" />
+    <Compile Include="XmlrpcHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\xml-rpc.net.2.5.0\src\xmlrpc.csproj">
+    <ProjectReference Include="..\src\xmlrpc.csproj">
       <Project>{1b4b0a58-0afb-4090-91dd-18912cc7de65}</Project>
       <Name>xmlrpc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\XmlrpcInterface\XmlrpcInterface.csproj">
-      <Project>{9715145d-7657-4a7d-931e-8b65dfcc8002}</Project>
-      <Name>XmlrpcInterface</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
