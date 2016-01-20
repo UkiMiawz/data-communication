@@ -20,7 +20,7 @@ public class Bully
      * Bully class constructor   */
     public Bully(Dictionary<int, String> candidateMachines)
     {
-        machines = candidateMachines;
+        machines = candidateMachines;        
         n = candidateMachines.Count();
         positionValue = new int[candidateMachines.Count()];
         for (int i = 0; i < candidateMachines.Count(); i++)
@@ -52,9 +52,8 @@ public class Bully
     {
         try
         {
-
             //array position from 0, priority from 1
-            int thisMachineArrayPosition = thisMachinePriority - 1;
+            int thisMachineArrayPosition = thisMachinePriority;
 
             for (int i = 1; i < n; i++)
             {
@@ -66,20 +65,22 @@ public class Bully
                     if (NetworkHelper.isServerUp(nextBiggerPriorityIpAddress, 1090, 500))
                     {
                         //send message to bigger value machines to hold election
-                        holdElection(i + 1);
+                        holdElection(i + 1); 
                         Object[] parameters = new Object[] { myIp };
                         try
                         {
                             //test if bigger node able to do election
-                            bool response = (bool)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, "Election.checkLeaderValidity", parameters);
+                            bool response = (bool)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, GlobalMethodName.checkLeaderValidity, parameters);
                             if (response)
                             {
                                 //gave up election
                                 Console.WriteLine(classNameLog + "Someone bigger answer, I gave up");
                                 gaveUp = true;
                                 //trigger election in bigger node
-                                //XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", parameters, new CallBack());
-                                //XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress);
+                                // XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", parameters, new Callback);
+                                Task<string> leaderElectionResult = XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, GlobalMethodName.leaderElection, parameters); 
+                                // ^ Why do we need call back? just let them run the function and then we will have the new master announced.
+                                //XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress); --> Why do we have to connect to this node? They still don't return any result.
                             }
                         }
                         catch (Exception exception)
