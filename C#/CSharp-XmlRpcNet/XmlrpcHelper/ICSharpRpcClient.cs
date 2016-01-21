@@ -11,7 +11,7 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     string HelloWorld(string input);
 
     [XmlRpcMethod(GlobalMethodName.getMachines)]
-    XmlRpcStruct[] getMachines(string callerIp);
+    XmlRpcStruct getMachines(string callerIp);
 
     [XmlRpcMethod(GlobalMethodName.serverShutDownFromClient)]
     void serverShutDownFromClient();

@@ -24,9 +24,9 @@ class CSharpServerImplementation : MarshalByRefObject
     }
 
     [XmlRpcMethod(GlobalMethodName.getMachines)]
-    public XmlRpcStruct[] getMachines(string callerIp)
+    public XmlRpcStruct getMachines(string callerIp)
     {
-        XmlRpcStruct[] result = Helper.ConvertDictToStruct(myRegisterHandler.getMachines(callerIp));
+        XmlRpcStruct result = Helper.ConvertDictToStruct(myRegisterHandler.getMachines(callerIp));
         return result;
     }
 

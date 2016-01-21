@@ -38,13 +38,13 @@ class CSharpRpcClient
                         // Menu 1: Show master hashmap.
                         // localProxy.checkMasterStatus();
 
-                        XmlRpcStruct[] networkHashMap = masterProxy.getMachines(myIpAddress);
+                        //XmlRpcStruct[] networkHashMap = masterProxy.getMachines(myIpAddress);
 
-                        Console.WriteLine("The Masternode hashmap");
-                        foreach (XmlRpcStruct ipItem in networkHashMap)
-                        {
-                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                        }
+                        //Console.WriteLine("The Masternode hashmap");
+                        //foreach (XmlRpcStruct ipItem in networkHashMap)
+                        //{
+                        //    Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
+                        //}
 
                         Console.ReadKey();
                         break;
@@ -53,13 +53,13 @@ class CSharpRpcClient
                         // Menu 1: Show local hashmap.
                        // localProxy.checkMasterStatus();
 
-                        XmlRpcStruct[] localhostHashMap = localProxy.getMachines(myIpAddress);
+                        //XmlRpcStruct[] localhostHashMap = localProxy.getMachines(myIpAddress);
 
-                        Console.WriteLine("The localhost hashmap");
-                        foreach (XmlRpcStruct ipItem in localhostHashMap)
-                        {
-                            Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                        }
+                        //Console.WriteLine("The localhost hashmap");
+                        //foreach (XmlRpcStruct ipItem in localhostHashMap)
+                        //{
+                        //    Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
+                        //}
 
                         Console.ReadKey();
                         break;

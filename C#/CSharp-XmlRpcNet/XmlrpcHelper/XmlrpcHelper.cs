@@ -214,14 +214,21 @@ public class XmlRpcHelper
 
 public class Helper
 {
-    public static XmlRpcStruct[] ConvertDictToStruct(Dictionary<int, string> inputDict)
+    public static XmlRpcStruct ConvertDictToStruct(Dictionary<int, string> inputDict)
     {
-        XmlRpcStruct[] convertionResult = new XmlRpcStruct[inputDict.Count()];
-        for (int i = 0; i < inputDict.Count; i++)
+        //XmlRpcStruct convertionResult = new XmlRpcStruct[inputDict.Count()];
+        //for (int i = 0; i < inputDict.Count; i++)
+        //{
+        //    convertionResult[i] = new XmlRpcStruct();
+        //    convertionResult[i].Add("NetworkPriority", inputDict.Keys.ElementAt(i));
+        //    convertionResult[i].Add("IpAddress", inputDict.Values.ElementAt(i));
+        //}
+
+        XmlRpcStruct convertionResult = new XmlRpcStruct();
+
+        foreach (KeyValuePair<int, string> dictItem in inputDict)
         {
-            convertionResult[i] = new XmlRpcStruct();
-            convertionResult[i].Add("NetworkPriority", inputDict.Keys.ElementAt(i));
-            convertionResult[i].Add("IpAddress", inputDict.Values.ElementAt(i));
+            convertionResult.Add(dictItem.Key.ToString(), dictItem.Value);
         }
 
         return convertionResult;
@@ -239,6 +246,16 @@ public class Helper
                 int itemKey = (int)structItem["NetworkPriority"];
                 string itemValue = structItem["IpAddress"].ToString();
                 convertionResult.Add(itemKey, itemValue);
+            }
+        }
+        else if (inputObj.GetType().Name == "XmlRpcStruct")
+        {
+            XmlRpcStruct structInput = (XmlRpcStruct)inputObj;
+            foreach (string structItem in structInput.Keys)
+            {
+                int itemKey = Convert.ToInt16(structItem);
+                string itemValue = structInput[structItem].ToString();
+                convertionResult.Add((int)itemKey, itemValue);
             }
         }
 

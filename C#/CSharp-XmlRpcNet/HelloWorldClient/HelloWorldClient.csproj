@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,6 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\src\xmlrpc.csproj">
+      <Project>{1b4b0a58-0afb-4090-91dd-18912cc7de65}</Project>
+      <Name>xmlrpc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlrpcHelper\XmlrpcHelper.csproj">
+      <Project>{61cdb7b3-fa3a-4bbe-8bb4-b04e7632498f}</Project>
+      <Name>XmlrpcHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
