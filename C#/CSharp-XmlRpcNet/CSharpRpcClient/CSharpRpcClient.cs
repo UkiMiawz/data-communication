@@ -73,19 +73,18 @@ class CSharpRpcClient
                         Console.ReadKey();
                         break;
 
-                    //case "4":
-                    //    Menu 4: do election.
-                    //   localProxy.checkMasterStatus();
+                    case "4":
+                        //Menu 4: do election.
+                        // masterProxy.checkMasterStatus();
 
+                        Console.WriteLine("Election held!!!");
 
-                    //   Console.WriteLine("Election held!!!");
+                        string newMaster = masterProxy.leaderElection(myIpAddress);
+                        //string newMasterIp = localProxy.getIpMaster(ipAddress);
 
-                    //    localProxy.DoLocalElection();
-                    //    string newMasterIp = localProxy.getIpMaster(ipAddress);
-
-                    //    Console.WriteLine("The new masternode is {0}", newMasterIp);
-                    //    Console.ReadKey();
-                    //    break;
+                        Console.WriteLine("The new masternode is {0}", newMaster);
+                        Console.ReadKey();
+                        break;
 
                     //case "6":
                     //    // Menu 6: Test Mutual Exclusion.

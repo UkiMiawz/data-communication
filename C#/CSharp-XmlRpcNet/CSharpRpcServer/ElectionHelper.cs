@@ -34,7 +34,7 @@ public class ElectionHelper
             Console.WriteLine(classNameLog + "New Leader IP =>" + newLeaderIp + " New Leader Priority => " + newKeyMaster);
 
             Object[] parameters = new Object[] { newKeyMaster };
-            XmlRpcHelper.SendToAllMachines(machines, "Election.setNewLeader", parameters);
+            XmlRpcHelper.SendToAllMachines(machines, GlobalMethodName.setNewLeader, parameters);
             Console.WriteLine(classNameLog + "New leader notification send to all");
         }
 
