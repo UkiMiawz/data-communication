@@ -51,6 +51,14 @@ public class RequestHandler {
 	
 	public String startMessage(boolean wantWrite, boolean isSignal){
 		
+		try {
+			System.out.println(classNameLog + "Wait for random amount of time");
+			Thread.sleep((long)(Math.random() * 2000));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//initialize variables
 		System.out.println(classNameLog + "Start mutual exclusion process");
 		System.out.println(classNameLog + "Master IP =>" + masterIp);
