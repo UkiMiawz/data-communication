@@ -72,8 +72,6 @@ public class JavaWsClient {
 	 */
 	private static void StartMutualExclusion(boolean isCentralized){
 		try {
-			//wait for random time
-			Thread.sleep((long)(Math.random() * 1000));
 			String response;
 			
 			//call mutual exclusion to write

@@ -53,7 +53,7 @@ public class RequestHandlerCentralized {
 		
 		try {
 			System.out.println(classNameLog + "Wait for random amount of time");
-			Thread.sleep((long)(Math.random() * 1000));
+			Thread.sleep((long)(Math.random() * 2000));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
