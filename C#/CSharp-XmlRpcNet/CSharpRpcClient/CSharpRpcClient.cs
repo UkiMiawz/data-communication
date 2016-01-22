@@ -38,29 +38,32 @@ class CSharpRpcClient
                         // Menu 1: Show master hashmap.
                         // localProxy.checkMasterStatus();
 
-                        //XmlRpcStruct[] networkHashMap = masterProxy.getMachines(myIpAddress);
+                        XmlRpcStruct masterMap = masterProxy.getMachines(myIpAddress);
 
-                        //Console.WriteLine("The Masternode hashmap");
-                        //foreach (XmlRpcStruct ipItem in networkHashMap)
-                        //{
-                        //    Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                        //}
+                        Dictionary<int, string> networkHashMap = Helper.ConvertObjToDict(masterMap);
+
+                        Console.WriteLine("The Masternode hashmap");
+                        foreach (KeyValuePair<int, string> networkNode in networkHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", networkNode.Key, networkNode.Value);
+                        }
 
                         Console.ReadKey();
                         break;
 
                     case "2":
-                        // Menu 1: Show local hashmap.
-                       // localProxy.checkMasterStatus();
+                        // Menu 2: Show local hashmap.
+                        // localProxy.checkMasterStatus();
 
-                        //XmlRpcStruct[] localhostHashMap = localProxy.getMachines(myIpAddress);
+                        XmlRpcStruct localMap = localProxy.getMachines(myIpAddress);
 
-                        //Console.WriteLine("The localhost hashmap");
-                        //foreach (XmlRpcStruct ipItem in localhostHashMap)
-                        //{
-                        //    Console.WriteLine("Priority {0} : {1}", ipItem["NetworkPriority"], ipItem["IpAddress"]);
-                        //}
+                        Dictionary<int, string> localhostHashMap = Helper.ConvertObjToDict(localMap);
 
+                        Console.WriteLine("The localnode hashmap");
+                        foreach (KeyValuePair<int, string> localNode in localhostHashMap)
+                        {
+                            Console.WriteLine("Priority {0} : {1}", localNode.Key, localNode.Value);
+                        }
                         Console.ReadKey();
                         break;
 
@@ -86,27 +89,29 @@ class CSharpRpcClient
                         Console.ReadKey();
                         break;
 
-                    //case "6":
-                    //    // Menu 6: Test Mutual Exclusion.
-                    //    Console.WriteLine("Processing Now...");
-                    //    bool isDirectProcessing = localProxy.SendMERequestToServer("addNewMessage", "this is new message");
-                    //    if (isDirectProcessing)
-                    //    {
-                    //        Console.WriteLine("The process is complete!!!");
-                    //    }
-                    //    else
-                    //    {
-                    //        Console.WriteLine("You are on pending.");
-                    //    }
-                    //    Console.ReadKey();
-                    //    break;
+                    case "5":
+                        // Menu 5: Ricart Agrawala Exlusion.
+                        Console.WriteLine("Start Ricart Agrawala exclusion");
+                        string RAresponse = masterProxy.requestStartMessage(true, true);
+                        Console.WriteLine("Resource value now :" + RAresponse);
+                        Console.ReadKey();
+                        break;
+
+                    case "6":
+                        // Menu 6: Test Mutual Exclusion.
+                        Console.WriteLine("Start centralized mutual exclusion");
+                        string CMEresponse = localProxy.requestCentralStartMessage(true);
+                        Console.WriteLine("Resource value now :" + CMEresponse);
+                        Console.ReadKey();
+                        break;
 
                     //case "7":
-                    //    Menu 7: Rejoining Network.
+                    //    //Menu 7: Rejoining Network.
                     //    localProxy.
                     //    Console.WriteLine("You successfully rejoin the network!!");
                     //    Console.ReadKey();
                     //    break;
+
                     default:
                         Console.WriteLine("from master {0}", masterProxy.HelloWorld("master Aderick"));
                         Console.WriteLine("from local {0}", localProxy.HelloWorld("Aderick"));
