@@ -12,6 +12,7 @@ class CSharpServerImplementation : MarshalByRefObject
     ElectionHelper myElectionHelper;
     RequestHandler myRequestHandler;
     RequestHandlerCentralized myRequestCentralHandler;
+    ResourceHandler myResourceHandler;
 
     public CSharpServerImplementation()
     {
@@ -19,12 +20,19 @@ class CSharpServerImplementation : MarshalByRefObject
         myElectionHelper = new ElectionHelper();
         myRequestHandler = new RequestHandler();
         myRequestCentralHandler = new RequestHandlerCentralized();
+        myResourceHandler = new ResourceHandler();
     }
 
     [XmlRpcMethod("Hello")]
     public string HelloWorld(string input)
     {
         return "Hello " + input;
+    }
+
+    [XmlRpcMethod(GlobalMethodName.resourceGetString)]
+    public String resourceGetString(String ipAddress)
+    {
+        return myResourceHandler.getString(ipAddress);
     }
 
     #region Register Handler

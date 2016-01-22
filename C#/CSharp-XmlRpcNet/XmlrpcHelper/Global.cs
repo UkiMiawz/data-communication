@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 public static class GlobalMethodName
 {
     public const string serverShutDownFromClient = "Server.serverShutDownFromClient";
+    public const string resourceGetString = "Resource.getString";
 
     #region Register Handler
     public const string removeMachineIp = "RegisterHandler.removeMachineIp";

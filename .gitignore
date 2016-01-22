@@ -242,3 +242,5 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/C#/WcfNetworkServer/WcfNetworkServer
+/0005-Khanh-Centralized-ME.patch

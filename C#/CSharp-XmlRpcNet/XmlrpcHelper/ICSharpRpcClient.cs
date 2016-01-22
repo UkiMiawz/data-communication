@@ -13,6 +13,9 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     [XmlRpcMethod(GlobalMethodName.serverShutDownFromClient)]
     void serverShutDownFromClient();
 
+    [XmlRpcMethod(GlobalMethodName.resourceGetString)]
+    String resourceGetString(String ipAddress);
+
     #region Register Handler
     [XmlRpcMethod(GlobalMethodName.getMachines)]
     XmlRpcStruct getMachines(string callerIp);

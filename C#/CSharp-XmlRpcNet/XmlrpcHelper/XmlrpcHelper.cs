@@ -126,6 +126,10 @@ public class XmlRpcHelper
                 object response;
                 switch (command)
                 {
+                    case GlobalMethodName.resourceGetString:
+                        response = newProxy.resourceGetString(parameter[0].ToString());
+                        break;
+
                     case GlobalMethodName.getMachines:
                         response = newProxy.getMachines(parameter[0].ToString());
                         break;
