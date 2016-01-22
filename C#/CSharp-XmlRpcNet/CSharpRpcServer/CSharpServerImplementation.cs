@@ -10,11 +10,15 @@ class CSharpServerImplementation : MarshalByRefObject
 {
     RegisterHandler myRegisterHandler;
     ElectionHelper myElectionHelper;
+    RequestHandler myRequestHandler;
+    RequestHandlerCentralized myRequestCentralHandler;
 
     public CSharpServerImplementation()
     {
         myRegisterHandler = new RegisterHandler();
         myElectionHelper = new ElectionHelper();
+        myRequestHandler = new RequestHandler();
+        myRequestCentralHandler = new RequestHandlerCentralized();
     }
 
     [XmlRpcMethod("Hello")]
@@ -23,25 +27,13 @@ class CSharpServerImplementation : MarshalByRefObject
         return "Hello " + input;
     }
 
+    #region Register Handler
+
     [XmlRpcMethod(GlobalMethodName.getMachines)]
     public XmlRpcStruct getMachines(string callerIp)
     {
         XmlRpcStruct result = Helper.ConvertDictToStruct(myRegisterHandler.getMachines(callerIp));
         return result;
-    }
-
-    [XmlRpcMethod(GlobalMethodName.leaderElection)]
-    public string leaderElection(string ipAddress)
-    {
-        try
-        {
-            return myElectionHelper.leaderElection(ipAddress);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Error : {0}", ex.Message);
-            return string.Empty;
-        }
     }
 
     [XmlRpcMethod(GlobalMethodName.newMachineJoin)]
@@ -74,16 +66,70 @@ class CSharpServerImplementation : MarshalByRefObject
         return myRegisterHandler.getKeyMaster(callerIp);
     }
 
+    #endregion
+
+    #region Election
+    [XmlRpcMethod(GlobalMethodName.leaderElection)]
+    public string leaderElection(string ipAddress)
+    {
+        try
+        {
+            return myElectionHelper.leaderElection(ipAddress);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error : {0}", ex.Message);
+            return string.Empty;
+        }
+    }
+
+
     [XmlRpcMethod(GlobalMethodName.checkLeaderValidity)]
     public bool checkLeaderValidity(String callerIp)
     {
         return myElectionHelper.checkLeaderValidity(callerIp);
     }
-    
+
     [XmlRpcMethod(GlobalMethodName.setNewLeader)]
     public String setNewLeader(int keyMaster)
     {
         return myElectionHelper.setNewLeader(keyMaster);
     }
+    #endregion
+
+    #region Request Handler
+    [XmlRpcMethod(GlobalMethodName.requestHandlerStartMessage)]
+    public string requestStartMessage(bool wantWrite, bool isSignal)
+    {
+        return myRequestHandler.startMessage(wantWrite, isSignal);
+    }
+
+    #endregion
+
+    #region RequestCentral Handler
+    [XmlRpcMethod(GlobalMethodName.requestCentralStartMessage)]
+    public string requestCentralStartMessage(bool localWantWrite)
+    {
+        return myRequestCentralHandler.startMessage(localWantWrite);
+    }
+
+    [XmlRpcMethod(GlobalMethodName.requestCentralReceiveRequest)]
+    public void requestCentralReceiveRequest(String requestIp, String requestString)
+    {
+        myRequestCentralHandler.receiveRequest(requestIp, requestString);
+    }
+
+    [XmlRpcMethod(GlobalMethodName.requestCentralGetPermission)]
+    public void requestCentralGetPermission(String requestIp, String requestString)
+    {
+        myRequestCentralHandler.getPermission(requestIp, requestString);
+    }
+
+    [XmlRpcMethod(GlobalMethodName.requestCentralFinishRequest)]
+    public void requestCentralFinishRequest(String requestIp)
+    {
+        myRequestCentralHandler.finishRequest(requestIp);
+    }
+    #endregion
 }
 

@@ -67,6 +67,21 @@ public class XmlRpcHelper
                         response = "Async call receive permission called";
                         break;
 
+                    case GlobalMethodName.requestCentralReceiveRequest:
+                        newProxy.requestCentralReceiveRequest(parameters[0].ToString(), parameters[1].ToString());
+                        response = "Async call receive request called";
+                        break;
+
+                    case GlobalMethodName.requestCentralGetPermission:
+                        newProxy.requestCentralGetPermission(parameters[0].ToString(), parameters[1].ToString());
+                        response = "success";
+                        break;
+
+                    case GlobalMethodName.requestCentralFinishRequest:
+                        newProxy.requestCentralFinishRequest(parameters[0].ToString());
+                        response = "Async call finish request called";
+                        break;
+
                     default:
                         response = "no such command";
                         break;
@@ -169,6 +184,18 @@ public class XmlRpcHelper
                         response = newProxy.requestRequestPermission((int)parameter[0], (int)parameter[1], parameter[2].ToString(), parameter[3].ToString());
                         break;
                     #endregion
+
+                    #region RequestCentral Handler
+                    case GlobalMethodName.requestCentralStartMessage:
+                        response = newProxy.requestCentralStartMessage((bool)parameter[0]);
+                        break;
+
+                    case GlobalMethodName.requestCentralGetPermission:
+                        newProxy.requestCentralGetPermission(parameter[0].ToString(), parameter[1].ToString());
+                        response = "success";
+                        break;
+                    #endregion
+
 
                     default:
                         response = "No such command";
