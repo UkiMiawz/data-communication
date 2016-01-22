@@ -86,7 +86,11 @@ public class JavaWsClient {
 				System.out.println("Resource value now :" + response);
 			}
 			
-			Thread.sleep(10000);
+			System.out.println("Start waiting process");
+			for(int i=0; i<10; i++){
+				System.out.println(i);
+				Thread.sleep(1000);
+			}
 			
 			//call mutual exclusion to read
 			params = new Object[]{ false, true };
