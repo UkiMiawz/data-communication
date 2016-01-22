@@ -31,7 +31,10 @@ public class RegisterHandler: MarshalByRefObject
     {
         Console.WriteLine(classNameLog + callerIp + " requesting hashmap machines");
         Dictionary<int, String> machines = CSharpRpcServer.getMachines();
-        Console.WriteLine(classNameLog + machines);
+        foreach (KeyValuePair<int, string> mach in machines)
+        {
+            Console.WriteLine(classNameLog + mach.Key + mach.Value);
+        }
         return machines;
     }
 
