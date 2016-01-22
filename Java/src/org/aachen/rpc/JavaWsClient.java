@@ -78,11 +78,11 @@ public class JavaWsClient {
 			Object[] params = new Object[]{ true, true };
 			if(isCentralized){
 				System.out.println("Start centralized mutual exclusion");
-				response = (String)consumeService(params, "RequestCentral.startMessage",true);
+				response = (String)consumeService(params, "RequestCentral.startMessage", false);
 				System.out.println("Resource value now :" + response);
 			} else {
 				System.out.println("Start ricart agrawala mutual exclusion");
-				response = (String)consumeService(params, "Request.startMessage",true);
+				response = (String)consumeService(params, "Request.startMessage", false);
 				System.out.println("Resource value now :" + response);
 			}
 			
