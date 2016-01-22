@@ -69,7 +69,7 @@ public class RequestHandler {
 			//contact all machines to start
 			TreeMap<Integer, String> machines = JavaWsServer.getMachines();
 			System.out.println(classNameLog + "Contacting all nodes " + machines);
-			Object[] params = new Object[]{true};
+			Object[] params = new Object[]{true, true};
 			XmlRpcHelper.SendToAllMachinesAsync(machines, "Request.startMessage", params, new CallBack());
 		}
 		

@@ -18,7 +18,7 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 public class XmlRpcHelper {
 
 	private static String classNameLog = "XmlRpcHelper : ";	
-	private static int timeout = 2000;
+	private static int timeout = 3000;
 	
 	/***
 	 * Create a xml rpc client to connect to a specific remote machine
