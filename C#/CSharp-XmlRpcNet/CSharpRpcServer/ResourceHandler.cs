@@ -59,7 +59,7 @@ public class ResourceHandler
         if (masterIp != myIp)
         {
             Object[] parameters = new Object[] { currentString + myString, myIp };
-            finalString = (String)XmlRpcHelper.SendToOneMachine(masterIp, "Resource.setString", parameters);
+            finalString = (String)XmlRpcHelper.SendToOneMachine(masterIp, GlobalMethodName.resourceSetString, parameters);
             Console.WriteLine(classNameLog + "String appended in master, shared string value now " + finalString);
         }
         else

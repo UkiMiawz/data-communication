@@ -126,10 +126,6 @@ public class XmlRpcHelper
                 object response;
                 switch (command)
                 {
-                    case GlobalMethodName.resourceGetString:
-                        response = newProxy.resourceGetString(parameter[0].ToString());
-                        break;
-
                     case GlobalMethodName.getMachines:
                         response = newProxy.getMachines(parameter[0].ToString());
                         break;
@@ -200,6 +196,15 @@ public class XmlRpcHelper
                         break;
                     #endregion
 
+                    #region Resource Handler                                            
+                    case GlobalMethodName.resourceGetString:
+                        response = newProxy.resourceGetString(parameter[0].ToString());
+                        break;
+
+                    case GlobalMethodName.resourceSetString:
+                        response = newProxy.resourceSetString(parameter[0].ToString(), parameter[1].ToString());
+                        break;
+                    #endregion
 
                     default:
                         response = "No such command";

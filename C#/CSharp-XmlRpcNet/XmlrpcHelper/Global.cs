@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 public static class GlobalMethodName
 {
-    public const string serverShutDownFromClient = "Server.serverShutDownFromClient";
-    public const string resourceGetString = "Resource.getString";
+    public const string serverShutDownFromClient = "Server.serverShutDownFromClient";    
 
     #region Register Handler
     public const string removeMachineIp = "RegisterHandler.removeMachineIp";
@@ -37,5 +36,10 @@ public static class GlobalMethodName
     public const string requestCentralReceiveRequest = "RequestCentral.receiveRequest";
     public const string requestCentralGetPermission = "RequestCentral.getPermission";
     public const string requestCentralFinishRequest = "RequestCentral.finishRequest";
+    #endregion
+
+    #region Resource Handler
+    public const string resourceGetString = "Resource.getString";
+    public const string resourceSetString = "Resource.setString";
     #endregion
 }

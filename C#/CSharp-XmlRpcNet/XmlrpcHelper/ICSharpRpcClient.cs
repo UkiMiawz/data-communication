@@ -11,10 +11,7 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     string HelloWorld(String input);
 
     [XmlRpcMethod(GlobalMethodName.serverShutDownFromClient)]
-    void serverShutDownFromClient();
-
-    [XmlRpcMethod(GlobalMethodName.resourceGetString)]
-    String resourceGetString(String ipAddress);
+    void serverShutDownFromClient();    
 
     #region Register Handler
     [XmlRpcMethod(GlobalMethodName.getMachines)]
@@ -51,7 +48,7 @@ public interface ICSharpRpcClient : IXmlRpcProxy
     String setNewLeader(int keyMaster);
 
     #endregion
-    
+
     #region Request Handler
     [XmlRpcMethod(GlobalMethodName.requestHandlerStartMessage)]
     string requestStartMessage(bool wantWrite, bool isSignal);
@@ -75,6 +72,14 @@ public interface ICSharpRpcClient : IXmlRpcProxy
 
     [XmlRpcMethod(GlobalMethodName.requestCentralFinishRequest)]
     void requestCentralFinishRequest(String requestIp);
+    #endregion
+
+    #region Resource Handler
+    [XmlRpcMethod(GlobalMethodName.resourceGetString)]
+    String resourceGetString(String ipAddress);
+
+    [XmlRpcMethod(GlobalMethodName.resourceSetString)]
+    String resourceSetString(String newString, String ipAddress);
     #endregion
 }
 

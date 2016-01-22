@@ -35,6 +35,11 @@ class CSharpServerImplementation : MarshalByRefObject
         return myResourceHandler.getString(ipAddress);
     }
 
+    [XmlRpcMethod(GlobalMethodName.resourceSetString)]
+    public String resourceSetString(String newString, String ipAddress)
+    {
+        return myResourceHandler.setString(newString, ipAddress);
+    }
     #region Register Handler
 
     [XmlRpcMethod(GlobalMethodName.getMachines)]

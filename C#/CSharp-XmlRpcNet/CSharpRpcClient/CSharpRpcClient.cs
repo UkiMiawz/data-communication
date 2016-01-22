@@ -20,7 +20,8 @@ class CSharpRpcClient
 
         ICSharpRpcClient localProxy = XmlRpcHelper.Connect("localhost");
 
-        ICSharpRpcClient masterProxy = XmlRpcHelper.Connect("localhost");
+        string currentMasterUrl = localProxy.getIpMaster(myIpAddress);
+        ICSharpRpcClient masterProxy = XmlRpcHelper.Connect(currentMasterUrl);
 
         try
         {
@@ -100,7 +101,7 @@ class CSharpRpcClient
                     case "6":
                         // Menu 6: Test Mutual Exclusion.
                         Console.WriteLine("Start centralized mutual exclusion");
-                        string CMEresponse = localProxy.requestCentralStartMessage(true);
+                        string CMEresponse = masterProxy.requestCentralStartMessage(true);
                         Console.WriteLine("Resource value now :" + CMEresponse);
                         Console.ReadKey();
                         break;
