@@ -9,27 +9,20 @@ using System.Collections;
 
 public class RequestHandlerCentralized
 {
-    private static List<Request> queue;
+    private static List<Request> queue = new List<Request>();
     private static String classNameLog = "RequestHandlerCentralized : ";
     private static ResourceHandler resourceHandler;
 
-    private static String masterIp;
-    private static String myIp;
+    private static String masterIp = CSharpRpcServer.getIpMaster();
+    private static String myIp = CSharpRpcServer.getMyIpAddress();
+    private int myKey = CSharpRpcServer.getMyPriority();
 
-    private bool currentlyAccessing = false;
-    private bool wantWrite = false;
-    private bool haveInterest = false;
+    private static bool currentlyAccessing = false;
+    private static bool wantWrite = false;
+    private static bool haveInterest = false;
 
-    private String finalString;
-    private String myString;
-
-    private int myKey;
-
-    public RequestHandlerCentralized()
-    {
-        queue = new List<Request>();
-        finalString = string.Empty;
-    }
+    private static String finalString = "";
+    private static String myString = "";
 
     /**
 	 * class to handle async call back for centralized mutual exclusion
@@ -61,7 +54,7 @@ public class RequestHandlerCentralized
      * @param wantWrite - indicates whether the request is for write or read
      * @return
      */
-    public String startMessage(bool localWantWrite)
+    public String startMessage(bool localWantWrite, bool isSignal)
     {
         Console.WriteLine(classNameLog + "Start mutual exclusion process");
         masterIp = CSharpRpcServer.getIpMaster();
@@ -69,6 +62,16 @@ public class RequestHandlerCentralized
         myKey = CSharpRpcServer.getMyPriority();
         Console.WriteLine(classNameLog + "Master IP =>" + masterIp);
         Console.WriteLine(classNameLog + "My IP => " + myIp + " My key => " + myKey);
+
+        if (!isSignal)
+        {
+            //start signal from client, inform others
+            //contact all machines to start
+            Dictionary<int, String> machines = CSharpRpcServer.getMachines();
+            Console.WriteLine(classNameLog + "Contacting all nodes " + machines);
+            Object[] parameters = new Object[] { localWantWrite, true };
+            XmlRpcHelper.SendToAllMachinesAsync(machines, GlobalMethodName.requestCentralStartMessage, parameters);
+        }
 
         Console.WriteLine(classNameLog + "Initiating resource handler. Want to write => " + localWantWrite);
         resourceHandler = new ResourceHandler();
@@ -91,7 +94,7 @@ public class RequestHandlerCentralized
         {
             Console.WriteLine(classNameLog + "I am master, start async on self");
             //Thread a = new Thread(()-> {receiveRequest(myIp, "RequestCentral.wantAccess")});
-            object[] parameter = new object[] { myIp, "Test string" };
+            object[] parameter = new object[] { myIp, "Test string" };            
             Thread receiveRequestThreadResult = new Thread(new ParameterizedThreadStart(receiveRequestThread));
             receiveRequestThreadResult.Start(parameter);
         }
@@ -125,6 +128,7 @@ public class RequestHandlerCentralized
         int containMyString = 0;
         if (finalString.Contains(myString))
         {
+            Console.WriteLine(classNameLog + "!!!!My string is in the final string!!!!");
             containMyString = 1;
         }
 
@@ -168,7 +172,7 @@ public class RequestHandlerCentralized
         else
         {
             Console.WriteLine(classNameLog + "I am master, start async on self");
-            object parameter = "myIp";
+            object parameter = myIp;
             Thread finishRequestResult = new Thread(new ParameterizedThreadStart(finishRequestThread));
             finishRequestResult.Start(parameter);
         }
@@ -179,7 +183,7 @@ public class RequestHandlerCentralized
         Console.WriteLine(classNameLog + "Do resource access");
         currentlyAccessing = true;
         //clear permission, do request access
-        String nowResource;
+        //String nowResource;
 
         ResourceHandler resourceHandler = new ResourceHandler();
         if (wantWrite)
@@ -187,19 +191,19 @@ public class RequestHandlerCentralized
             Console.WriteLine(classNameLog + "Write random string to resource");
             myString = resourceHandler.generateRandomString();
             Console.WriteLine(classNameLog + "Random string generated => " + myString);
-            nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
+            finalString = resourceHandler.appendNewString(myIp, masterIp, myString);
         }
         else
         {
             Console.WriteLine(classNameLog + "Read shared string");
-            nowResource = resourceHandler.readNewString(myIp, masterIp);
+            finalString = resourceHandler.readNewString(myIp, masterIp);
         }
 
-        Console.WriteLine(classNameLog + "Resource value now => " + nowResource);
+        Console.WriteLine(classNameLog + "Resource value now => " + finalString);
         haveInterest = false;
         currentlyAccessing = false;
 
-        return nowResource;
+        return finalString;
     }
 
     //============MASTER SIDE===================
@@ -234,7 +238,7 @@ public class RequestHandlerCentralized
         else
         {
             //send signal that its ok to request
-            if (masterIp != myIp)
+            if (requestIp != myIp)
             {
                 Object[] parameter = new Object[] { requestIp, requestString };
                 Task<string> getPermissionResult = XmlRpcHelper.SendToOneMachineAsync(requestIp, GlobalMethodName.requestCentralGetPermission , parameter);

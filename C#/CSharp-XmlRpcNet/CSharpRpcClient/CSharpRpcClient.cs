@@ -10,6 +10,77 @@ using System.Threading.Tasks;
 
 class CSharpRpcClient
 {
+    private static ICSharpRpcClient _localProxy;
+
+    private static string _currentMasterUrl;
+    private static ICSharpRpcClient _masterProxy;
+
+    /***
+	 * Start mutual exclusion process
+	 * @param isCentralized To choose whether mutual exclusion using centralized or ricart
+	 */
+    private static void StartMutualExclusion(Boolean isCentralized)
+    {
+        try
+        {
+            String response;
+
+            //call mutual exclusion to write
+            Object[] parameters = new Object[] { true, false };
+
+            if (isCentralized)
+            {
+                Console.WriteLine("Start centralized mutual exclusion");
+                response = (String)_localProxy.requestCentralStartMessage(true, false);
+                Console.WriteLine("Resource value now :" + response);
+            }
+            else {
+                Console.WriteLine("Start ricart agrawala mutual exclusion");
+                response = (String)_localProxy.requestStartMessage(true, false);
+                Console.WriteLine("Resource value now :" + response);
+            }
+
+            Console.WriteLine("Start waiting process");
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(i);
+                System.Threading.Thread.Sleep(1000);
+            }
+			
+			//call mutual exclusion to read
+			parameters = new Object[] { false, false };
+            if (isCentralized)
+            {
+                Console.WriteLine("Start centralized mutual exclusion read");
+                response = (String)_localProxy.requestCentralStartMessage(false, false);
+                Console.WriteLine("Resource value now :" + response);
+            }
+            else {
+                Console.WriteLine("Start ricart agrawala mutual exclusion read");
+                response = (String)_localProxy.requestStartMessage(false, false);
+                Console.WriteLine("Resource value now :" + response);
+            }
+
+            String[] parts = response.Split(';');
+            Console.WriteLine("Split array value " + string.Join(" | ", parts));
+
+            if (parts[1] == "1")
+            {
+                Console.WriteLine("!!!!My string is in the final string!!!!");
+            }
+            else {
+                Console.WriteLine("!!!!My string is not in the final string!!!!");
+            }
+
+            Console.WriteLine("Final String: " + parts[0]);
+
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            Console.WriteLine(e.Message);
+        }
+    }
     static void Main(string[] args)
     {
         ClientObject co = new ClientObject();
@@ -18,10 +89,10 @@ class CSharpRpcClient
         HttpChannel chnl = new HttpChannel(null, new XmlRpcClientFormatterSinkProvider(), null);
         ChannelServices.RegisterChannel(chnl, false);
 
-        ICSharpRpcClient localProxy = XmlRpcHelper.Connect("localhost");
+        _localProxy = XmlRpcHelper.Connect("localhost");
 
-        string currentMasterUrl = localProxy.getIpMaster(myIpAddress);
-        ICSharpRpcClient masterProxy = XmlRpcHelper.Connect(currentMasterUrl);
+        _currentMasterUrl = _localProxy.getIpMaster(myIpAddress);
+        _masterProxy = XmlRpcHelper.Connect(_currentMasterUrl);
 
         try
         {
@@ -39,7 +110,7 @@ class CSharpRpcClient
                         // Menu 1: Show master hashmap.
                         // localProxy.checkMasterStatus();
 
-                        XmlRpcStruct masterMap = masterProxy.getMachines(myIpAddress);
+                        XmlRpcStruct masterMap = _masterProxy.getMachines(myIpAddress);
 
                         Dictionary<int, string> networkHashMap = Helper.ConvertObjToDict(masterMap);
 
@@ -56,7 +127,7 @@ class CSharpRpcClient
                         // Menu 2: Show local hashmap.
                         // localProxy.checkMasterStatus();
 
-                        XmlRpcStruct localMap = localProxy.getMachines(myIpAddress);
+                        XmlRpcStruct localMap = _localProxy.getMachines(myIpAddress);
 
                         Dictionary<int, string> localhostHashMap = Helper.ConvertObjToDict(localMap);
 
@@ -72,7 +143,7 @@ class CSharpRpcClient
                         // Menu 3: Get Master Ip.
                         //localProxy.checkMasterStatus();
 
-                        string result = masterProxy.getIpMaster(myIpAddress);
+                        string result = _masterProxy.getIpMaster(myIpAddress);
                         Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
@@ -83,7 +154,7 @@ class CSharpRpcClient
 
                         Console.WriteLine("Election held!!!");
 
-                        string newMaster = masterProxy.leaderElection(myIpAddress);
+                        string newMaster = _masterProxy.leaderElection(myIpAddress);
                         //string newMasterIp = localProxy.getIpMaster(ipAddress);
 
                         Console.WriteLine("The new masternode is {0}", newMaster);
@@ -92,17 +163,13 @@ class CSharpRpcClient
 
                     case "5":
                         // Menu 5: Ricart Agrawala Exlusion.
-                        Console.WriteLine("Start Ricart Agrawala exclusion");
-                        string RAresponse = masterProxy.requestStartMessage(true, true);
-                        Console.WriteLine("Resource value now :" + RAresponse);
+                        StartMutualExclusion(false);
                         Console.ReadKey();
                         break;
 
                     case "6":
                         // Menu 6: Test Mutual Exclusion.
-                        Console.WriteLine("Start centralized mutual exclusion");
-                        string CMEresponse = masterProxy.requestCentralStartMessage(true);
-                        Console.WriteLine("Resource value now :" + CMEresponse);
+                        StartMutualExclusion(true);
                         Console.ReadKey();
                         break;
 
@@ -114,8 +181,8 @@ class CSharpRpcClient
                     //    break;
 
                     default:
-                        Console.WriteLine("from master {0}", masterProxy.HelloWorld("master Aderick"));
-                        Console.WriteLine("from local {0}", localProxy.HelloWorld("Aderick"));
+                        Console.WriteLine("from master {0}", _masterProxy.HelloWorld("master Aderick"));
+                        Console.WriteLine("from local {0}", _localProxy.HelloWorld("Aderick"));
                         Console.ReadKey();
                         break;
                 }
