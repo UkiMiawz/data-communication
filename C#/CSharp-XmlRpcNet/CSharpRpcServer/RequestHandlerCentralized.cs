@@ -239,7 +239,7 @@ public class RequestHandlerCentralized
         else
         {
             //send signal that its ok to request
-            if (masterIp != myIp)
+            if (requestIp != myIp)
             {
                 Object[] parameter = new Object[] { requestIp, requestString };
                 Task<string> getPermissionResult = XmlRpcHelper.SendToOneMachineAsync(requestIp, GlobalMethodName.requestCentralGetPermission , parameter);
