@@ -68,7 +68,7 @@ public class RequestHandlerCentralized {
 			//contact all machines to start write and read process
 			TreeMap<Integer, String> machines = JavaWsServer.getMachines();
 			System.out.println(classNameLog + "Contacting all nodes " + machines);
-			Object[] params = new Object[]{true, true};
+			Object[] params = new Object[]{wantWrite, true};
 			XmlRpcHelper.SendToAllMachinesAsync(machines, "RequestCentral.startMessage", params, new CallBack());
 		}
 		

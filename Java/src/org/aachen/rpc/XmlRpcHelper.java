@@ -139,16 +139,12 @@ public class XmlRpcHelper {
 				if(ipAddress.equals(myIpAddress)){
 					System.out.println(classNameLog + "Machine is my own machine");
 				} else {
-					if (InetAddress.getByName(ipAddress).isReachable(timeout)){
-						System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
-						  
-						  //check if machine is on
-						  Object response = (Object)SendToOneMachine(ipAddress, command, params);
-						  System.out.println(classNameLog + response);
-						  success += 1;
-					} else {
-						System.out.println(classNameLog + "Machine is not active");
-					}
+					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
+					  
+					  //check if machine is on
+					  Object response = (Object)SendToOneMachine(ipAddress, command, params);
+					  System.out.println(classNameLog + response);
+					  success += 1;
 				}
 				
 			} catch (UnknownHostException e) {
@@ -186,14 +182,10 @@ public class XmlRpcHelper {
 				if(ipAddress.equals(myIpAddress)){
 					System.out.println(classNameLog + "Machine is my own machine");
 				} else {
-					if (InetAddress.getByName(ipAddress).isReachable(timeout)){
-						System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
-						  String response = (String)SendToOneMachineAsync(ipAddress, command, params, callback);
-						  System.out.println(classNameLog + response);
-						  success += 1;
-					} else {
-						System.out.println(classNameLog + "Machine is not active");
-					}
+					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
+					  String response = (String)SendToOneMachineAsync(ipAddress, command, params, callback);
+					  System.out.println(classNameLog + response);
+					  success += 1;
 				}
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
