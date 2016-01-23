@@ -93,7 +93,7 @@ public class JavaWsClient {
 			}
 			
 			//call mutual exclusion to read
-			params = new Object[]{ false, true };
+			params = new Object[]{ false, false };
 			if(isCentralized){
 				System.out.println("Start centralized mutual exclusion read");
 				response = (String)consumeService(params, "RequestCentral.startMessage",true);
