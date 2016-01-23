@@ -184,7 +184,7 @@ public class RequestHandlerCentralized
         Console.WriteLine(classNameLog + "Do resource access");
         currentlyAccessing = true;
         //clear permission, do request access
-        String nowResource;
+        //String nowResource;
 
         ResourceHandler resourceHandler = new ResourceHandler();
         if (wantWrite)
@@ -192,19 +192,19 @@ public class RequestHandlerCentralized
             Console.WriteLine(classNameLog + "Write random string to resource");
             myString = resourceHandler.generateRandomString();
             Console.WriteLine(classNameLog + "Random string generated => " + myString);
-            nowResource = resourceHandler.appendNewString(myIp, masterIp, myString);
+            finalString = resourceHandler.appendNewString(myIp, masterIp, myString);
         }
         else
         {
             Console.WriteLine(classNameLog + "Read shared string");
-            nowResource = resourceHandler.readNewString(myIp, masterIp);
+            finalString = resourceHandler.readNewString(myIp, masterIp);
         }
 
-        Console.WriteLine(classNameLog + "Resource value now => " + nowResource);
+        Console.WriteLine(classNameLog + "Resource value now => " + finalString);
         haveInterest = false;
         currentlyAccessing = false;
 
-        return nowResource;
+        return finalString;
     }
 
     //============MASTER SIDE===================
