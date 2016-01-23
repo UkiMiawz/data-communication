@@ -9,28 +9,20 @@ using System.Collections;
 
 public class RequestHandlerCentralized
 {
-    private static List<Request> queue;
+    private static List<Request> queue = new List<Request>();
     private static String classNameLog = "RequestHandlerCentralized : ";
     private static ResourceHandler resourceHandler;
 
-    private static String masterIp;
-    private static String myIp;
+    private static String masterIp = CSharpRpcServer.getIpMaster();
+    private static String myIp = CSharpRpcServer.getMyIpAddress();
+    private int myKey = CSharpRpcServer.getMyPriority();
 
-    private bool currentlyAccessing = false;
-    private bool wantWrite = false;
-    private bool haveInterest = false;
+    private static bool currentlyAccessing = false;
+    private static bool wantWrite = false;
+    private static bool haveInterest = false;
 
-    private String finalString;
-    private String myString;
-
-    private int myKey;
-
-    public RequestHandlerCentralized()
-    {
-        queue = new List<Request>();
-        finalString = string.Empty;
-        myIp = CSharpRpcServer.getMyIpAddress();
-    }
+    private static String finalString = "";
+    private static String myString = "";
 
     /**
 	 * class to handle async call back for centralized mutual exclusion
@@ -102,7 +94,7 @@ public class RequestHandlerCentralized
         {
             Console.WriteLine(classNameLog + "I am master, start async on self");
             //Thread a = new Thread(()-> {receiveRequest(myIp, "RequestCentral.wantAccess")});
-            object[] parameter = new object[] { myIp, "Test string" };
+            object[] parameter = new object[] { myIp, "Test string" };            
             Thread receiveRequestThreadResult = new Thread(new ParameterizedThreadStart(receiveRequestThread));
             receiveRequestThreadResult.Start(parameter);
         }
@@ -116,6 +108,7 @@ public class RequestHandlerCentralized
         {
             try
             {
+                Console.WriteLine(classNameLog + "have interest " + haveInterest);
                 Console.Write(".");
                 Thread.Sleep(500);
             }

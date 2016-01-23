@@ -31,12 +31,12 @@ class CSharpRpcClient
             if (isCentralized)
             {
                 Console.WriteLine("Start centralized mutual exclusion");
-                response = (String)_localProxy.requestStartMessage(true, false);
+                response = (String)_localProxy.requestCentralStartMessage(true, false);
                 Console.WriteLine("Resource value now :" + response);
             }
             else {
                 Console.WriteLine("Start ricart agrawala mutual exclusion");
-                response = (String)_localProxy.requestCentralStartMessage(true, false);
+                response = (String)_localProxy.requestStartMessage(true, false);
                 Console.WriteLine("Resource value now :" + response);
             }
 
@@ -52,7 +52,7 @@ class CSharpRpcClient
             if (isCentralized)
             {
                 Console.WriteLine("Start centralized mutual exclusion read");
-                response = (String)_localProxy.requestStartMessage(false, false);
+                response = (String)_localProxy.requestCentralStartMessage(false, false);
                 Console.WriteLine("Resource value now :" + response);
             }
             else {
