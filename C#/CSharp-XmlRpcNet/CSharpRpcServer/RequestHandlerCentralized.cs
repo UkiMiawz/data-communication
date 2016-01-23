@@ -61,7 +61,7 @@ public class RequestHandlerCentralized
      * @param wantWrite - indicates whether the request is for write or read
      * @return
      */
-    public String startMessage(bool localWantWrite)
+    public String startMessage(bool localWantWrite, bool isSignal)
     {
         Console.WriteLine(classNameLog + "Start mutual exclusion process");
         masterIp = CSharpRpcServer.getIpMaster();
@@ -69,6 +69,16 @@ public class RequestHandlerCentralized
         myKey = CSharpRpcServer.getMyPriority();
         Console.WriteLine(classNameLog + "Master IP =>" + masterIp);
         Console.WriteLine(classNameLog + "My IP => " + myIp + " My key => " + myKey);
+
+        if (!isSignal)
+        {
+            //start signal from client, inform others
+            //contact all machines to start
+            Dictionary<int, String> machines = CSharpRpcServer.getMachines();
+            Console.WriteLine(classNameLog + "Contacting all nodes " + machines);
+            Object[] parameters = new Object[] { true };
+            XmlRpcHelper.SendToAllMachinesAsync(machines, GlobalMethodName.requestCentralStartMessage, parameters);
+        }
 
         Console.WriteLine(classNameLog + "Initiating resource handler. Want to write => " + localWantWrite);
         resourceHandler = new ResourceHandler();

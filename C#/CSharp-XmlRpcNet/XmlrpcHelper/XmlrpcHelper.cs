@@ -187,7 +187,7 @@ public class XmlRpcHelper
 
                     #region RequestCentral Handler
                     case GlobalMethodName.requestCentralStartMessage:
-                        response = newProxy.requestCentralStartMessage((bool)parameter[0]);
+                        response = newProxy.requestCentralStartMessage((bool)parameter[0], (bool)parameter[1]);
                         break;
 
                     case GlobalMethodName.requestCentralGetPermission:

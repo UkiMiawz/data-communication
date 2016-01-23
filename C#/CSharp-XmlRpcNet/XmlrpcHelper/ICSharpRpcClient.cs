@@ -62,7 +62,7 @@ public interface ICSharpRpcClient : IXmlRpcProxy
 
     #region RequestCentral Handler
     [XmlRpcMethod(GlobalMethodName.requestCentralStartMessage)]
-    String requestCentralStartMessage(bool localWantWrite);
+    String requestCentralStartMessage(bool localWantWrite, bool isSignal);
 
     [XmlRpcMethod(GlobalMethodName.requestCentralReceiveRequest)]
     void requestCentralReceiveRequest(String requestIp, String requestString);
