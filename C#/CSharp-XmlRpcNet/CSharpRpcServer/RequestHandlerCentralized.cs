@@ -69,7 +69,7 @@ public class RequestHandlerCentralized
             //contact all machines to start
             Dictionary<int, String> machines = CSharpRpcServer.getMachines();
             Console.WriteLine(classNameLog + "Contacting all nodes " + machines);
-            Object[] parameters = new Object[] { true, true };
+            Object[] parameters = new Object[] { localWantWrite, true };
             XmlRpcHelper.SendToAllMachinesAsync(machines, GlobalMethodName.requestCentralStartMessage, parameters);
         }
 
@@ -108,7 +108,6 @@ public class RequestHandlerCentralized
         {
             try
             {
-                Console.WriteLine(classNameLog + "have interest " + haveInterest);
                 Console.Write(".");
                 Thread.Sleep(500);
             }

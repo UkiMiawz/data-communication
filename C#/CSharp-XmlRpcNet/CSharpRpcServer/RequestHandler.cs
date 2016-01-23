@@ -43,7 +43,7 @@ public class RequestHandler
             //contact all machines to start
             Dictionary<int, String> machines = CSharpRpcServer.getMachines();
             Console.WriteLine(classNameLog + "Contacting all nodes " + machines);
-            Object[] parameters = new Object[] { true, true };
+            Object[] parameters = new Object[] { wantWrite, true };
             XmlRpcHelper.SendToAllMachinesAsync(machines, GlobalMethodName.requestHandlerStartMessage, parameters);
         }
 
