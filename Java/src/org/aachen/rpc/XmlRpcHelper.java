@@ -183,13 +183,17 @@ public class XmlRpcHelper {
 			try {
 				//don't send to self and check if machine alive
 				String myIpAddress = InetAddress.getLocalHost().getHostAddress();
-				if (!ipAddress.equals(myIpAddress) && InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
-					  String response = (String)SendToOneMachineAsync(ipAddress, command, params, callback);
-					  System.out.println(classNameLog + response);
-					  success += 1;
+				if(ipAddress.equals(myIpAddress)){
+					System.out.println(classNameLog + "Machine is my own machine");
 				} else {
-					System.out.println(classNameLog + "Machine is not active or my own machine");
+					if (InetAddress.getByName(ipAddress).isReachable(timeout)){
+						System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
+						  String response = (String)SendToOneMachineAsync(ipAddress, command, params, callback);
+						  System.out.println(classNameLog + response);
+						  success += 1;
+					} else {
+						System.out.println(classNameLog + "Machine is not active");
+					}
 				}
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
