@@ -65,7 +65,6 @@ public class Bully
                     if (NetworkHelper.isServerUp(nextBiggerPriorityIpAddress, 1090, 500))
                     {
                         //send message to bigger value machines to hold election
-                        holdElection(i + 1); 
                         Object[] parameters = new Object[] { myIp };
                         try
                         {
@@ -78,9 +77,7 @@ public class Bully
                                 gaveUp = true;
                                 //trigger election in bigger node
                                 // XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", parameters, new Callback);
-                                Task<string> leaderElectionResult = XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, GlobalMethodName.leaderElection, parameters); 
-                                // ^ Why do we need call back? just let them run the function and then we will have the new master announced.
-                                //XmlRpcClient client = XmlRpcHelper.Connect(nextBiggerPriorityIpAddress); --> Why do we have to connect to this node? They still don't return any result.
+                                Task<string> leaderElectionResult = XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, GlobalMethodName.leaderElection, parameters);                                
                             }
                         }
                         catch (Exception exception)
