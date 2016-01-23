@@ -121,9 +121,9 @@ class CSharpServerImplementation : MarshalByRefObject
 
     #region RequestCentral Handler
     [XmlRpcMethod(GlobalMethodName.requestCentralStartMessage)]
-    public string requestCentralStartMessage(bool localWantWrite)
+    public string requestCentralStartMessage(bool localWantWrite, bool isSignal)
     {
-        return myRequestCentralHandler.startMessage(localWantWrite);
+        return myRequestCentralHandler.startMessage(localWantWrite, isSignal);
     }
 
     [XmlRpcMethod(GlobalMethodName.requestCentralReceiveRequest)]
