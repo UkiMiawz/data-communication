@@ -135,6 +135,7 @@ public class RequestHandlerCentralized
         int containMyString = 0;
         if (finalString.Contains(myString))
         {
+            Console.WriteLine(classNameLog + "!!!!My string is in the final string!!!!");
             containMyString = 1;
         }
 
