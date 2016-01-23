@@ -29,6 +29,7 @@ public class RequestHandlerCentralized
     {
         queue = new List<Request>();
         finalString = string.Empty;
+        myIp = CSharpRpcServer.getMyIpAddress();
     }
 
     /**
@@ -179,7 +180,7 @@ public class RequestHandlerCentralized
         else
         {
             Console.WriteLine(classNameLog + "I am master, start async on self");
-            object parameter = "myIp";
+            object parameter = myIp;
             Thread finishRequestResult = new Thread(new ParameterizedThreadStart(finishRequestThread));
             finishRequestResult.Start(parameter);
         }
