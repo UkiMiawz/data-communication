@@ -62,6 +62,10 @@ public class XmlRpcHelper
                         response = "Async call called";
                         break;
 
+                    case GlobalMethodName.requestHandlerStartMessage:
+                        response = newProxy.requestStartMessage(Convert.ToBoolean(parameters[0]), Convert.ToBoolean(parameters[1]));
+                        break;
+
                     case GlobalMethodName.requestHandlerReceivePermission:
                         newProxy.requestReceivePermission((int)parameters[0], (int)parameters[1], parameters[2].ToString());
                         response = "Async call receive permission called";
@@ -109,7 +113,35 @@ public class XmlRpcHelper
 
     public static void SendToAllMachinesAsync(Dictionary<int, String> machines, String command, Object[] parameter)
     {
-        throw new NotImplementedException();
+        int success = 0;
+
+        foreach (KeyValuePair<int, string> entry in machines)
+        {
+            String ipAddress = entry.Value;
+
+            try
+            {
+                //don't send to self and check if machine alive
+                String myIpAddress = NetworkHelper.GetMyIpAddress();
+                if(ipAddress != myIpAddress &&  NetworkHelper.isServerUp(ipAddress, 1090, 300))
+                {
+                    Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
+                    Task<string> response = SendToOneMachineAsync(ipAddress, command, parameter);
+                    Console.WriteLine(classNameLog + response);
+                    success += 1;
+                }
+                else
+                {
+                    Console.WriteLine(classNameLog + "Machine is not active or my own machine");
+                }
+            }           
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
+        Console.WriteLine(classNameLog + "Finished sending to all machines, success call " + success);
     }
 
     public static Object SendToOneMachine(String ipAddress, String command, Object[] parameter)
