@@ -71,6 +71,10 @@ public class XmlRpcHelper
                         response = "Async call receive permission called";
                         break;
 
+                    case GlobalMethodName.requestCentralStartMessage:
+                        response = newProxy.requestCentralStartMessage((bool)parameters[0], (bool)parameters[1]);
+                        break;
+
                     case GlobalMethodName.requestCentralReceiveRequest:
                         newProxy.requestCentralReceiveRequest(parameters[0].ToString(), parameters[1].ToString());
                         response = "Async call receive request called";
