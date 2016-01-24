@@ -16,7 +16,6 @@ public class JavaWsServer {
 	/* ========= PROPERTIES SETTER AND GETTER ====== */
 	
 	private static final int PORT = 1090;
-	private static int timeout = 100;
 	private static WebServer webServer;
 	private static XmlRpcServer xmlRpcServer;
 	private static ElectionHelper electionHelper;
@@ -155,7 +154,7 @@ public class JavaWsServer {
 	/* ========= SERVER SHUTDOWN METHODS ====== */
 	
 	public static void serverShutDown(){
-		Object[] params = new Object[] { myIp };
+		Object[] params = new Object[] { myIpAddress };
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 	}
 	
@@ -167,7 +166,7 @@ public class JavaWsServer {
 		System.out.println("Server shutdown");
 	}
 	
-	/* ========= MAIN METHODS ====== */
+	/* ========= MAIN METHOD ====== */
 	
 	public static void main(String[] args) {
 		

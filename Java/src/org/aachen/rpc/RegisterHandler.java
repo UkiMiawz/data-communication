@@ -1,14 +1,11 @@
 package org.aachen.rpc;
 
-import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import com.google.common.net.InetAddresses;
 
 public class RegisterHandler {
 	
-	private static int timeout = 200;
 	private static String classNameLog = "RegisterHandler : ";
 	
 	public String getIpMaster(String callerIp){
@@ -49,7 +46,7 @@ public class RegisterHandler {
 				       String host= subnet + "." + i;
 				       System.out.println(classNameLog + "Contacting " + host);
 				       
-				       if (!host.equals(ipAddress) && InetAddress.getByName(host).isReachable(timeout)){
+				       if (!host.equals(ipAddress)){
 				           System.out.println(classNameLog + host + " is reachable. Checking validity");
 				           Object[] params = new Object[] { ipAddress };
 				           
@@ -117,13 +114,13 @@ public class RegisterHandler {
 		return "From " + callerIpAddress + " new machine registered " + newIpAddress;
 	}
 	
-	public static String removeMachine(int key){
+	public String removeMachine(int key){
 		System.out.println(classNameLog + "Remove machine with key " + key);
 		String removedIp = JavaWsServer.removeMachineFromMap(key);
 		return "Machine removed " + removedIp;
 	}
 	
-	public static String removeMachineIp(String ipAddress){
+	public String removeMachineIp(String ipAddress){
 		System.out.println(classNameLog + "Remove machine with key " + ipAddress);
 		int removedKey = JavaWsServer.removeMachineFromMap(ipAddress);
 		return "Machine removed " + removedKey;

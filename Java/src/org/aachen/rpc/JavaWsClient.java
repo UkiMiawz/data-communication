@@ -87,7 +87,7 @@ public class JavaWsClient {
 			}
 			
 			System.out.println("Start waiting process");
-			for(int i=0; i<10; i++){
+			for(int i=0; i<20; i++){
 				System.out.println(i);
 				Thread.sleep(1000);
 			}
@@ -155,8 +155,6 @@ public class JavaWsClient {
         	System.out.println("4. Do election");
         	System.out.println("5. Ricart Agrawala Mutual Exclusion");
         	System.out.println("6. Centralized Mutual Exclusion");
-        	//TODO Rejoin Network
-        	System.out.println("7. Rejoin Network");
         	System.out.println("99. Logout and shutdown server");
         	System.out.println("0. Exit");
         	
