@@ -53,15 +53,14 @@ public class RegisterHandler: MarshalByRefObject
         return "From " + callerIpAddress + " new machine registered " + newIpAddress;
     }
 
-    public static String removeMachine(int key)
+    public String removeMachine(int key)
     {
         Console.WriteLine(classNameLog + "Remove machine with key " + key);
         String removedIp = CSharpRpcServer.removeMachineFromMap(key);
         return "Machine removed " + removedIp;
     }
 
-    [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
-    public static String removeMachineIp(String ipAddress)
+    public String removeMachineIp(String ipAddress)
     {
         Console.WriteLine(classNameLog + "Remove machine with key " + ipAddress);
         int removedKey = CSharpRpcServer.removeMachineFromMap(ipAddress);

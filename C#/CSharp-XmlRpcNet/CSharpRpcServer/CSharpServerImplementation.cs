@@ -79,6 +79,11 @@ class CSharpServerImplementation : MarshalByRefObject
         return myRegisterHandler.getKeyMaster(callerIp);
     }
 
+    [XmlRpcMethod(GlobalMethodName.removeMachineIp)]
+    public String removeMachineIp(String ipAddress)
+    {
+        return myRegisterHandler.removeMachineIp(ipAddress);
+    }
     #endregion
 
     #region Election

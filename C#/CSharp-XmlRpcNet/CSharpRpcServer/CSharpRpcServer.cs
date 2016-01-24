@@ -167,14 +167,14 @@ class CSharpRpcServer : MarshalByRefObject
 
     public static void serverShutDown()
     {
-        Object[] parameters = new Object[] { myIp };
+        Object[] parameters = new Object[] { myIpAddress };
         XmlRpcHelper.SendToAllMachines(machines, GlobalMethodName.removeMachineIp, parameters);
     }
 
     public void serverShutDownFromClient(String ip)
     {
         Console.WriteLine(ip + " client ask to shutdown server");
-        Object[] parameters = new Object[] { myIp };
+        Object[] parameters = new Object[] { myIpAddress };
         XmlRpcHelper.SendToAllMachines(machines, GlobalMethodName.removeMachineIp, parameters);
         Console.WriteLine("Server shutdown");
     }

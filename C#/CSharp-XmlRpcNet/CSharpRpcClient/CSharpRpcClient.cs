@@ -41,7 +41,7 @@ class CSharpRpcClient
             }
 
             Console.WriteLine("Start waiting process");
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Console.WriteLine(i);
                 System.Threading.Thread.Sleep(1000);
@@ -81,6 +81,7 @@ class CSharpRpcClient
             Console.WriteLine(e.Message);
         }
     }
+
     static void Main(string[] args)
     {
         ClientObject co = new ClientObject();
@@ -143,7 +144,7 @@ class CSharpRpcClient
                         // Menu 3: Get Master Ip.
                         //localProxy.checkMasterStatus();
 
-                        string result = _masterProxy.getIpMaster(myIpAddress);
+                        string result = _localProxy.getIpMaster(myIpAddress);
                         Console.WriteLine("the masterNode is {0}", result);
                         Console.ReadKey();
                         break;
@@ -154,7 +155,7 @@ class CSharpRpcClient
 
                         Console.WriteLine("Election held!!!");
 
-                        string newMaster = _masterProxy.leaderElection(myIpAddress);
+                        string newMaster = _localProxy.leaderElection(myIpAddress);
                         //string newMasterIp = localProxy.getIpMaster(ipAddress);
 
                         Console.WriteLine("The new masternode is {0}", newMaster);
