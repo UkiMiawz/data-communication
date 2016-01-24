@@ -19,8 +19,6 @@ public class ClientUI
         Console.WriteLine("4. Do Election");
         Console.WriteLine("5. Ricart Agrawala Mutual Exclusion");
         Console.WriteLine("6. Centralized Mutual Exclusion");
-        Console.WriteLine("7. Rejoin Network");
-        Console.WriteLine("99. Logout and shutdown server");
         Console.WriteLine("0. Exit");
                       
         Console.Write("Enter your choice: ");

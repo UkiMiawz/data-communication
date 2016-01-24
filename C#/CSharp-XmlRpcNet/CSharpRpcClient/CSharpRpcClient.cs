@@ -172,14 +172,7 @@ class CSharpRpcClient
                         // Menu 6: Test Mutual Exclusion.
                         StartMutualExclusion(true);
                         Console.ReadKey();
-                        break;
-
-                    //case "7":
-                    //    //Menu 7: Rejoining Network.
-                    //    localProxy.
-                    //    Console.WriteLine("You successfully rejoin the network!!");
-                    //    Console.ReadKey();
-                    //    break;
+                        break;                  
 
                     default:
                         Console.WriteLine("from master {0}", _masterProxy.HelloWorld("master Aderick"));
