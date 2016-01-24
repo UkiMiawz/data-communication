@@ -138,20 +138,14 @@ public class XmlRpcHelper {
 				if(ipAddress.equals(myIpAddress)){
 					System.out.println(classNameLog + "Machine is my own machine");
 				} else {
-					System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
-					  
-					  //check if machine is on
+					  System.out.println(classNameLog + "Command " + command + " Contacting priority " + entry.getKey() + " => " + ipAddress);
 					  Object response = (Object)SendToOneMachine(ipAddress, command, params);
 					  System.out.println(classNameLog + response);
 					  success += 1;
 				}
-				
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 				System.out.println(classNameLog + "IP is not valid");
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println(classNameLog + "String is not valid");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

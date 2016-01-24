@@ -154,7 +154,7 @@ public class JavaWsServer {
 	/* ========= SERVER SHUTDOWN METHODS ====== */
 	
 	public static void serverShutDown(){
-		Object[] params = new Object[] { myIp };
+		Object[] params = new Object[] { myIpAddress };
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 	}
 	
@@ -166,7 +166,7 @@ public class JavaWsServer {
 		System.out.println("Server shutdown");
 	}
 	
-	/* ========= MAIN METHODS ====== */
+	/* ========= MAIN METHOD ====== */
 	
 	public static void main(String[] args) {
 		
