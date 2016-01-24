@@ -279,7 +279,7 @@ public class XmlRpcHelper
                 //don't send to self
                 String myIpAddress = NetworkHelper.GetMyIpAddress();
 
-                if (ipAddress != myIpAddress && NetworkHelper.isServerUp(ipAddress, 1090, 300))
+                if (ipAddress != myIpAddress)
                 {
                     Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
 
