@@ -127,7 +127,7 @@ public class XmlRpcHelper
             {
                 //don't send to self and check if machine alive
                 String myIpAddress = NetworkHelper.GetMyIpAddress();
-                if(ipAddress != myIpAddress &&  NetworkHelper.isServerUp(ipAddress, 1090, 300))
+                if(ipAddress != myIpAddress)
                 {
                     Console.WriteLine(classNameLog + "Command " + command + " Contacting priority " + entry.Key + " => " + ipAddress);
                     Task<string> response = SendToOneMachineAsync(ipAddress, command, parameter);

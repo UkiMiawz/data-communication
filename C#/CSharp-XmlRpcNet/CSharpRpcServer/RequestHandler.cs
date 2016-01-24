@@ -90,35 +90,26 @@ public class RequestHandler
             try
             {
                 //check if machine is on
-                if (NetworkHelper.isServerUp(ipAddress, 1090, 500))
+                Console.WriteLine(classNameLog + "Machine is alive. Asking permission from machine " + entry.Key + " => " + ipAddress);
+
+                //ask permission to all
+                String requestString = "Request.askPermission";
+                Object[] parameters = new Object[] { localClock.getClockValue(), myKey, myIp, requestString };
+                String replyOk = (String)XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", parameters);
+                Console.WriteLine(classNameLog + "Reply permission => " + replyOk);
+
+                if (replyOk == "true" && replyOk == "false")
                 {
-                    Console.WriteLine(classNameLog + "Machine is alive. Asking permission from machine " + entry.Key + " => " + ipAddress);
-
-                    //ask permission to all
-                    String requestString = "Request.askPermission";
-                    Object[] parameters = new Object[] { localClock.getClockValue(), myKey, myIp, requestString };
-                    String replyOk = (String)XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", parameters);
-                    Console.WriteLine(classNameLog + "Reply permission => " + replyOk);
-
-                    if (replyOk == "true" && replyOk == "false")
+                    if (replyOk == "true")
                     {
-                        if (replyOk == "true")
-                        {
-                            Console.WriteLine(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
-                            removeMachineFromExpected(machineKey);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine(classNameLog + "Reply not as expected, removing machine from waiting list");
+                        Console.WriteLine(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
                         removeMachineFromExpected(machineKey);
                     }
-
                 }
                 else
                 {
+                    Console.WriteLine(classNameLog + "Reply not as expected, removing machine from waiting list");
                     removeMachineFromExpected(machineKey);
-                    Console.WriteLine(classNameLog + "Machine " + machineKey + " is not active. IP Address " + ipAddress);
                 }
             }
             catch (Exception e)
