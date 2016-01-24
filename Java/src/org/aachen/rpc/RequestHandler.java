@@ -48,6 +48,12 @@ public class RequestHandler {
 		}
 	}
 	
+	/***
+	 * 
+	 * @param wantWrite - indicates whether the request is for write or read
+	 * @param isSignal - indicates whether the request coming from client or another server auto trigger
+	 * @return
+	 */
 	public String startMessage(boolean wantWrite, boolean isSignal){
 		
 		try {
@@ -77,7 +83,11 @@ public class RequestHandler {
 		return sendRequest();
 	}
 	
-	//send request
+	/***
+	 * Start sending request to access shared resource
+	 * @param wantWrite indicates whether the operation is write or read
+	 * @return
+	 */
 	private String sendRequest(){
 		
 		//increment clock by 1
@@ -170,8 +180,15 @@ public class RequestHandler {
 		return finalString + ";" + containMyString;
 	}
 
-	// receive message for ok permission, triggering resource access when all have given permission
+	/***
+	 * Receive message for ok permission, triggering resource access when all have given permission
+	 * @param requestClock logical clock of incoming request
+	 * @param machineKey key of machine sending ok signal
+	 * @param ipAddress 
+	 * @return string from resource access
+	 */
 	public String receivePermission(int requestClock, int machineKey, String ipAddress){
+		
 		//sync clock from message
 		System.out.println(classNameLog + "Received permission");
 		System.out.println(classNameLog + "Local clock " + localClock.getClockValue() + " request clock " + requestClock);
@@ -189,8 +206,15 @@ public class RequestHandler {
 		
 		return finalString;
 	}
-	
-	//receive message request for permission
+
+	/***
+	 * Receive message asking permission from other machine
+	 * @param requestClock logical clock of incoming request
+	 * @param machineKey machine key of requesting machine
+	 * @param ipAddress ip address of requesting machine
+	 * @param requestString request string
+	 * @return
+	 */
 	public String requestPermission(int requestClock, int machineKey, String ipAddress, String requestString){
 		System.out.println(classNameLog + ipAddress + " asking for permission");
 		//check if accessing resource
@@ -222,6 +246,10 @@ public class RequestHandler {
 		return "false";
 	}
 	
+	/***
+	 * Do resource access to master machine
+	 * @return return string from master
+	 */
 	private String doResourceAccess(){
 		System.out.println(classNameLog + "Accessing resource");
 		currentlyAccessing = true;
@@ -246,6 +274,9 @@ public class RequestHandler {
 		return finalString;
 	}
 	
+	/***
+	 * Send ok signal to all machines in differed list so that they can remove this machine from expected list
+	 */
 	private void sendOkResponse(){
 		//increment clock by 1
 		System.out.println(classNameLog + "Sending signal that already finished accessing resource");
@@ -269,6 +300,10 @@ public class RequestHandler {
 	
 	/*==== Machine array management ====*/
 	
+	/***
+	 * Remove machine from expected list
+	 * @param machineKey machine key to be removed
+	 */
 	private void removeMachineFromExpected(int machineKey){
 		System.out.println(classNameLog + "Remove machine key from expected request list => " + machineKey);
 		if(expectedRequestIps.containsKey(machineKey)){
@@ -276,6 +311,11 @@ public class RequestHandler {
 		}
 	}
 	
+	/***
+	 * Add new machine to differed list
+	 * @param machineKey machine key to be added
+	 * @param ipAddress ip address of new machine to be added
+	 */
 	private void addMachineToDiffered(int machineKey, String ipAddress){
 		System.out.println(classNameLog + "Add machine key to differed request list => " + machineKey);
 		if(!differedRequestIps.containsKey(machineKey)){
@@ -283,6 +323,10 @@ public class RequestHandler {
 		}
 	}
 	
+	/***
+	 * Remove machine from differed list
+	 * @param machineKey machine key to be removed
+	 */
 	private void removeMachineFromDiffered(int machineKey){
 		System.out.println(classNameLog + "Remove machine key from differed request list => " + machineKey);
 		if(differedRequestIps.containsKey(machineKey)){

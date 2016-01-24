@@ -47,6 +47,7 @@ public class RequestHandlerCentralized {
 	/***
 	 * 
 	 * @param wantWrite - indicates whether the request is for write or read
+	 * @param isSignal - indicates whether the request coming from client or another server auto trigger
 	 * @return
 	 */
 	public String startMessage(boolean wantWrite, boolean isSignal){
@@ -79,6 +80,11 @@ public class RequestHandlerCentralized {
 		return sendRequest(wantWrite);
 	}
 	
+	/***
+	 * Start sending request to access shared resource
+	 * @param wantWrite indicates whether the operation is write or read
+	 * @return
+	 */
 	public String sendRequest(boolean wantWrite){
 		//send request to master
 		System.out.println(classNameLog + "Send request to access resource to master");
@@ -159,6 +165,10 @@ public class RequestHandlerCentralized {
 		return finalString;
 	}
 	
+	/***
+	 * Do resource access in master machine
+	 * @return string returned from master
+	 */
 	public String doResourceAccess(){
 		System.out.println(classNameLog + "Do resource access ");
 		System.out.println(classNameLog + "Want write " + wantWrite);
