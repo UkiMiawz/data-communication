@@ -62,7 +62,7 @@ public class Bully
                     Console.WriteLine(classNameLog + "Election message is sent from " + (positionValue[thisMachineArrayPosition + 1]) + " to " + (positionValue[i]));
                     String nextBiggerPriorityIpAddress = machines.ElementAt(i).Value;
                     
-                    if (NetworkHelper.isServerUp(nextBiggerPriorityIpAddress, 1090, 500))
+                    if (NetworkHelper.isServerUp(nextBiggerPriorityIpAddress, 1090, 5000))
                     {
                         //send message to bigger value machines to hold election
                         Object[] parameters = new Object[] { myIp };
