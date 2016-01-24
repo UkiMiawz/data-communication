@@ -12,7 +12,6 @@ public class Bully {
 	private static TreeMap<Integer, String> machines;
 	private static int n;
     private static Integer positionValue[] = new Integer[100];
-    private static int timeout = 2000;
     private static String myIp;
     private static boolean gaveUp = false;
     
@@ -31,12 +30,6 @@ public class Bully {
     	myIp = JavaWsServer.getMyIpAddress();
     }
     
-    /**
-     * 
-     * 
-     * @author suchijulidayani
-     *
-     */
     private class CallBack implements AsyncCallback {
     	private String classNameLog = "callBack Bully : ";
 
@@ -69,23 +62,22 @@ public class Bully {
 	            {
 	                System.out.println(classNameLog + "Election message is sent from "+(positionValue[thisMachineArrayPosition+1])+" to "+(positionValue[i+1]));
 	                String nextBiggerPriorityIpAddress = machines.get(i);
-	                if(InetAddress.getByName(nextBiggerPriorityIpAddress).isReachable(timeout)){
-	                	//send message to bigger value machines to hold election
-	                	Object[] params = new Object[]{ myIp };
-	                	try{
-	                		//test if bigger node able to do election
-	                		boolean response = (boolean)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, "Election.checkLeaderValidity", params);
-	                		if(response){
-	                			//gave up election
-	                			System.out.println(classNameLog + "Someone bigger answer, I gave up");
-	                			gaveUp = true;
-	                			//trigger election in bigger node
-	                			XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", params, new CallBack());
-	                		}
-	                	} catch (Exception exception){
-	                		System.out.println(classNameLog + "Machine " + positionValue[i] + "gave up, continue election");
-	                	}
-	                } 
+	                //send message to bigger value machines to hold election
+                	Object[] params = new Object[]{ myIp };
+                	try{
+                		//test if bigger node able to do election
+                		boolean response = (boolean)XmlRpcHelper.SendToOneMachine(nextBiggerPriorityIpAddress, "Election.checkLeaderValidity", params);
+                		if(response){
+                			//gave up election
+                			System.out.println(classNameLog + "Someone bigger answer, I gave up");
+                			gaveUp = true;
+                			//trigger election in bigger node
+                			XmlRpcHelper.SendToOneMachineAsync(nextBiggerPriorityIpAddress, "Election.leaderElection", params, new CallBack());
+                		}
+                	} catch (Exception exception){
+                		System.out.println(classNameLog + "Machine " + positionValue[i] + "gave up, continue election");
+                	}
+	                
 	            }
 	        }
 	        

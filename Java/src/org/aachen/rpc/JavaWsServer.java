@@ -16,7 +16,6 @@ public class JavaWsServer {
 	/* ========= PROPERTIES SETTER AND GETTER ====== */
 	
 	private static final int PORT = 1090;
-	private static int timeout = 100;
 	private static WebServer webServer;
 	private static XmlRpcServer xmlRpcServer;
 	private static ElectionHelper electionHelper;

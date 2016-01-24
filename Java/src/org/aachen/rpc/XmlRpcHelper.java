@@ -17,8 +17,7 @@ import org.apache.xmlrpc.server.XmlRpcNoSuchHandlerException;
 
 public class XmlRpcHelper {
 
-	private static String classNameLog = "XmlRpcHelper : ";	
-	private static int timeout = 3000;
+	private static String classNameLog = "XmlRpcHelper : ";
 	
 	/***
 	 * Create a xml rpc client to connect to a specific remote machine
@@ -190,9 +189,6 @@ public class XmlRpcHelper {
 			} catch (UnknownHostException e) {
 				e.printStackTrace();
 				System.out.println(classNameLog + "IP is not valid");
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.out.println(classNameLog + "String is not valid");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

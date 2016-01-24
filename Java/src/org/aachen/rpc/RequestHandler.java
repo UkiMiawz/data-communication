@@ -14,7 +14,6 @@ public class RequestHandler {
 	private static TreeMap<Integer, String> expectedRequestIps = new TreeMap<Integer, String>();
 	private static TreeMap<Integer, String> differedRequestIps = new TreeMap<Integer, String>();
 	private static LogicalClock localClock = new LogicalClock();
-	private static int timeout = 3000;
 	private static ResourceHandler resourceHandler = new ResourceHandler();
 	private static String classNameLog = "RequestHandler : ";
 	
@@ -107,37 +106,26 @@ public class RequestHandler {
 			
 			try {
 				//check if machine is on
-				if (InetAddress.getByName(ipAddress).isReachable(timeout)){
-					System.out.println(classNameLog + "Machine is alive. Asking permission from machine " + entry.getKey() + " => " + ipAddress);
-					
-					//ask permission to all
-					String requestString = "Request.askPermission";
-					Object[] params = new Object[]{localClock.getClockValue(), myKey, myIp, requestString};
-					String replyOk = (String) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
-					System.out.println(classNameLog + "Reply permission => " + replyOk);
-					
-					if(replyOk.equals("true") && replyOk.equals("false")){
-						if(replyOk.equals("true")){
-							System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
-							removeMachineFromExpected(machineKey);
-						}
-					} else {
-						System.out.println(classNameLog + "Reply not as expected, removing machine from waiting list");
+				System.out.println(classNameLog + "Machine is alive. Asking permission from machine " + entry.getKey() + " => " + ipAddress);
+				
+				//ask permission to all
+				String requestString = "Request.askPermission";
+				Object[] params = new Object[]{localClock.getClockValue(), myKey, myIp, requestString};
+				String replyOk = (String) XmlRpcHelper.SendToOneMachine(ipAddress, "Request.requestPermission", params);
+				System.out.println(classNameLog + "Reply permission => " + replyOk);
+				
+				if(replyOk.equals("true") && replyOk.equals("false")){
+					if(replyOk.equals("true")){
+						System.out.println(classNameLog + "Got permission from " + machineKey + " removing machine from expected list");
 						removeMachineFromExpected(machineKey);
 					}
-					
 				} else {
+					System.out.println(classNameLog + "Reply not as expected, removing machine from waiting list");
 					removeMachineFromExpected(machineKey);
-					System.out.println(classNameLog + "Machine " + machineKey + " is not active. IP Address " + ipAddress);
 				}
-			} catch (UnknownHostException e) {
-				removeMachineFromExpected(machineKey);
-				System.out.println(classNameLog + "IP is not valid");
-			} catch (IOException e) {
-				removeMachineFromExpected(machineKey);
-				System.out.println(classNameLog + "String is not valid");
+				
 			} catch (Exception e){
-				e.printStackTrace();
+				System.out.println(classNameLog + "Machine is not valid, removing from expected list");
 				removeMachineFromExpected(machineKey);
 			}
 		}
