@@ -158,14 +158,6 @@ public class JavaWsServer {
 		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
 	}
 	
-	public void serverShutDownFromClient(String ip){
-		System.out.println(ip + " client ask to shutdown server");
-		Object[] params = new Object[] { myIp };
-		XmlRpcHelper.SendToAllMachines(machines, "RegisterHandler.removeMachineIp", params);
-		webServer.shutdown();
-		System.out.println("Server shutdown");
-	}
-	
 	/* ========= MAIN METHOD ====== */
 	
 	public static void main(String[] args) {
