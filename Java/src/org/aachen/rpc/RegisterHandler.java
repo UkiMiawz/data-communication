@@ -27,6 +27,11 @@ public class RegisterHandler {
 		return machines;
 	}
 	
+	/**
+	 * Join a network
+	 * @param ipAddress ip address of joined machine
+	 * @param neighbourIp neighbour machine ip address
+	 */
 	public static void joinNetwork(String ipAddress, String neighbourIp) {
 		System.out.println(classNameLog + ipAddress + " joining network");
 		
@@ -40,7 +45,7 @@ public class RegisterHandler {
 		    
 		    int i = 2;
 		    
-			if(neighbourIp == null && neighbourIp.isEmpty()){
+			if(neighbourIp.isEmpty() || neighbourIp == null){
 				//search for neighbor automatically
 			    while (ipNeighbor == null && i<255){
 				       String host= subnet + "." + i;
@@ -65,16 +70,20 @@ public class RegisterHandler {
 			} else {
 				if(!neighbourIp.equals(myIp) && !neighbourIp.equals("localhost")){
 					Object[] params = new Object[] { ipAddress };
+					//alert neighbour that new machine wants to join
 					ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(neighbourIp, "RegisterHandler.newMachineJoin", params);	
 				}
 			}
 		
 		    System.out.println(classNameLog + "Finish registering to neighbor");
 		    
+		    //check if neighbor is indeed other machine and valid
 		    if(ipNeighbor != null && !ipNeighbor.equals("error") && !ipNeighbor.equals(myIp) && !ipNeighbor.equals("localhost")){
-				//you're not alone
+				
+		    	//you're not alone
 		    	System.out.println(classNameLog + "I'm not alone! Requesting key and ip of master");
-				//get master from neighbor
+				
+		    	//get master from neighbor
 		    	Object[] params = new Object[]{myIp};
 		    	Integer keyMaster = (Integer) XmlRpcHelper.SendToOneMachine(ipNeighbor, "RegisterHandler.getKeyMaster", params);
 				String ipMaster = (String) XmlRpcHelper.SendToOneMachine(ipNeighbor, "RegisterHandler.getIpMaster", params);
@@ -89,6 +98,7 @@ public class RegisterHandler {
 				//set ip master
 				JavaWsServer.setMaster(keyMaster);
 			} else {
+				//alone in the network :(
 				System.out.println("I'm alone here. Guys....");
 			}
 			
@@ -97,10 +107,17 @@ public class RegisterHandler {
 			JavaWsServer.setLastPriority();
 			
 		} catch (Exception e) {
+			System.out.println(classNameLog + "Captain we got problem!!");
 			e.printStackTrace();
 		}
 	}
 	
+	/***
+	 * Add new machine by ip address and priority
+	 * @param ipAddress ip address of new machine
+	 * @param priority priority of new machine
+	 * @return
+	 */
 	public static String registerMachine(String ipAddress, int priority){
 		System.out.println(classNameLog + "Register new machine " + ipAddress + " priority " + priority);
 		String myIp = JavaWsServer.getMyIpAddress();
@@ -108,24 +125,46 @@ public class RegisterHandler {
 		return "From " + myIp + " You have been registered " + ipAddress + "with priority " + priority + ". Number of machines now " + numberOfMachines;
 	}
 	
+	/***
+	 * Add new machine by ip address
+	 * @param newIpAddress ip address of new machine
+	 * @param callerIpAddress ip address of machine that send new ip address
+	 * @return
+	 */
 	public String addNewMachine(String newIpAddress, String callerIpAddress){
 		System.out.println(classNameLog + "Add new machine " + newIpAddress + " from " + callerIpAddress);
 		JavaWsServer.addMachineToMap(newIpAddress);
 		return "From " + callerIpAddress + " new machine registered " + newIpAddress;
 	}
 	
+	/***
+	 * Remove machine from map by machine key
+	 * @param key key of machine to be removed
+	 * @return
+	 */
 	public String removeMachine(int key){
 		System.out.println(classNameLog + "Remove machine with key " + key);
 		String removedIp = JavaWsServer.removeMachineFromMap(key);
 		return "Machine removed " + removedIp;
 	}
 	
+	/***
+	 * Remove machine from map by machine ip address
+	 * @param ipAddress ipAddress of machine to be removed
+	 * @return
+	 */
 	public String removeMachineIp(String ipAddress){
 		System.out.println(classNameLog + "Remove machine with key " + ipAddress);
 		int removedKey = JavaWsServer.removeMachineFromMap(ipAddress);
 		return "Machine removed " + removedKey;
 	}
 	
+	/***
+	 * As master, get notification that a new machine is joining
+	 * @param newIp ip address of new machine to join
+	 * @param callerIp ip address of machine sending notification
+	 * @return
+	 */
 	public String newMachineJoinNotification(String newIp, String callerIp){
 		System.out.println(classNameLog + "New machine notification " + newIp + " from " + callerIp);
 		//inform all others
@@ -136,6 +175,11 @@ public class RegisterHandler {
 		return "Notification from " + callerIp + " Machine added " + newIp;
 	}
 	
+	/***
+	 * As neighbor, receive join request from a new machine
+	 * @param ipAddress ip address of new machine that wants to join
+	 * @return
+	 */
 	public String newMachineJoin(String ipAddress){
 		System.out.println(classNameLog + "Join request from neighbor " + ipAddress);
 		try{

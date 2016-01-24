@@ -67,7 +67,7 @@ public class JavaWsServer {
 		return ipMaster;
 	}
 	
-	/* ========= SYNC PROPERTIES SETTER AND GETTER ====== */
+	/* ========= SHARED PROPERTIES SETTER AND GETTER ====== */
 	
 	private static String sharedString = "";
 	public static String getSharedString(){

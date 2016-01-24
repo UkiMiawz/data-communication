@@ -1,6 +1,5 @@
 package org.aachen.rpc;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.XmlRpcRequest;
 import org.apache.xmlrpc.client.AsyncCallback;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;

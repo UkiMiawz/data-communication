@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Test service with test methods
+ * @author ukimiawz
+ *
+ */
 public class HelloWorld {
 	
 	public static boolean haveInterest;
@@ -35,20 +40,6 @@ public class HelloWorld {
 		test.putAll(machines);
 		return test;
 	}
-	
-	/*public class Test{
-		public int networkPriority;
-		public String ipAddress;
-	}
-	
-	public Test[] returnKeyMap(String ipAddress, int priority){
-		System.out.println("Hashmap request from server " + ipAddress);
-		Test objectTest = new Test();
-		objectTest.ipAddress = ipAddress;
-		objectTest.networkPriority = priority;
-		Test[] testArray = new Test[] { objectTest };
-		return testArray;
-	}*/
 	
 	public String haveInterest(){
 		System.out.println("Interest initiated");

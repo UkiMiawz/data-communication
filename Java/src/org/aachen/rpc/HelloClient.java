@@ -13,6 +13,11 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
+/**
+ * Test client to run test methods
+ * @author ukimiawz
+ *
+ */
 public class HelloClient {
 	
 	private static XmlRpcClient client;
