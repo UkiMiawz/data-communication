@@ -114,13 +114,13 @@ public class RegisterHandler {
 		return "From " + callerIpAddress + " new machine registered " + newIpAddress;
 	}
 	
-	public static String removeMachine(int key){
+	public String removeMachine(int key){
 		System.out.println(classNameLog + "Remove machine with key " + key);
 		String removedIp = JavaWsServer.removeMachineFromMap(key);
 		return "Machine removed " + removedIp;
 	}
 	
-	public static String removeMachineIp(String ipAddress){
+	public String removeMachineIp(String ipAddress){
 		System.out.println(classNameLog + "Remove machine with key " + ipAddress);
 		int removedKey = JavaWsServer.removeMachineFromMap(ipAddress);
 		return "Machine removed " + removedKey;
