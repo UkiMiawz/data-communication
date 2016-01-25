@@ -11,4 +11,4 @@ Made in 1 month with a lot of pull push commit and unneccessary pushes (as per u
 4. Mutual Exclusion using the guys with the funny name Mutual Exclusion a.k.a Ricart Agrawala
 
 Like Sun Zhu once said 
-> This is a software project, nothing ever goes according to the plan
+> This is a software project, nothing ever goes according to plan
