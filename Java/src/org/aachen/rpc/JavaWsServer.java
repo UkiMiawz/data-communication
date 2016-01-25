@@ -188,16 +188,11 @@ public class JavaWsServer {
 			//ask for neighbour ip or not
 
 			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        	System.out.println("=====Connecting to Network=====");        
-        	System.out.println("1. Input neighbour IP Address manually");
-        	System.out.println("2. Detect neighbour IP Address automatically");
-        	System.out.println("Enter choice, or 'exit' to quit: ");
-            String command =  reader.readLine();
+        	System.out.println("=====Connecting to Network=====");
             
-            if(command.equals("1")){
-            	System.out.println("Please input neighbor IP address :");
-            	myNeighbourIp = reader.readLine();
-            }
+            System.out.println("Please input neighbor IP address :");
+            myNeighbourIp = reader.readLine();
+            
         	
 			System.out.println("");
 			
