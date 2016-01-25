@@ -12,7 +12,7 @@ Made in 1 month with a lot of pull push commit and unneccessary pushes (as per u
 
 #####What's (bananaly) not implemented:
 1. Auto election on dead master node
-2. Neat logging and exceptions handlind
+2. Neat logging and exceptions handling
 
 This project will develop random features on testing. Just like Sun Zhu once said 
 > This is a software project, nothing ever goes according to plan
