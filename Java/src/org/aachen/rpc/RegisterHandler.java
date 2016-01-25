@@ -52,18 +52,23 @@ public class RegisterHandler {
 				       System.out.println(classNameLog + "Contacting " + host);
 				       
 				       if (!host.equals(ipAddress)){
-				           System.out.println(classNameLog + host + " is reachable. Checking validity");
-				           Object[] params = new Object[] { ipAddress };
+				    	   try{
+				    		   System.out.println(classNameLog + host + " is reachable. Checking validity");
+					           Object[] params = new Object[] { ipAddress };
+					           
+					           ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
+					           //check if ip neighbor is valid
+					           if(!InetAddresses.isInetAddress(ipNeighbor)){
+					        	   ipNeighbor = null;
+					           } else {
+					        	   System.out.println(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
+					           }
+				    	   } catch (Exception e){
+				    		   System.out.println(classNameLog + host + " is not valid");
+				    	   }
 				           
-				           ipNeighbor = (String) XmlRpcHelper.SendToOneMachine(host, "RegisterHandler.newMachineJoin", params);
-				           //check if ip neighbor is valid
-				           if(!InetAddresses.isInetAddress(ipNeighbor)){
-				        	   ipNeighbor = null;
-				           } else {
-				        	   System.out.println(classNameLog + "Neighbor found. IP neighbor " + ipNeighbor);
-				           }
 				       } else {
-				    	   System.out.println(host + " is not reachable");
+				    	   System.out.println(host + " is my self");
 				       }
 				       i++;
 				}
