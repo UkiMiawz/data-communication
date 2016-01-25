@@ -211,19 +211,9 @@ class CSharpRpcServer : MarshalByRefObject
             //join network
             String myNeighbourIp = "";
 
-            //ask for neighbour ip or not
-
             Console.WriteLine("=====Connecting to Network=====");
-            Console.WriteLine("1. Input neighbour IP Address manually");
-            Console.WriteLine("2. Detect neighbour IP Address automatically");
-            Console.WriteLine("Enter choice, or 'exit' to quit: ");
-            String command = Console.ReadLine();
-
-            if (command == "1")
-            {
-                Console.WriteLine("Please input neighbor IP address :");
-                myNeighbourIp = Console.ReadLine();
-            }
+            Console.WriteLine("Please input neighbor IP address :");
+            myNeighbourIp = Console.ReadLine();
 
             Console.WriteLine("");
 
@@ -251,7 +241,7 @@ class CSharpRpcServer : MarshalByRefObject
             Console.WriteLine(classNameLog + "My priority now " + myPriority);
             Console.WriteLine(classNameLog + "Machines now " + machines.Count());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Console.WriteLine("{0}", ex.Message);
         }
@@ -271,7 +261,7 @@ class CSharpRpcServer : MarshalByRefObject
                 {
                     case "ip":
                         Console.WriteLine("This machine ip :" + myIpAddress);
-                        break;                   
+                        break;
                     default:
                         Console.WriteLine("Command " + input + " not recognized");
                         break;
@@ -288,5 +278,5 @@ class CSharpRpcServer : MarshalByRefObject
 
         Console.WriteLine("Shutting down server...");
         serverShutDown();
-    }   
+    }
 }
