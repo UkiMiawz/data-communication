@@ -172,19 +172,21 @@ class CSharpRpcClient
                         // Menu 6: Test Mutual Exclusion.
                         StartMutualExclusion(true);
                         Console.ReadKey();
-                        break;                  
+                        break;
+
+                    case "0":
+                        // exit
+                        break;
 
                     default:
-                        Console.WriteLine("from master {0}", _masterProxy.HelloWorld("master Aderick"));
-                        Console.WriteLine("from local {0}", _localProxy.HelloWorld("Aderick"));
+                        Console.WriteLine("Invalid command. Please re-enter the command.");
                         Console.ReadKey();
                         break;
                 }
             }
             while (input != "0");
 
-            //localProxy.removeMachine(ipAddress);
-            Console.WriteLine("You are logging out. Your machine have been removed from network");
+            Console.WriteLine("Ending the client session.");
             Console.ReadKey();
         }
         catch (XmlRpcFaultException fex)

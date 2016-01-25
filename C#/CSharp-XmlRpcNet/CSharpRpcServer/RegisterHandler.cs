@@ -33,7 +33,7 @@ public class RegisterHandler: MarshalByRefObject
         Dictionary<int, String> machines = CSharpRpcServer.getMachines();
         foreach (KeyValuePair<int, string> mach in machines)
         {
-            Console.WriteLine(classNameLog + mach.Key + mach.Value);
+            Console.WriteLine(classNameLog + "priority " + mach.Key + " : " + mach.Value);
         }
         return machines;
     }
