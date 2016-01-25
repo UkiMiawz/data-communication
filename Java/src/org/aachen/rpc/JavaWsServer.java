@@ -165,6 +165,7 @@ public class JavaWsServer {
 		try {
 			electionHelper = new ElectionHelper();
 			
+			String command = "";
 			String response = "";
 			System.out.println("Starting XML-RPC 3.1.1 Server on port : "+PORT+" ... ");
 
