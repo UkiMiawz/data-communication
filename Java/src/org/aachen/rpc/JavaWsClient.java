@@ -87,7 +87,7 @@ public class JavaWsClient {
 			}
 			
 			System.out.println("Start waiting process");
-			for(int i=0; i<20; i++){
+			for(int i=0; i<15; i++){
 				System.out.println(i);
 				Thread.sleep(1000);
 			}
