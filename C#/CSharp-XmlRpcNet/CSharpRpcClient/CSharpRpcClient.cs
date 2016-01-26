@@ -41,7 +41,7 @@ class CSharpRpcClient
             }
 
             Console.WriteLine("Start waiting process");
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 15; i++)
             {
                 Console.WriteLine(i);
                 System.Threading.Thread.Sleep(1000);
